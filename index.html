@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathe 6. Klasse – Übungsbereich</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .wrapper {
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+  }
+  .wrapper h1 {
+    color: white;
+    font-size: 1.8em;
+    margin-bottom: 6px;
+  }
+  .wrapper p.subtitle {
+    color: rgba(255,255,255,0.85);
+    margin-top: 0;
+    margin-bottom: 36px;
+    font-size: 1em;
+  }
+  .cards {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 30px 26px;
+    width: 260px;
+    text-decoration: none;
+    color: #222;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 28px rgba(0,0,0,0.32);
+  }
+  .card .icon {
+    font-size: 2.6em;
+    margin-bottom: 14px;
+  }
+  .card h2 {
+    font-size: 1.15em;
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+  }
+  .card p {
+    font-size: 0.9em;
+    color: #555;
+    margin: 0 0 18px 0;
+    line-height: 1.5;
+  }
+  .card .btn {
+    background: #3498db;
+    color: white;
+    padding: 9px 20px;
+    border-radius: 20px;
+    font-size: 0.88em;
+    font-weight: bold;
+  }
+  .card.test .btn { background: #27ae60; }
+  .card.explain .btn { background: #e67e22; }
+  footer {
+    margin-top: 34px;
+    color: rgba(255,255,255,0.7);
+    font-size: 0.8em;
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+  <h1>📐 Mathe 6. Klasse – Übungsbereich</h1>
+  <p class="subtitle">Jahrgangsstufentest Bayern – wähle, womit du üben möchtest</p>
+
+  <div class="cards">
+    <a class="card test" href="mathe_test_6klasse.html">
+      <div class="icon">📝</div>
+      <h2>Interaktiver Test</h2>
+      <p>19 Aufgaben mit zufälligen Zahlen, direkter Auswertung und Punktestand. Beliebig oft wiederholbar.</p>
+      <span class="btn">Test starten</span>
+    </a>
+
+    <a class="card explain" href="mathe_erklaerbuch.html">
+      <div class="icon">📘</div>
+      <h2>Erklärbuch</h2>
+      <p>Alle Original-Aufgaben Schritt für Schritt erklärt – ideal zum Lernen und Nachschlagen vor dem Üben.</p>
+      <span class="btn">Erklärungen ansehen</span>
+    </a>
+  </div>
+
+  <footer>Angelehnt an den Jahrgangsstufentest Mathematik 2023, Realschule Bayern</footer>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jahrgangsstufentest Mathematik 6. Klasse - Übung</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 5px 0; font-size: 1.4em; }
+  header p { margin: 0; font-size: 0.9em; color: #cbd5e0; }
+  #container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 15px;
+  }
+  .task {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 18px;
+    border-left: 6px solid #3498db;
+  }
+  .task.correct { border-left-color: #27ae60; }
+  .task.incorrect { border-left-color: #e74c3c; }
+  .task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .task-number {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 1.05em;
+  }
+  .points-badge {
+    background: #eee;
+    color: #555;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+  }
+  .task-text { margin-bottom: 14px; line-height: 1.5; }
+  input[type="text"], input[type="number"] {
+    padding: 8px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    width: 140px;
+  }
+  .options label {
+    display: block;
+    padding: 8px 10px;
+    margin: 4px 0;
+    background: #f9f9f9;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+  }
+  .options label:hover { background: #eef5fc; }
+  .options input { margin-right: 8px; }
+  .feedback {
+    margin-top: 12px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.95em;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: #eafaf1; color: #1e7e45; border: 1px solid #a8e6c1; }
+  .feedback.incorrect-fb { background: #fdecea; color: #a12a24; border: 1px solid #f5b7b1; }
+  .explanation {
+    margin-top: 8px;
+    font-size: 0.9em;
+    color: #555;
+    background: #fff8e1;
+    border-left: 4px solid #f5c518;
+    padding: 8px 12px;
+    border-radius: 4px;
+    display: none;
+  }
+  .explanation.show { display: block; }
+  button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 0.95em;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  button:hover { background: #2980b9; }
+  #submitBtn {
+    display: block;
+    width: 100%;
+    max-width: 800px;
+    margin: 20px auto 40px auto;
+    background: #27ae60;
+    font-size: 1.1em;
+    padding: 14px;
+  }
+  #submitBtn:hover { background: #1e8449; }
+  #resultBox {
+    max-width: 800px;
+    margin: 0 auto 30px auto;
+    padding: 20px;
+    background: #2c3e50;
+    color: white;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.2em;
+    display: none;
+  }
+  #resultBox.show { display: block; }
+  .grade-scale {
+    font-size: 0.85em;
+    color: #cbd5e0;
+    margin-top: 10px;
+  }
+  #resetBtn {
+    background: #7f8c8d;
+    margin-top: 12px;
+  }
+  #resetBtn:hover { background: #616a6b; }
+  .img-box {
+    display: flex;
+    justify-content: center;
+    margin: 12px 0;
+  }
+  svg { max-width: 100%; }
+  .hint { font-size: 0.85em; color: #888; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jahrgangsstufentest Mathematik – 6. Klasse Realschule Bayern</h1>
+  <p>Interaktive Übungsversion (angelehnt an den Test 2023) – 19 Aufgaben, 21 Punkte</p>
+</header>
+
+<div id="container">
+  <form id="testForm"></form>
+</div>
+
+<button id="submitBtn">Test auswerten</button>
+<div id="resultBox"></div>
+
+<script>
+// ---------------------------------------------------------
+// Hilfsfunktionen
+// ---------------------------------------------------------
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ---------------------------------------------------------
+// Aufgaben-Generatoren (jede Funktion liefert ein Task-Objekt)
+// ---------------------------------------------------------
+
+function taskDivision() {
+  // a : b, ergebnis ganzzahlig
+  const b = randInt(4, 30);
+  const result = randInt(10, 60);
+  const a = b * result;
+  return {
+    points: 1,
+    text: `Berechne: ${a} : ${b} =`,
+    type: 'number',
+    answer: result,
+    explanation: `${a} geteilt durch ${b} ergibt ${result}, da ${b} · ${result} = ${a}.`
+  };
+}
+
+function taskPower() {
+  const e1 = randInt(2, 4);
+  const e2 = randInt(1, 3);
+  const v1 = Math.pow(10, e1);
+  const v2 = Math.pow(10, e2);
+  return {
+    points: 1,
+    text: `Berechne: 10<sup>${e1}</sup> + 10<sup>${e2}</sup> =`,
+    type: 'number',
+    answer: v1 + v2,
+    explanation: `10 hoch ${e1} ist ${v1}, 10 hoch ${e2} ist ${v2}. Zusammen: ${v1} + ${v2} = ${v1+v2}.`
+  };
+}
+
+function taskSubtractionNegative() {
+  const a = randInt(1000, 9000);
+  const b = randInt(a + 500, a + 9000); // b > a, damit Ergebnis negativ
+  return {
+    points: 1,
+    text: `Berechne: ${a} − ${b} =`,
+    type: 'number',
+    answer: a - b,
+    explanation: `Da ${b} größer ist als ${a}, wird das Ergebnis negativ: ${a} − ${b} = ${a-b}.`
+  };
+}
+
+function taskNegativeMultiplication() {
+  const a = randInt(2, 20);
+  const b = randInt(2, 12);
+  return {
+    points: 1,
+    text: `Berechne: (−${a}) · (−${b}) =`,
+    type: 'number',
+    answer: a * b,
+    explanation: `Minus mal Minus ergibt Plus: (−${a}) · (−${b}) = ${a*b}.`
+  };
+}
+
+function taskNumberLine() {
+  // Zahlengerade mit einer falschen Zahl - feste Version wie im Original, leicht variiert
+  const wrongOptions = [
+    { shown: [-150, -90, 0, 120], correctIdx: 1, correctVal: -100, wrongVal: -90, range: [-200, 100] }
+  ];
+  const cfg = wrongOptions[0];
+  return {
+    points: 1,
+    text: `Auf einer Zahlengeraden von ${cfg.range[0]} bis ${cfg.range[1]} (in 10er-Schritten) wurden die Zahlen ${cfg.shown.join(', ')} eingetragen. Eine davon steht an der falschen Stelle. Welche Zahl ist falsch beschriftet und wie muss die Korrektur lauten? Gib die korrigierte Zahl ein (die an der Stelle von ${cfg.wrongVal} steht):`,
+    type: 'number',
+    answer: cfg.correctVal,
+    explanation: `Die Zahlengerade ist in 10er-Schritten unterteilt. Die Markierung, die als ${cfg.wrongVal} beschriftet war, liegt tatsächlich bei ${cfg.correctVal}.`
+  };
+}
+
+function taskDivisibleBy3() {
+  return {
+    points: 1,
+    text: `Tom legt mit den Ziffernkarten 7, 2, 1, 8 eine vierstellige Zahl. Begründe kurz (ein Satz genügt), warum jede damit gelegte Zahl durch 3 teilbar ist. Tipp: Denk an die Quersumme.`,
+    type: 'text-open',
+    answer: null,
+    explanation: `Die Quersumme der Ziffern 7+2+1+8 = 18 ist durch 3 teilbar. Da sich beim Vertauschen der Ziffern die Quersumme nicht ändert, ist jede damit gebildete Zahl ebenfalls durch 3 teilbar.`
+  };
+}
+
+function taskRounding() {
+  const base = randInt(100, 999) * 1000;
+  const rest = randInt(0, 999);
+  const num = base + rest;
+  const rounded = Math.round(num / 1000) * 1000;
+  return {
+    points: 1,
+    text: `Runde die Zahl ${num.toLocaleString('de-DE')} auf Tausender.`,
+    type: 'number',
+    answer: rounded,
+    explanation: `Die Hunderterstelle von ${num.toLocaleString('de-DE')} entscheidet: Bei den letzten drei Ziffern (${(num%1000).toString().padStart(3,'0')}) wird ${rest >= 500 ? 'aufgerundet' : 'abgerundet'}: ${num.toLocaleString('de-DE')} ≈ ${rounded.toLocaleString('de-DE')}.`
+  };
+}
+
+function taskLargestSquareBound() {
+  const bound = randInt(150, 300);
+  let largest = 0;
+  for (let n = 1; n < 30; n++) { if (n*n < bound) largest = n; }
+  const options = shuffle([largest, largest+1, largest-1, largest+2, largest-2, largest+4].filter((v,i,a)=>a.indexOf(v)===i)).slice(0,5);
+  if (!options.includes(largest)) options[0] = largest;
+  return {
+    points: 1,
+    text: `Für den Platzhalter soll die größtmögliche natürliche Zahl eingesetzt werden, sodass gilt: Platzhalter² < ${bound}. Welche Zahl ist es?`,
+    type: 'radio',
+    options: shuffle(options.map(String)),
+    answer: String(largest),
+    explanation: `${largest}² = ${largest*largest} ist kleiner als ${bound}, aber ${largest+1}² = ${(largest+1)*(largest+1)} ist nicht mehr kleiner als ${bound}. Also ist ${largest} die größtmögliche Zahl.`
+  };
+}
+
+function taskWindows() {
+  const floors = randInt(10, 30);
+  const apts = randInt(8, 16);
+  const windows = randInt(3, 5);
+  const total = floors * apts * windows;
+  return {
+    points: 1,
+    text: `Eine Reinigungsfirma putzt die Fenster von ${floors} Stockwerken eines Hochhauses. Auf jedem Stockwerk gibt es ${apts} Wohnungen mit jeweils ${windows} Fenstern. Wie viele Fenster wurden insgesamt geputzt?`,
+    type: 'number',
+    answer: total,
+    explanation: `Rechnung: ${floors} · ${apts} · ${windows} = ${total} Fenster.`
+  };
+}
+
+function taskBeanEstimationError() {
+  return {
+    points: 1,
+    text: `Michael möchte die ungefähre Anzahl der Bohnen auf einem Bild abschätzen. Er zählt die Bohnen in einem einzelnen Feld (A1) und multipliziert diese Zahl mit der Gesamtzahl der Felder. Beschreibe kurz den Fehler, den er dabei macht.`,
+    type: 'text-open',
+    answer: null,
+    explanation: `Der Fehler: Die Bohnen sind nicht gleichmäßig auf allen Feldern verteilt. Ein einzelnes Feld ist nicht repräsentativ für den Durchschnitt, daher verfälscht die Hochrechnung auf Basis nur eines Feldes das Ergebnis. Besser wäre es, mehrere Felder zu zählen und den Durchschnitt zu bilden.`
+  };
+}
+
+function taskTermDescription() {
+  const options = [
+    "Bilde das Produkt aus der Summe der Zahlen 128 und 39 und dem Quotienten der Zahlen 56 und 8.",
+    "Addiere die Summe der Zahlen 128 und 39 zur Differenz der Zahlen 56 und 8.",
+    "Bilde den Quotienten aus der Summe der Zahlen 128 und 39 und dem Produkt der Zahlen 56 und 8.",
+    "Multipliziere die Summe der Zahlen 128 und 39 mit der Differenz der Zahlen 56 und 8."
+  ];
+  return {
+    points: 1,
+    text: `Welcher Text passt zum Term (128 + 39) · (56 − 8)?`,
+    type: 'radio',
+    options: shuffle([...options]),
+    answer: options[3],
+    explanation: `Der Term besteht aus einer Summe (128 + 39) und einer Differenz (56 − 8), die miteinander multipliziert werden. Das entspricht: "Multipliziere die Summe der Zahlen 128 und 39 mit der Differenz der Zahlen 56 und 8."`
+  };
+}
+
+function taskConeVsPyramid() {
+  return {
+    points: 1,
+    text: `Beschreibe anhand einer geometrischen Eigenschaft, wie sich Kegel und Pyramide unterscheiden.`,
+    type: 'text-open',
+    answer: null,
+    explanation: `Ein Kegel hat eine kreisförmige (runde) Grundfläche, während eine Pyramide eine vieleckige Grundfläche (z. B. Dreieck, Viereck) mit geraden Kanten und ebenen Seitenflächen hat. Der Kegel hat außerdem eine gekrümmte Mantelfläche, die Pyramide nur ebene Seitenflächen.`
+  };
+}
+
+function taskAreaConversion() {
+  const cm = randInt(2, 9);
+  const mm = randInt(20, 90);
+  const cm_mm = cm * 10;
+  const result = cm_mm * mm;
+  const options = shuffle([result, result/10, result*10, result*100].map(v => Math.round(v)));
+  return {
+    points: 1,
+    text: `Welches Ergebnis passt zur folgenden Rechnung? ${cm} cm · ${mm} mm =`,
+    type: 'radio',
+    options: options.map(v => v.toLocaleString('de-DE') + ' mm²'),
+    answer: result.toLocaleString('de-DE') + ' mm²',
+    explanation: `${cm} cm sind ${cm_mm} mm. Also: ${cm_mm} mm · ${mm} mm = ${result} mm².`
+  };
+}
+
+function taskSharedCost() {
+  const totalPeople = randInt(2, 5);
+  const pricePerPerson = randInt(4, 15);
+  const total = totalPeople * pricePerPerson;
+  const newGroup = randInt(4, 9);
+  const newTotal = newGroup * pricePerPerson;
+  return {
+    points: 1,
+    text: `${totalPeople} Freunde waren in der Kletterhalle und haben für den Eintritt insgesamt ${total} Euro bezahlt. Wie viel müssen ${newGroup} Personen insgesamt bezahlen, wenn sie zum selben Einzelpreis in die Kletterhalle gehen?`,
+    type: 'number',
+    answer: newTotal,
+    explanation: `Einzelpreis: ${total} Euro geteilt durch ${totalPeople} Personen = ${pricePerPerson} Euro pro Person. Für ${newGroup} Personen: ${newGroup} · ${pricePerPerson} = ${newTotal} Euro.`
+  };
+}
+
+function taskScale() {
+  const realCm = randInt(150, 300);
+  const drawnOptions = ['1:100', '1:10', '1:1', '10:1', '100:1'];
+  return {
+    points: 1,
+    text: `Ein Eisbär ist in Wirklichkeit ${realCm} cm lang und wird auf einem Bild deutlich kleiner, aber gut erkennbar mit allen Details dargestellt (das Bild ist ungefähr so groß wie eine Buchseite). In welchem Maßstab ist der Eisbär ungefähr gezeichnet?`,
+    type: 'radio',
+    options: [...drawnOptions],
+    answer: '1:10',
+    explanation: `Der Eisbär ist etwa ${realCm} cm groß in echt, wird aber nur wenige Zentimeter groß auf der Seite dargestellt (grob 15-25 cm). Das entspricht einer Verkleinerung um etwa den Faktor 10, also dem Maßstab 1:10.`
+  };
+}
+
+function taskRectangleArea() {
+  const area = randInt(8, 24);
+  return {
+    points: 1,
+    text: `Nenne zwei ganzzahlige Seitenlängen (in cm) für ein Rechteck mit dem Flächeninhalt A = ${area} cm². Gib sie als "Länge mal Breite" ein, zum Beispiel 4x3.`,
+    type: 'text-pair',
+    answer: area,
+    explanation: `Gesucht sind zwei ganze Zahlen, deren Produkt ${area} ergibt, zum Beispiel ${area}x1${area>1 ? ', oder andere Teiler-Paare von ' + area : ''}.`
+  };
+}
+
+function taskSquareSplit() {
+  const a = randInt(6, 12);
+  const largerPerimeter = randInt(2*a + 2, 4*a - 2);
+  // largerPerimeter = 2*(a + h) => h = largerPerimeter/2 - a
+  const h = largerPerimeter / 2 - a;
+  if (!Number.isInteger(h) || h <= 0 || h >= a) {
+    // fallback to fixed values like original
+    return taskSquareSplitFixed();
+  }
+  const smallerHeight = a - h;
+  const smallerPerimeter = 2 * (a + smallerHeight);
+  const options = shuffle([smallerPerimeter, smallerPerimeter+4, smallerPerimeter-4, smallerPerimeter+8, smallerPerimeter-8].filter(v => v > 0));
+  return {
+    points: 1,
+    text: `Ein Quadrat mit der Seitenlänge a = ${a} cm wird in zwei Rechtecke aufgeteilt (durch einen Schnitt parallel zu einer Seite). Das größere Rechteck hat einen Umfang von ${largerPerimeter} cm. Wie groß ist der Umfang des kleineren Rechtecks?`,
+    type: 'radio',
+    options: options.map(v => v + ' cm'),
+    answer: smallerPerimeter + ' cm',
+    explanation: `Das größere Rechteck hat die Breite ${a} cm (Seite des Quadrats) und eine Höhe h, mit 2·(${a}+h) = ${largerPerimeter}, also h = ${h} cm. Die Höhe des kleineren Rechtecks ist dann ${a} − ${h} = ${smallerHeight} cm. Umfang: 2·(${a}+${smallerHeight}) = ${smallerPerimeter} cm.`
+  };
+}
+
+function taskSquareSplitFixed() {
+  return {
+    points: 1,
+    text: `Ein Quadrat mit der Seitenlänge a = 8 cm wird in zwei Rechtecke aufgeteilt (durch einen Schnitt parallel zu einer Seite). Das größere Rechteck hat einen Umfang von 28 cm. Wie groß ist der Umfang des kleineren Rechtecks?`,
+    type: 'radio',
+    options: ['12 cm', '16 cm', '20 cm', '22 cm', '26 cm'],
+    answer: '20 cm',
+    explanation: `Das größere Rechteck hat Breite 8 cm und Höhe h, mit 2·(8+h) = 28, also h = 6 cm. Die Höhe des kleineren Rechtecks ist 8 − 6 = 2 cm. Umfang: 2·(8+2) = 20 cm.`
+  };
+}
+
+function taskBarChart() {
+  const a = randInt(120, 200) * 1000;
+  const b = randInt(80, a/1000 - 20) * 1000;
+  const c = a / 2;
+  return {
+    points: 1,
+    text: `Hersteller A hat ${a.toLocaleString('de-DE')} Fahrzeuge verkauft, Hersteller B hat ${b.toLocaleString('de-DE')} Fahrzeuge verkauft. Hersteller C hat halb so viele Fahrzeuge verkauft wie Hersteller A. Wie viele Fahrzeuge hat Hersteller C verkauft?`,
+    type: 'number',
+    answer: c,
+    explanation: `Die Hälfte von ${a.toLocaleString('de-DE')} ist ${c.toLocaleString('de-DE')}. Hersteller C hat also ${c.toLocaleString('de-DE')} Fahrzeuge verkauft.`
+  };
+}
+
+function taskAngle() {
+  const angle = shuffle([135, 45, 120, 60, 150])[0];
+  return {
+    points: 1,
+    text: `Ein Winkel hat das Maß α = ${angle}°. Ist dieser Winkel spitz (kleiner als 90°), rechter Winkel (genau 90°), stumpf (zwischen 90° und 180°) oder gestreckt (genau 180°)?`,
+    type: 'radio',
+    options: ['spitz', 'rechter Winkel', 'stumpf', 'gestreckt'],
+    answer: angle < 90 ? 'spitz' : angle === 90 ? 'rechter Winkel' : angle < 180 ? 'stumpf' : 'gestreckt',
+    explanation: `Ein Winkel von ${angle}° liegt ${angle < 90 ? 'unter 90°, ist also spitz' : angle === 90 ? 'genau bei 90°, also ein rechter Winkel' : angle < 180 ? 'zwischen 90° und 180°, ist also stumpf' : 'genau bei 180°, also gestreckt'}.`
+  };
+}
+
+function taskConeNet() {
+  return {
+    points: 1,
+    text: `Ein rechteckiges Stück Papier soll so gefaltet werden, dass ein Quader entsteht. Wie viele Faltlinien braucht man dafür (bei einem einfachen Quadernetz aus einem zusammenhängenden Stück)?`,
+    type: 'number',
+    answer: 5,
+    explanation: `Für einen Quader aus einem zusammenhängenden Netz benötigt man 5 Faltlinien, damit sich die sechs Seitenflächen zu einem geschlossenen Quader falten lassen.`
+  };
+}
+
+function taskDistancePointLine() {
+  const d = randInt(2, 8);
+  return {
+    points: 1,
+    text: `Ein Punkt P liegt senkrecht über einer Geraden g. Der kürzeste Abstand (senkrechter Lot-Abstand) zwischen P und g beträgt ${d} cm. Wie lautet der Abstand d(P; g)?`,
+    type: 'number',
+    answer: d,
+    explanation: `Der Abstand eines Punktes von einer Geraden ist immer die Länge der kürzesten (senkrechten) Verbindungsstrecke, hier also ${d} cm.`
+  };
+}
+
+// ---------------------------------------------------------
+// Alle Aufgaben zusammenstellen
+// ---------------------------------------------------------
+function buildTasks() {
+  const generators = [
+    taskDivision,
+    taskPower,
+    taskSubtractionNegative,
+    taskNegativeMultiplication,
+    taskNumberLine,
+    taskDivisibleBy3,
+    taskRounding,
+    taskLargestSquareBound,
+    taskWindows,
+    taskBeanEstimationError,
+    taskTermDescription,
+    taskDistancePointLine,
+    taskConeVsPyramid,
+    taskConeNet,
+    taskAngle,
+    taskAreaConversion,
+    taskSharedCost,
+    taskScale,
+    taskRectangleArea,
+    taskSquareSplit,
+    taskBarChart
+  ];
+  // Wir wollen genau 19 Aufgaben wie im Original (gruppiert 1a,1b,2a,2b als 4 einzelne, macht total mehr als 19 Punkte-Felder -> insgesamt 21 Punkte wie im Original)
+  // Reihenfolge ist laut Nutzer egal -> mischen
+  return shuffle(generators.map(fn => fn()));
+}
+
+let tasks = [];
+
+function renderTasks() {
+  tasks = buildTasks();
+  const form = document.getElementById('testForm');
+  form.innerHTML = '';
+  tasks.forEach((task, idx) => {
+    const div = document.createElement('div');
+    div.className = 'task';
+    div.id = 'task-' + idx;
+
+    let inputHtml = '';
+    if (task.type === 'number') {
+      inputHtml = `<input type="text" inputmode="numeric" id="input-${idx}" placeholder="Antwort eingeben">`;
+    } else if (task.type === 'radio') {
+      inputHtml = `<div class="options">` + task.options.map((opt, oi) =>
+        `<label><input type="radio" name="radio-${idx}" value="${opt.replace(/"/g,'&quot;')}"> ${opt}</label>`
+      ).join('') + `</div>`;
+    } else if (task.type === 'text-open') {
+      inputHtml = `<textarea id="input-${idx}" rows="2" style="width:100%; padding:8px; border-radius:5px; border:2px solid #ccc; font-family:inherit;" placeholder="Deine Antwort..."></textarea><p class="hint">Diese Aufgabe wird nicht automatisch als richtig/falsch bewertet, sondern zeigt dir nach dem Absenden eine Musterlösung zum Vergleichen.</p>`;
+    } else if (task.type === 'text-pair') {
+      inputHtml = `<input type="text" id="input-${idx}" placeholder="z. B. 4x3">`;
+    }
+
+    div.innerHTML = `
+      <div class="task-header">
+        <span class="task-number">Aufgabe ${idx + 1}</span>
+        <span class="points-badge">${task.points} Punkt${task.points > 1 ? 'e' : ''}</span>
+      </div>
+      <div class="task-text">${task.text}</div>
+      ${inputHtml}
+      <div class="feedback" id="feedback-${idx}"></div>
+      <div class="explanation" id="explanation-${idx}"></div>
+    `;
+    form.appendChild(div);
+  });
+}
+
+function normalizeNumber(str) {
+  if (str === null || str === undefined) return NaN;
+  return parseFloat(str.toString().replace(/\./g, '').replace(',', '.').replace(/\s/g, ''));
+}
+
+function evaluateTest() {
+  let totalPoints = 0;
+  let maxPoints = 0;
+  let openTasksCount = 0;
+
+  tasks.forEach((task, idx) => {
+    maxPoints += task.points;
+    const taskDiv = document.getElementById('task-' + idx);
+    const feedbackDiv = document.getElementById('feedback-' + idx);
+    const explanationDiv = document.getElementById('explanation-' + idx);
+    let isCorrect = false;
+    let userAnswered = false;
+
+    if (task.type === 'number') {
+      const val = document.getElementById('input-' + idx).value;
+      userAnswered = val.trim() !== '';
+      const num = normalizeNumber(val);
+      isCorrect = !isNaN(num) && num === task.answer;
+    } else if (task.type === 'radio') {
+      const checked = document.querySelector(`input[name="radio-${idx}"]:checked`);
+      userAnswered = !!checked;
+      isCorrect = checked && checked.value === task.answer;
+    } else if (task.type === 'text-open') {
+      const val = document.getElementById('input-' + idx).value;
+      userAnswered = val.trim() !== '';
+      // Wird nicht automatisch gewertet, zählt als "zu prüfen"
+      openTasksCount++;
+    } else if (task.type === 'text-pair') {
+      const val = document.getElementById('input-' + idx).value.trim().toLowerCase();
+      userAnswered = val !== '';
+      const match = val.match(/^(\d+)\s*x\s*(\d+)$/);
+      if (match) {
+        const p = parseInt(match[1]) * parseInt(match[2]);
+        isCorrect = p === task.answer;
+      }
+    }
+
+    feedbackDiv.classList.add('show');
+    explanationDiv.classList.add('show');
+    explanationDiv.innerHTML = 'Lösungsweg: ' + task.explanation;
+
+    if (task.type === 'text-open') {
+      taskDiv.classList.remove('correct', 'incorrect');
+      feedbackDiv.classList.remove('correct-fb', 'incorrect-fb');
+      feedbackDiv.innerHTML = userAnswered ? 'Vergleiche deine Antwort mit der Musterlösung unten.' : 'Keine Antwort eingegeben. Hier ist die Musterlösung zum Lernen:';
+    } else if (isCorrect) {
+      totalPoints += task.points;
+      taskDiv.classList.add('correct');
+      taskDiv.classList.remove('incorrect');
+      feedbackDiv.classList.add('correct-fb');
+      feedbackDiv.classList.remove('incorrect-fb');
+      feedbackDiv.innerHTML = 'Richtig!';
+      explanationDiv.classList.remove('show'); // keine Erklärung nötig bei richtig, aber optional anzeigen
+      explanationDiv.classList.add('show');
+    } else {
+      taskDiv.classList.add('incorrect');
+      taskDiv.classList.remove('correct');
+      feedbackDiv.classList.add('incorrect-fb');
+      feedbackDiv.classList.remove('correct-fb');
+      feedbackDiv.innerHTML = userAnswered ? 'Leider nicht richtig.' : 'Keine Antwort eingegeben.';
+    }
+  });
+
+  const resultBox = document.getElementById('resultBox');
+  resultBox.classList.add('show');
+  let grade = '';
+  const percent = totalPoints / maxPoints;
+  if (percent >= 0.92) grade = '1 (sehr gut)';
+  else if (percent >= 0.81) grade = '2 (gut)';
+  else if (percent >= 0.67) grade = '3 (befriedigend)';
+  else if (percent >= 0.50) grade = '4 (ausreichend)';
+  else if (percent >= 0.30) grade = '5 (mangelhaft)';
+  else grade = '6 (ungenügend)';
+
+  resultBox.innerHTML = `
+    <div>Ergebnis: ${totalPoints} von ${maxPoints} Punkten</div>
+    <div class="grade-scale">Ungefähre Note (grobe Orientierung): ${grade}</div>
+    ${openTasksCount > 0 ? `<div class="grade-scale">${openTasksCount} Aufgabe(n) mit freier Antwort wurden nicht automatisch gewertet – bitte oben mit der Musterlösung vergleichen.</div>` : ''}
+    <button id="resetBtn">Neuer Test (neue Zahlen)</button>
+  `;
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    resultBox.classList.remove('show');
+    renderTasks();
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  resultBox.scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('submitBtn').addEventListener('click', evaluateTest);
+
+// Initiales Rendern
+renderTasks();
+</script>
+
+</body>
+</html>
