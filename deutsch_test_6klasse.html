@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jahrgangsstufentest Deutsch - Übung</title>
+<style>
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f8; color: #222; margin: 0; }
+  header { background: #8e44ad; color: white; padding: 20px; text-align: center; }
+  header h1 { margin: 0 0 5px 0; font-size: 1.4em; }
+  header p { margin: 0; font-size: 0.9em; color: #ecd9f5; }
+  #container { max-width: 850px; margin: 20px auto; padding: 0 15px; }
+  .readtext {
+    background: #fffdf5; border: 1px solid #e6dcc0; border-radius: 8px;
+    padding: 20px; margin-bottom: 24px; line-height: 1.6;
+  }
+  .readtext h2 { margin-top: 0; text-align: center; font-size: 1.2em; color: #6c3483; }
+  .readtext .abschnitt { margin-bottom: 10px; }
+  .readtext .num { color: #8e44ad; font-weight: bold; margin-right: 6px; }
+  details.readtext summary { cursor: pointer; font-weight: bold; color: #6c3483; padding: 8px; }
+  .task {
+    background: white; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    padding: 20px; margin-bottom: 18px; border-left: 6px solid #8e44ad;
+  }
+  .task.correct { border-left-color: #27ae60; }
+  .task.incorrect { border-left-color: #e74c3c; }
+  .task.partial { border-left-color: #f39c12; }
+  .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .task-number { font-weight: bold; color: #4a235a; font-size: 1.05em; }
+  .points-badge { background: #eee; color: #555; padding: 3px 10px; border-radius: 12px; font-size: 0.8em; }
+  .task-text { margin-bottom: 14px; line-height: 1.5; }
+  .subq { margin-bottom: 10px; padding: 10px; background: #faf7fc; border-radius: 6px; }
+  input[type="text"] { padding: 7px; border: 2px solid #ccc; border-radius: 5px; font-size: 0.95em; width: 200px; }
+  select { padding: 7px; border: 2px solid #ccc; border-radius: 5px; font-size: 0.95em; }
+  textarea { width: 100%; padding: 8px; border-radius: 5px; border: 2px solid #ccc; font-family: inherit; font-size: 0.95em; }
+  .options label, .checklist label {
+    display: block; padding: 7px 10px; margin: 3px 0; background: #f9f9f9;
+    border-radius: 5px; cursor: pointer; border: 2px solid transparent;
+  }
+  .options label:hover, .checklist label:hover { background: #f3ecf7; }
+  .feedback { margin-top: 12px; padding: 10px 14px; border-radius: 6px; font-size: 0.95em; display: none; }
+  .feedback.show { display: block; }
+  .feedback.correct-fb { background: #eafaf1; color: #1e7e45; border: 1px solid #a8e6c1; }
+  .feedback.incorrect-fb { background: #fdecea; color: #a12a24; border: 1px solid #f5b7b1; }
+  .feedback.partial-fb { background: #fef5e7; color: #9a6c00; border: 1px solid #f8d99b; }
+  .explanation {
+    margin-top: 8px; font-size: 0.9em; color: #555; background: #fff8e1;
+    border-left: 4px solid #f5c518; padding: 8px 12px; border-radius: 4px; display: none;
+  }
+  .explanation.show { display: block; }
+  button { background: #8e44ad; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-size: 0.95em; cursor: pointer; margin-top: 6px; }
+  button:hover { background: #732d91; }
+  #submitBtn { display: block; width: 100%; max-width: 850px; margin: 20px auto 40px auto; background: #27ae60; font-size: 1.1em; padding: 14px; }
+  #submitBtn:hover { background: #1e8449; }
+  #resultBox { max-width: 850px; margin: 0 auto 30px auto; padding: 20px; background: #4a235a; color: white; border-radius: 8px; text-align: center; font-size: 1.2em; display: none; }
+  #resultBox.show { display: block; }
+  .grade-scale { font-size: 0.85em; color: #dcd0e6; margin-top: 10px; }
+  #resetBtn { background: #7f8c8d; margin-top: 12px; }
+  #resetBtn:hover { background: #616a6b; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Jahrgangsstufentest Deutsch - Jahrgangsstufe 6</h1>
+  <p>Interaktive Übungsversion (angelehnt an den Test 2025) - 19 Aufgaben, 60 Punkte</p>
+</header>
+
+<div id="container">
+
+  <details class="readtext" open>
+    <summary>📖 Lesetext: "Die faszinierende Welt der Zugvögel" (zum Ein-/Ausklappen)</summary>
+    <div style="margin-top:14px;">
+      <div class="abschnitt"><span class="num">[1]</span>„Alle Vögel sind schon da, aaalle Vögel, aaalle.“ Na gut, alle nicht, aber zwischen Ende Februar und Mitte März trudeln die ersten Zugvögel wieder ein und es wird voller auf Bäumen, Wiesen und Feldern. Das konnten die Menschen hierzulande schon vor Tausenden von Jahren beobachten. Im Gegensatz zu heute wussten sie damals aber nicht, wo die Vögel den Winter über eigentlich gesteckt hatten und wo sie plötzlich wieder herkamen.</div>
+      <div class="abschnitt"><span class="num">[2]</span>Der griechische Philosoph Aristoteles vermutete im vierten Jahrhundert vor Christus zwar bereits, dass einige Vögel in den kalten Monaten die Flatter machen, um sich in wärmere Gebiete zu begeben, wo es genug Futter gibt. Besonders weite Strecken traute er ihnen allerdings nicht zu. Die meisten Arten, so lehrte er, verschliefen die frostige Zeit einfach. Vögel im Winterschlaf? Aber das war längst nicht die verrückteste Theorie.</div>
+      <div class="abschnitt"><span class="num">[3]</span>Ein Zeitgenosse des Aristoteles etwa glaubte, dass manche Vögel sich im Winter einfach zu einer anderen Art mausern. Aus dem Kuckuck zum Beispiel würde – kurzer Federwechsel – ein Habicht oder Sperber. Andere meinten, Störche schliefen in Baumhöhlen, Rauchschwalben harrten in Löchern aus.</div>
+      <div class="abschnitt"><span class="num">[4]</span>Im 17. Jahrhundert vertrat der Brite Charles Morton die Ansicht, dass Kraniche, Störche und Schwalben den Winter gar auf dem Mond verbringen. Der schwedische Biologe Carl von Linné hingegen schrieb im 18. Jahrhundert davon, dass Schwalben im schlammigen Grund von Sümpfen überwintern. Dass wir es heute besser wissen, verdanken wir unter anderem tatsächlich einem Vogel. Genauer: einem Weißstorch. Im Frühjahr 1822 lieferte dieser den entscheidenden Hinweis. In der Kleinstadt Klütz an der Ostsee sorgte er für Aufsehen, weil er wochenlang mit einem Pfeil im Hals herumflog. Schließlich wurde er erlegt und an die Universität Rostock gebracht. Dort untersuchte man den Pfeil im Storchenhals und schnell war klar: Das Holz und die Sehne, mit der die Pfeilspitze daran gebunden war, kamen nicht aus der Nähe. Im Gegenteil: Die Wissenschaft war sich sicher, dass der Pfeil aus der Nil-Gegend in Nordafrika stammte – ein Beleg dafür, dass Störche weite Strecken in ihr Winterquartier fliegen.</div>
+      <div class="abschnitt"><span class="num">[5]</span>Aber erst fast 80 Jahre später, im Jahr 1899, konnte der dänische Lehrer Hans Christian Mortensen erklären, wohin die Vögel ziehen: Er stattete etliche von ihnen mit einem Metallring am Bein aus, versehen mit einer Nummer und seiner Adresse. Er notierte sich Datum, Art, Alter und Geschlecht der Tiere und ließ sie wieder fliegen. Kurz darauf bekam er Post aus der ganzen Welt. Menschen schrieben ihm, wo sie die Vögel entdeckt hatten. Erstmals konnte er so die Winterquartiere vieler Zugvögel bestimmen.</div>
+      <div class="abschnitt"><span class="num">[6]</span>Bei etwa der Hälfte der über 300 heimischen Vogelarten handelt es sich um Zugvögel. Kurzstreckenzieher, wie zum Beispiel der Kranich oder der Star, fliegen in Schwärmen Richtung Süden. Wann sie starten, entscheidet das Klima. Langstreckenzieher, zu denen Kuckucke und Weißstörche zählen, sind meist allein oder in losen Gruppen unterwegs und reisen sogar bis nach Afrika. Einige von ihnen legen dabei bis zu 1000 Kilometer am Tag zurück.</div>
+      <div class="abschnitt"><span class="num">[7]</span>Wohin sie genau fliegen, ist offenbar von Geburt an festgelegt. Um den Weg zu finden, achten Vögel auf Merkmale in der Landschaft, wie Gebirge oder Flüsse. Vor allem aber orientieren sie sich am Stand der Sonne und den Sternen sowie am Verlauf des Erdmagnetfeldes, wobei die Forschung noch nicht genau erklären kann, wie Vögel dieses wahrnehmen. Heutzutage können Wissenschaftlerinnen und Wissenschaftler dank Satellitentechnik sogar die Routen der Vögel genau verfolgen und wissen, welche Vogelart wann, wie und wohin unterwegs ist.</div>
+      <div class="abschnitt"><span class="num">[8]</span>Jedes Jahr machen schätzungsweise 50 Milliarden Vögel auf dem ganzen Globus den Abflug. Sie reisen teils Tausende Kilometer weit, um zu überwintern. Sie überqueren Städte, Wüsten und Ozeane – ohne Kompass, Karte oder Routenplaner. Der Mauersegler etwa, der im Frühjahr vielleicht unter dem Dachvorsprung eures Hauses sein Nest baut, hat noch ein paar Monate zuvor 10 000 Kilometer entfernt die Sonne südlich der Sahara genossen. Hätten wir das vor über 2300 Jahren Aristoteles erzählt, hätte er wohl gedacht, wir hätten einen Vogel.</div>
+      <p style="font-size:0.8em; color:#888; font-style:italic;">(Quelle: GEOlino 03/24, Text zu Testzwecken verändert)</p>
+    </div>
+  </details>
+
+  <form id="testForm"></form>
+</div>
+
+<button id="submitBtn">Test auswerten</button>
+<div id="resultBox"></div>
+
+<script>
+function norm(s) {
+  return (s || '').toString().trim().toLowerCase()
+    .replace(/ß/g,'ss').replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue');
+}
+function matchAny(val, accepted) {
+  const v = norm(val);
+  return accepted.some(a => norm(a) === v);
+}
+
+const tasks = [
+{ id:1, points:3, type:'zuordnung1',
+  title:'Aufgabe 1 – Aussagen den Textabschnitten zuordnen',
+  text:'Ordne die folgenden Aussagen dem jeweils am besten passenden Textabschnitt zu (Nummer 1-8).',
+  items: [
+    { label: 'Eine Materialuntersuchung lieferte erste Informationen über mögliche Aufenthaltsorte von Zugvögeln im Winter.', answer: '4' },
+    { label: 'Jedes Frühjahr kann man in unseren Breitengraden feststellen, dass Vögel wieder vermehrt in der Natur anzutreffen sind.', answer: '1' },
+    { label: 'Vögel nutzen auf ihrem Flug unterschiedliche Möglichkeiten, um sich zu orientieren.', answer: '7' }
+  ]
+},
+{ id:2, points:4, type:'zuordnungPerson',
+  title:'Aufgabe 2 – Aussage der richtigen Person zuordnen',
+  text:'Aristoteles = A, Zeitgenosse des Aristoteles = B, Charles Morton = C, Carl von Linné = D, Hans Christian Mortensen = E',
+  items: [
+    { label: 'Manche Vögel verlassen den Planeten Erde.', answer: 'C' },
+    { label: 'Viele Vögel halten Winterschlaf.', answer: 'A' },
+    { label: 'Vögel suchen verschiedene Erdteile auf.', answer: 'E' },
+    { label: 'Eine Vogelart zieht sich in feuchten Untergrund zurück.', answer: 'D' }
+  ]
+},
+{ id:3, points:2, type:'textfields',
+  title:'Aufgabe 3 – Falsche Information verbessern',
+  text:'Die folgenden Notizen enthalten jeweils eine falsche Information. Gib das korrigierte Wort ein.',
+  items: [
+    { label: 'Langstreckenzieher: allein oder in losen Gruppen, Kuckuck, ziehen bis nach Afrika, <s>Habicht</s> → richtig wäre:', accepted: ['Weißstorch','Weissstorch'] },
+    { label: 'Kurzstreckenzieher: Abflug je nach Klima, in Schwärmen Richtung <s>Westen</s> → richtig wäre:, Star, Kranich', accepted: ['Süden','Sueden'] }
+  ]
+},
+{ id:4, points:3, type:'rfne',
+  title:'Aufgabe 4 – Richtig, falsch oder nicht enthalten?',
+  items: [
+    { label: 'Die Universität Rostock ist heute noch führend in der Erforschung der Flugrouten von Zugvögeln.', answer: 'ne' },
+    { label: 'Um in das Winterquartier zu gelangen, überwinden die Langstreckenzieher täglich eine Strecke von über tausend Kilometern.', answer: 'f' },
+    { label: 'Welches Winterquartier ein Zugvogel aufsucht, ist wahrscheinlich angeboren.', answer: 'r' }
+  ]
+},
+{ id:5, points:3, type:'checklist3',
+  title:'Aufgabe 5 – Aussagen zum Diagramm (genau 3 ankreuzen)',
+  text:'(Diagramm: Aufenthalt ausgewählter Zugvögel in Mitteleuropa, März bis November)',
+  options: [
+    'Vom 1. Mai bis 31. Juli halten sich alle angeführten Zugvögel in Mitteleuropa auf.',
+    'Der letzte Zugvogel, der Mitteleuropa verlässt, ist der Zilpzalp.',
+    'Abgesehen von den Durchzüglern hat von den genannten Vögeln der Mauersegler die kürzeste Aufenthaltsdauer in Mitteleuropa.',
+    'Es sind insgesamt acht Zugvogelarten bekannt, die sich im Sommer in Europa fortpflanzen.',
+    'Standvögel wechseln ihren Standort nur, wenn es ihnen im Winter in Nordeuropa zu kalt wird.',
+    'Die Singdrossel erscheint bei uns im März und verlässt uns Anfang September in Richtung Mitteleuropa.',
+    'Die Zwergmöwe können Mitteleuropäer lediglich auf ihrem Weg zwischen Winterquartier und Sommerlebensraum beobachten.'
+  ],
+  correctIdx: [1, 2, 6]
+},
+{ id:6, points:4, type:'textfields',
+  title:'Aufgabe 6 – Verben zu Nomen umwandeln',
+  text:'Bilde zu den vorgegebenen Verben jeweils das passende Nomen.',
+  items: [
+    { label: '(vermuten) → Die ___, dass viele Vögel die kalte Jahreszeit in wärmeren Gegenden verbringen, gibt es schon lange.', accepted: ['Vermutung'] },
+    { label: '(aufbrechen) → ...wussten die Menschen nichts Genaues über den Grund für ihren ___', accepted: ['Aufbruch'] },
+    { label: '(verlaufen) → ...und über den ___ ihrer Reise.', accepted: ['Verlauf'] },
+    { label: '(zurückkehren) → Ihre ___ setzten die Menschen mit dem Einzug des Frühlings gleich.', accepted: ['Rückkehr','Rückkunft'] }
+  ]
+},
+{ id:7, points:3, type:'textfields',
+  title:'Aufgabe 7 – Passende Suffixe ergänzen',
+  text:'Ergänze die Wörter mit einem passenden Suffix (Nachsilbe).',
+  items: [
+    { label: '...wirkt es zunächst so, als ob sie orientierungs___ umherfliegen würden', accepted: ['los','orientierungslos'] },
+    { label: '...findet ihr Verhalten vielleicht sonder___', accepted: ['bar','lich','sonderbar','sonderlich'] },
+    { label: '...dann fliegt er aufmerk___ seinem Ziel entgegen.', accepted: ['sam','aufmerksam'] }
+  ]
+},
+{ id:8, points:3, type:'textfields',
+  title:'Aufgabe 8 – Treffendere Verben des Wortfelds "fliegen"',
+  items: [
+    { label: 'Mücken fliegen um unsere Köpfe. → fliegen ersetzen durch:', accepted: ['schwirren','umherschwirren'] },
+    { label: 'Verirrt sich ein Vogel aus Versehen in ein Gebäude, fliegt er aufgeregt von einer Ecke in die andere. → fliegt ersetzen durch:', accepted: ['flattert'] },
+    { label: 'In freier Natur fliegen Greifvögel in der Höhe ruhig über ihrem Revier. → fliegen ersetzen durch:', accepted: ['gleiten','segeln','kreisen'] }
+  ]
+},
+{ id:9, points:3, type:'radioMulti',
+  title:'Aufgabe 9 – Wortbedeutungen erfassen',
+  items: [
+    { label: '„trudeln … ein“ (Z. 3–4)', options: ['kommen in großer Zahl','kommen nach und nach an','kommen unerwartet an'], answer: 'kommen in großer Zahl' },
+    { label: '„die Flatter machen“ (Z. 13–14)', options: ['verschwinden','mit den Flügeln schlagen','hin- und herfliegen'], answer: 'verschwinden' },
+    { label: '„versehen mit“ (Z. 53)', options: ['gesichtet mit','ausgestattet mit','gesichert mit'], answer: 'ausgestattet mit' }
+  ]
+},
+{ id:10, points:2, type:'textfields',
+  title:'Aufgabe 10 – Gegenteiliges Verb finden',
+  items: [
+    { label: 'Im Winter sollen Gartenbesitzer die Vogelhäuschen verschmutzen. →', accepted: ['reinigen','säubern','saeubern'] },
+    { label: 'Vogelhäuschen können im Winter viele Vögel abstoßen. →', accepted: ['anziehen','anlocken'] }
+  ]
+},
+{ id:11, points:5, type:'komma',
+  title:'Aufgabe 11 – Kommasetzung',
+  text:'a) Setze die vier notwendigen Kommas (gib den ganzen Satz mit Kommas ein):',
+  sentence: 'Das Futterangebot im Winter ist in den meisten Regionen Deutschlands und Mitteleuropas nicht ausreichend deshalb fliegen viele Vogelarten in wärmere Regionen. Dort wiederum ist der Andrang manchmal so groß dass es zu einem Konkurrenzkampf zwischen den Vögeln um Nahrung Ruheplätze und das eigene Revier kommen kann was Stress für die Tiere bedeutet. Auch aus diesem Grund nehmen die Tiere im Frühjahr allein oder in großen Schwärmen den anstrengenden Flug nach Europa auf sich und bauen dort ihr Nest.',
+  checkpoints: ['ausreichend,', 'groß,', 'Nahrung,', 'kann,'],
+  radioQuestion: 'b) "Durch die Klimaerwärmung gibt es immer mehr Vogelarten, die den Winter im Norden Europas verbringen." Hier wird ein Komma gesetzt, weil...',
+  radioOptions: ['es zwei Hauptsätze voneinander trennt.', 'eine Aufzählung vorliegt.', 'ein Relativsatz folgt.', 'auf den Nebensatz ein Hauptsatz folgt.'],
+  radioAnswer: 'ein Relativsatz folgt.'
+},
+{ id:12, points:4, type:'textfields',
+  title:'Aufgabe 12 – Rechtschreibfehler verbessern',
+  text:'"Dass Vögel ihr Ziel auf ganz unterschiedliche Art und Weiße finden, ist bekannt. Einige Tiere fliegen bei Nacht und richten sich nachdem Sternenhimmel. Die meisten sind jedoch Tagsüber unterwegs... Egal auf welche Art sich die Tiere vortbewegen..." Verbessere die vier Fehler:',
+  items: [
+    { label: '"Weiße" (Art und Weiße) →', accepted: ['Weise'] },
+    { label: '"nachdem" (richten sich nachdem Sternenhimmel) →', accepted: ['nach dem'] },
+    { label: '"Tagsüber" (großgeschrieben) →', accepted: ['tagsüber','tagsueber'] },
+    { label: '"vortbewegen" →', accepted: ['fortbewegen'] }
+  ]
+},
+{ id:13, points:3, type:'textfields',
+  title:'Aufgabe 13 – "tz" oder "z"? Bei drei Wörtern fehlt das "t"',
+  text:'"Wenn die Vogeleltern kurz auf Futtersuche gehen, si_zen die Jungen schu_zlos im Nest... genu_zt... Tierar_zt gebracht." Ergänze die drei Wörter, bei denen ein "t" fehlt:',
+  items: [
+    { label: 'si_zen → schu_zlos:', accepted: ['schutzlos'] },
+    { label: '...damit sie nicht fallen, wurden Zweige genu_zt:', accepted: ['genutzt'] },
+    { label: '...zum Tierar_zt gebracht:', accepted: ['Tierarzt'] }
+  ]
+},
+{ id:14, points:3, type:'radioMulti',
+  title:'Aufgabe 14 – Groß- oder Kleinschreibung (Höflichkeitsform)',
+  text:'Ein Brief an "Herrn Dr. Singvogel" - es wird gesiezt (formelle Anrede).',
+  items: [
+    { label: 'Dort hat man ___ geraten, ___ zu kontaktieren. (1. Lücke)', options: ['ihr','Ihr'], answer: 'Ihr' },
+    { label: '...sie/Sie zu kontaktieren. (2. Lücke)', options: ['sie','Sie'], answer: 'Sie' },
+    { label: 'Leider konnten wir online die aktuelle Adresse ___ Praxis nicht finden.', options: ['ihrer','Ihrer'], answer: 'Ihrer' }
+  ]
+},
+{ id:15, points:4, type:'textfields',
+  title:'Aufgabe 15 – Verben in der richtigen Zeitform',
+  items: [
+    { label: '(lesen, Präsens) Im Kunstmärchen "Des Kaisers Nachtigall" ___ man, dass...', accepted: ['liest'] },
+    { label: '(singen, Plusquamperfekt) ...die stets für ihn ___', accepted: ['gesungen hatte'] },
+    { label: '(erklingen, Präteritum) ...___ vor dem Fenster des Kaisers wieder der Gesang', accepted: ['erklang'] },
+    { label: '(schweigen, Perfekt) "Du ___, doch jetzt ist dein Lied meine Rettung"', accepted: ['hast geschwiegen'] }
+  ]
+},
+{ id:16, points:3, type:'textfields',
+  title:'Aufgabe 16 – Passende Pronomen ergänzen',
+  items: [
+    { label: '(Relativpronomen) Ein weiterer Zugvogel, ___ viele aus Frühlingsliedern kennen, ist der Kuckuck.', accepted: ['den','welchen'] },
+    { label: '(Personalpronomen) ___ kennzeichnet ein unverwechselbarer Ruf.', accepted: ['ihn','Ihn'] },
+    { label: '(Possessivpronomen) Von ___ Gesang waren selbst berühmte Komponisten angetan.', accepted: ['ihrem'] }
+  ]
+},
+{ id:17, points:3, type:'mixed17',
+  title:'Aufgabe 17 – Satzgefüge und Satzreihe',
+  radioQuestion: 'a) Welche Fortsetzung ergänzt den Satz zu einem korrekten Satzgefüge? "Man sieht eine Nachtigall nicht so häufig, ___"',
+  radioOptions: ['denn sie versteckt sich am liebsten im Gebüsch.', 'da sie recht scheu ist und sich versteckt.', 'weil sie versteckt sich am liebsten im Gebüsch.', 'das liegt an ihrer großen Scheu.'],
+  radioAnswer: 'da sie recht scheu ist und sich versteckt.',
+  openItems: [
+    { label: 'b) Satzreihe (mit Konjunktion, nicht "und"): "Im Sommer ernährt sich die Nachtigall hauptsächlich von Insekten, ___"', model: 'aber im Herbst sucht sie verstärkt nach Beeren und Früchten.' },
+    { label: 'c) Relativsatz: "Eine wichtige Rolle übernimmt das Nachtigall-Männchen, ___"', model: 'das feste Aufgaben bei der Aufzucht der Brut hat.' }
+  ]
+},
+{ id:18, points:2, type:'mixed18',
+  title:'Aufgabe 18 – Satzumstellung',
+  openItems: [
+    { label: 'a) Beginne mit dem Subjekt: "Besonders gut beobachtet man unsere heimischen Vögel an einer Futterstelle."', model: 'Man beobachtet unsere heimischen Vögel besonders gut an einer Futterstelle.' }
+  ],
+  textAfter: { label: 'b) Welche Satzart ergibt sich, wenn man das Prädikat an den Satzanfang stellt?', accepted: ['Fragesatz'] }
+},
+{ id:19, points:3, type:'checklist3',
+  title:'Aufgabe 19 – Satzglieder erkennen (genau 3 ankreuzen)',
+  text:'"Während der Brutzeit wollen Männchen in ihrem Revier Weibchen anlocken." Der Satz enthält...',
+  options: ['ein zweiteiliges Prädikat.', 'ein Dativobjekt.', 'ein Satzglied aus vier Wörtern.', 'ein Subjekt im Plural.', 'sieben Satzglieder.', 'ein Temporaladverbial.'],
+  correctIdx: [0, 3, 5]
+}
+];
+
+const explanations = {
+1: 'Aussage 1 (Materialuntersuchung) = Abschnitt 4 (Pfeil-Untersuchung Uni Rostock). Aussage 2 (jedes Frühjahr) = Abschnitt 1 (Einleitung). Aussage 3 (Orientierung) = Abschnitt 7.',
+2: 'Planet Erde verlassen = Charles Morton (C, glaubte an den Mond). Winterschlaf = Aristoteles (A). Verschiedene Erdteile = Mortensen (E, durch Beringung). Feuchter Untergrund = Carl von Linné (D, Sümpfe).',
+3: 'Langstreckenzieher sind laut Text Kuckuck UND Weißstorch (nicht Habicht). Kurzstreckenzieher fliegen Richtung Süden (nicht Westen).',
+4: 'Rostock wird nur historisch erwähnt, nichts zu heute (n.e.). "Über tausend" stimmt nicht, im Text steht "bis zu 1000" (f). Das Winterquartier ist laut Text "von Geburt an festgelegt" = angeboren (r).',
+5: 'Richtig sind: Zilpzalp verlässt uns laut Diagramm zuletzt; der Mauersegler hat (ohne die Durchzügler) die kürzeste Aufenthaltszeit; die Zwergmöwe ist als Durchzügler nur auf der Durchreise zu sehen.',
+6: 'Vermutung (vermuten), Aufbruch (aufbrechen), Verlauf (verlaufen), Rückkehr (zurückkehren).',
+7: 'orientierungslos (ohne Orientierung), sonderbar/sonderlich (seltsam), aufmerksam (konzentriert).',
+8: 'schwirren (kleine, schnelle Kreisbewegungen), flattert (unruhig, ungeordnet), gleiten/segeln/kreisen (ruhiges Fliegen ohne Flügelschlag).',
+9: '"trudeln ein" = in großer Zahl ankommen. "die Flatter machen" = verschwinden (Redewendung). "versehen mit" = ausgestattet mit.',
+10: 'verschmutzen (Gegenteil: reinigen/säubern), abstoßen (Gegenteil: anziehen/anlocken).',
+11: 'Kommas: nach "ausreichend" (vor deshalb), nach "groß" (vor dass), nach "Nahrung" (Aufzählung), nach "kann" (vor was). Kein Komma vor "und bauen" nötig. Bei b) handelt es sich um einen Relativsatz (eingeleitet mit "die"), nicht um zwei Hauptsätze.',
+12: '"Weiße" → "Weise" (Art und Weise), "nachdem" → "nach dem" (zwei Wörter, Präposition + Artikel), "Tagsüber" → "tagsüber" (klein, da Adverb), "vortbewegen" → "fortbewegen".',
+13: 'Nach kurzem Vokal direkt vor dem Wortende/-teil steht "tz": schutzlos, genutzt, Tierarzt. Nach Konsonanten wie r, l, n bleibt es bei "z" (kurz, einzelne, Holzstücke, Wurzeln).',
+14: 'Da im Brief die formelle Anrede "Sie" verwendet wird (Herr Dr. Singvogel wird gesiezt), werden auch alle Höflichkeitspronomen großgeschrieben: Ihr, Sie, Ihrer.',
+15: 'liest (Präsens), gesungen hatte (Plusquamperfekt - Vorzeitigkeit zur Vergangenheit), erklang (Präteritum), hast geschwiegen (Perfekt).',
+16: 'den/welchen (Relativpronomen, bezieht sich auf "Zugvogel"), ihn (Personalpronomen, ersetzt "Kuckuck" im Akkusativ), ihrem (Possessivpronomen, bezieht sich auf "Kuckucke").',
+17: 'a) "da sie recht scheu ist und sich versteckt" ist der einzige grammatisch korrekte Nebensatz (Verb am Ende). b) Satzreihe braucht eine Konjunktion wie "aber". c) Der Relativsatz beginnt mit "das" und bezieht sich auf "Nachtigall-Männchen".',
+18: 'a) Wird "man" (Subjekt) an den Anfang gestellt, folgt normale Wortstellung: Subjekt-Prädikat-Rest. b) Steht das Prädikat (Verb) ganz vorne, entsteht ein Fragesatz (Ja/Nein-Frage).',
+19: '"wollen...anlocken" = zweiteiliges Prädikat. "Männchen" = Subjekt im Plural. "Während der Brutzeit" = Temporaladverbial. Es gibt kein Dativobjekt, keine sieben Satzglieder (nur 5) und kein Satzglied aus genau vier Wörtern.'
+};
+
+const container = document.getElementById('testForm');
+
+tasks.forEach(t => {
+  const div = document.createElement('div');
+  div.className = 'task';
+  div.id = 'task-' + t.id;
+  let html = `<div class="task-header"><span class="task-number">${t.title}</span><span class="points-badge">${t.points} Punkte</span></div>`;
+  if (t.text) html += `<div class="task-text">${t.text}</div>`;
+
+  if (t.type === 'zuordnung1' || t.type === 'zuordnungPerson') {
+    t.items.forEach((it, i) => {
+      const opts = t.type === 'zuordnung1' ? [1,2,3,4,5,6,7,8] : ['A','B','C','D','E'];
+      html += `<div class="subq">${it.label}<br><select id="t${t.id}-${i}"><option value="">-- wählen --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div>`;
+    });
+  } else if (t.type === 'textfields') {
+    t.items.forEach((it, i) => {
+      html += `<div class="subq">${it.label}<br><input type="text" id="t${t.id}-${i}"></div>`;
+    });
+  } else if (t.type === 'rfne') {
+    t.items.forEach((it, i) => {
+      html += `<div class="subq">${it.label}<br>
+        <label><input type="radio" name="t${t.id}-${i}" value="r"> richtig</label>
+        <label><input type="radio" name="t${t.id}-${i}" value="f"> falsch</label>
+        <label><input type="radio" name="t${t.id}-${i}" value="ne"> nicht enthalten</label>
+      </div>`;
+    });
+  } else if (t.type === 'checklist3') {
+    html += `<div class="checklist">` + t.options.map((o,i) =>
+      `<label><input type="checkbox" name="t${t.id}" value="${i}"> ${o}</label>`
+    ).join('') + `</div>`;
+  } else if (t.type === 'radioMulti') {
+    t.items.forEach((it, i) => {
+      html += `<div class="subq">${it.label}<div class="options">` + it.options.map(o =>
+        `<label><input type="radio" name="t${t.id}-${i}" value="${o.replace(/"/g,'&quot;')}"> ${o}</label>`
+      ).join('') + `</div></div>`;
+    });
+  } else if (t.type === 'komma') {
+    html += `<textarea id="t${t.id}-sentence" rows="6">${t.sentence}</textarea>`;
+    html += `<p style="font-size:0.85em;color:#888;">Füge im Text oben die vier Kommas an den richtigen Stellen ein.</p>`;
+    html += `<div class="subq">${t.radioQuestion}<div class="options">` + t.radioOptions.map(o =>
+      `<label><input type="radio" name="t${t.id}-radio" value="${o.replace(/"/g,'&quot;')}"> ${o}</label>`
+    ).join('') + `</div></div>`;
+  } else if (t.type === 'mixed17') {
+    html += `<div class="subq">${t.radioQuestion}<div class="options">` + t.radioOptions.map(o =>
+      `<label><input type="radio" name="t${t.id}-radio" value="${o.replace(/"/g,'&quot;')}"> ${o}</label>`
+    ).join('') + `</div></div>`;
+    t.openItems.forEach((it,i) => {
+      html += `<div class="subq">${it.label}<br><input type="text" id="t${t.id}-open${i}" style="width:100%;"><p style="font-size:0.85em;color:#888;">Diese Antwort wird nicht automatisch bewertet - Musterlösung erscheint nach dem Absenden.</p></div>`;
+    });
+  } else if (t.type === 'mixed18') {
+    t.openItems.forEach((it,i) => {
+      html += `<div class="subq">${it.label}<br><input type="text" id="t${t.id}-open${i}" style="width:100%;"><p style="font-size:0.85em;color:#888;">Diese Antwort wird nicht automatisch bewertet - Musterlösung erscheint nach dem Absenden.</p></div>`;
+    });
+    html += `<div class="subq">${t.textAfter.label}<br><input type="text" id="t${t.id}-textafter"></div>`;
+  }
+
+  html += `<div class="feedback" id="feedback-${t.id}"></div><div class="explanation" id="explanation-${t.id}">${explanations[t.id] || ''}</div>`;
+  div.innerHTML = html;
+  container.appendChild(div);
+});
+
+function evaluateTest() {
+  let totalPoints = 0, maxPoints = 0, hasOpen = false;
+
+  tasks.forEach(t => {
+    maxPoints += t.points;
+    const div = document.getElementById('task-' + t.id);
+    const fb = document.getElementById('feedback-' + t.id);
+    const ex = document.getElementById('explanation-' + t.id);
+    let earned = 0;
+
+    if (t.type === 'zuordnung1' || t.type === 'zuordnungPerson') {
+      t.items.forEach((it, i) => {
+        const val = document.getElementById(`t${t.id}-${i}`).value;
+        if (val === it.answer) earned++;
+      });
+    } else if (t.type === 'textfields') {
+      t.items.forEach((it, i) => {
+        const val = document.getElementById(`t${t.id}-${i}`).value;
+        if (matchAny(val, it.accepted)) earned++;
+      });
+    } else if (t.type === 'rfne') {
+      t.items.forEach((it, i) => {
+        const sel = document.querySelector(`input[name="t${t.id}-${i}"]:checked`);
+        if (sel && sel.value === it.answer) earned++;
+      });
+    } else if (t.type === 'checklist3') {
+      const checked = Array.from(document.querySelectorAll(`input[name="t${t.id}"]:checked`)).map(c => parseInt(c.value));
+      const correctSet = t.correctIdx;
+      const rightHits = checked.filter(c => correctSet.includes(c)).length;
+      const wrongHits = checked.length - rightHits;
+      earned = Math.max(0, Math.min(t.points, rightHits - wrongHits));
+    } else if (t.type === 'radioMulti') {
+      t.items.forEach((it, i) => {
+        const sel = document.querySelector(`input[name="t${t.id}-${i}"]:checked`);
+        if (sel && sel.value === it.answer) earned++;
+      });
+    } else if (t.type === 'komma') {
+      const val = document.getElementById(`t${t.id}-sentence`).value;
+      let commaHits = 0;
+      t.checkpoints.forEach(cp => { if (val.includes(cp)) commaHits++; });
+      const radioSel = document.querySelector(`input[name="t${t.id}-radio"]:checked`);
+      const radioOk = radioSel && radioSel.value === t.radioAnswer;
+      earned = commaHits + (radioOk ? 1 : 0);
+      earned = Math.min(earned, t.points);
+    } else if (t.type === 'mixed17') {
+      const radioSel = document.querySelector(`input[name="t${t.id}-radio"]:checked`);
+      if (radioSel && radioSel.value === t.radioAnswer) earned++;
+      hasOpen = true;
+    } else if (t.type === 'mixed18') {
+      const val = document.getElementById(`t${t.id}-textafter`).value;
+      if (matchAny(val, t.textAfter.accepted)) earned++;
+      hasOpen = true;
+    }
+
+    totalPoints += earned;
+    fb.classList.add('show');
+    ex.classList.add('show');
+
+    if (t.type === 'mixed17' || t.type === 'mixed18') {
+      let modelHtml = '';
+      if (t.openItems) t.openItems.forEach(it => { modelHtml += `<br>Musterlösung: <i>${it.model}</i>`; });
+      ex.innerHTML = explanations[t.id] + modelHtml;
+    }
+
+    if (earned === t.points) {
+      div.classList.add('correct'); div.classList.remove('incorrect','partial');
+      fb.classList.add('correct-fb'); fb.classList.remove('incorrect-fb','partial-fb');
+      fb.innerHTML = `Richtig! (${earned}/${t.points} Punkte)`;
+    } else if (earned > 0) {
+      div.classList.add('partial'); div.classList.remove('incorrect','correct');
+      fb.classList.add('partial-fb'); fb.classList.remove('incorrect-fb','correct-fb');
+      fb.innerHTML = `Teilweise richtig (${earned}/${t.points} Punkte)`;
+    } else {
+      div.classList.add('incorrect'); div.classList.remove('correct','partial');
+      fb.classList.add('incorrect-fb'); fb.classList.remove('correct-fb','partial-fb');
+      fb.innerHTML = `Leider nicht richtig (${earned}/${t.points} Punkte)`;
+    }
+  });
+
+  const resultBox = document.getElementById('resultBox');
+  resultBox.classList.add('show');
+  let grade = '';
+  if (totalPoints >= 51) grade = '1 (sehr gut)';
+  else if (totalPoints >= 42) grade = '2 (gut)';
+  else if (totalPoints >= 35) grade = '3 (befriedigend)';
+  else if (totalPoints >= 28) grade = '4 (ausreichend)';
+  else if (totalPoints >= 21) grade = '5 (mangelhaft)';
+  else grade = '6 (ungenügend)';
+
+  resultBox.innerHTML = `
+    <div>Ergebnis: ${totalPoints} von ${maxPoints} Punkten</div>
+    <div class="grade-scale">Ungefähre Note (offizieller Bewertungsmaßstab 2025): ${grade}</div>
+    ${hasOpen ? `<div class="grade-scale">Einige Aufgaben mit freier Antwort wurden mit Musterlösung angezeigt - bitte oben vergleichen.</div>` : ''}
+    <button id="resetBtn">Seite neu laden</button>
+  `;
+  document.getElementById('resetBtn').addEventListener('click', () => location.reload());
+  resultBox.scrollIntoView({ behavior: 'smooth' });
+}
+
+document.getElementById('submitBtn').addEventListener('click', evaluateTest);
+</script>
+
+</body>
+</html>
