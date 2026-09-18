@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mathe-Erklärbuch – Jahrgangsstufentest 6. Klasse (mit Lösungswegen)</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+    margin: 0;
+    line-height: 1.6;
+  }
+  header {
+    background: #2c3e50;
+    color: white;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 6px 0; font-size: 1.5em; }
+  header p { margin: 0; color: #cbd5e0; font-size: 0.95em; }
+  #container { max-width: 850px; margin: 20px auto; padding: 0 16px 60px 16px; }
+
+  .intro-box {
+    background: #eaf2fb;
+    border-left: 6px solid #3498db;
+    padding: 16px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+  }
+
+  .task {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    margin-bottom: 22px;
+    overflow: hidden;
+  }
+  .task-title {
+    background: #34495e;
+    color: white;
+    padding: 12px 18px;
+    font-weight: bold;
+    font-size: 1.05em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .task-title .badge {
+    background: rgba(255,255,255,0.2);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: normal;
+  }
+  .task-body { padding: 18px 20px; }
+  .original-question {
+    background: #f9f9f9;
+    border-left: 4px solid #95a5a6;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-style: italic;
+    margin-bottom: 14px;
+    color: #444;
+  }
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    align-items: flex-start;
+  }
+  .step-number {
+    background: #3498db;
+    color: white;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 0.9em;
+    flex-shrink: 0;
+  }
+  .step-content { flex: 1; }
+  .step-content b { color: #2c3e50; }
+  .tip-box {
+    background: #fff8e1;
+    border-left: 4px solid #f5c518;
+    padding: 10px 14px;
+    border-radius: 6px;
+    margin-top: 10px;
+    font-size: 0.92em;
+  }
+  .tip-box b { color: #a67c00; }
+  .answer-box {
+    background: #eafaf1;
+    border: 2px solid #27ae60;
+    color: #1e7e45;
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-top: 14px;
+    font-weight: bold;
+    font-size: 1.05em;
+  }
+  .toc {
+    background: white;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  .toc a {
+    display: inline-block;
+    margin: 3px 8px 3px 0;
+    padding: 4px 10px;
+    background: #eaf2fb;
+    border-radius: 14px;
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 0.88em;
+  }
+  .toc a:hover { background: #d4e6f7; }
+  @media print {
+    .toc { display: none; }
+    .task { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📘 Mathe-Erklärbuch zum Jahrgangsstufentest 2023</h1>
+  <p>Alle 19 Original-Aufgaben – Schritt für Schritt erklärt, ganz von vorne</p>
+</header>
+
+<div id="container">
+
+  <div class="intro-box">
+    <b>So funktioniert dieses Erklärbuch:</b><br>
+    Zu jeder Aufgabe steht zuerst die Original-Frage, dann eine ganz genaue Schritt-für-Schritt-Anleitung, wie man selbst darauf kommt – nicht nur das Ergebnis. Am Ende jeder Aufgabe steht die Lösung zum Gegenchecken. Am besten erst selbst versuchen, dann hier nachlesen!
+  </div>
+
+  <div class="toc" id="toc"></div>
+
+  <div id="tasksContainer"></div>
+
+</div>
+
+<script>
+const tasks = [
+{
+  id: 1,
+  title: "Aufgabe 1a – Teilen (Division)",
+  points: 1,
+  original: "Berechne: 3240 : 120 = ?",
+  steps: [
+    "Bei einer Division wie 3240 : 120 fragst du dich: 'Wie oft passt 120 in 3240 hinein?' Große Zahlen wirken erstmal einschüchternd – der Trick ist, sie kleiner zu machen, ohne das Ergebnis zu verändern.",
+    "<b>Kürzen mit 10:</b> Wenn du oben und unten durch 10 teilst, ändert sich das Ergebnis nicht (so wie 20:4 dasselbe Ergebnis hat wie 200:40). Aus 3240 : 120 wird also 324 : 12. Das ist schon viel einfacher!",
+    "<b>324 : 12 in kleinen Schritten:</b> Überlege, wie oft 12 in 32 hineinpasst (die ersten beiden Ziffern von 324). 12 · 2 = 24, 12 · 3 = 36 (zu viel). Also passt 12 zweimal in 32, Rest 32 − 24 = 8.",
+    "Jetzt holst du dir die nächste Ziffer von 324 dazu (die 4) und hängst sie an den Rest an: aus Rest 8 wird 84.",
+    "Wie oft passt 12 in 84? 12 · 7 = 84 – passt genau! Kein Rest übrig.",
+    "Das Ergebnis setzt sich zusammen aus den Ziffern, die du gefunden hast: zuerst die 2, dann die 7 → 27.",
+    "<b>Gegenprobe (ganz wichtig, um sicherzugehen!):</b> 27 · 120 = 27 · 12 · 10 = 324 · 10 = 3240. Stimmt genau mit der Ausgangszahl überein – also ist 27 richtig."
+  ],
+  tip: "Merke dir: Bei Divisionen darfst du IMMER Zähler und Nenner durch dieselbe Zahl teilen (kürzen), das macht große Zahlen viel handlicher.",
+  answer: "3240 : 120 = 27"
+},
+{
+  id: 2,
+  title: "Aufgabe 1b – Potenzen addieren",
+  points: 1,
+  original: "Berechne: 10³ + 10² = ?",
+  steps: [
+    "Eine Potenz wie 10³ bedeutet: 'Nimm die 10 dreimal als Faktor', also 10 · 10 · 10. Die kleine hochgestellte Zahl (der Exponent) sagt dir, wie oft du die Grundzahl mit sich selbst multiplizierst.",
+    "10³ = 10 · 10 · 10 = 1000. (Merkregel: 10 hoch irgendeine Zahl n ist einfach eine 1 mit n Nullen dahinter!)",
+    "10² = 10 · 10 = 100. (Eine 1 mit 2 Nullen.)",
+    "<b>Wichtig:</b> Erst werden Potenzen berechnet, dann erst wird addiert – das nennt man Punkt-vor-Strich-Regel (Potenzen zählen wie 'Punktrechnung').",
+    "Jetzt einfach addieren: 1000 + 100 = 1100."
+  ],
+  tip: "10 hoch n ist immer eine 1 mit n Nullen. 10¹=10, 10²=100, 10³=1000, 10⁴=10000 usw. Das kannst du dir wie ein kleines Muster merken.",
+  answer: "10³ + 10² = 1000 + 100 = 1100"
+},
+{
+  id: 3,
+  title: "Aufgabe 2a – Subtraktion mit negativem Ergebnis",
+  points: 1,
+  original: "Berechne: 2318 − 8319 = ?",
+  steps: [
+    "Hier ist die zweite Zahl (8319) größer als die erste (2318). Das bedeutet: Du 'hast' nicht genug, um etwas abzuziehen – das Ergebnis wird negativ (kleiner als 0).",
+    "<b>Trick:</b> Rechne erstmal andersherum – ziehe die kleinere von der größeren Zahl ab: 8319 − 2318. So rechnest du mit vertrauten, 'normalen' Zahlen.",
+    "8319 − 2318: Du kannst das schriftlich rechnen: 9−8=1, 1−1=0 (bei den Zehnern), 3−3=0 (bei den Hundertern), 8−2=6 (bei den Tausendern). Ergebnis: 6001.",
+    "Da du am Anfang wusstest, dass das eigentliche Ergebnis negativ sein muss (weil du von einer kleineren Zahl eine größere abziehst), setzt du jetzt einfach ein Minuszeichen davor.",
+    "Ergebnis: −6001."
+  ],
+  tip: "Wenn du 'kleine Zahl minus große Zahl' rechnest, drehe die Reihenfolge um, rechne normal, und setze am Ende ein Minus vor das Ergebnis.",
+  answer: "2318 − 8319 = −6001"
+},
+{
+  id: 4,
+  title: "Aufgabe 2b – Negative Zahlen multiplizieren",
+  points: 1,
+  original: "Berechne: (−16) · (−5) = ?",
+  steps: [
+    "Bei der Multiplikation von negativen Zahlen gibt es eine feste Regel für das Vorzeichen des Ergebnisses:",
+    "<b>Minus mal Minus ergibt Plus.</b> Merkhilfe: Zwei Verneinungen heben sich auf – so wie 'nicht nicht kommen' bedeutet 'doch kommen'.",
+    "Also wird das Ergebnis auf jeden Fall positiv sein. Jetzt rechnest du einfach mit den Zahlen ohne Minuszeichen: 16 · 5.",
+    "16 · 5 = 80 (zum Beispiel: 10·5 + 6·5 = 50+30 = 80).",
+    "Da Minus mal Minus Plus ergibt, bleibt es bei +80."
+  ],
+  tip: "Vorzeichen-Regeln zum Merken: Plus·Plus=Plus, Minus·Minus=Plus, Plus·Minus=Minus, Minus·Plus=Minus. Gleiche Vorzeichen → Plus, unterschiedliche → Minus.",
+  answer: "(−16) · (−5) = 80"
+},
+{
+  id: 5,
+  title: "Aufgabe 3 – Fehler auf der Zahlengeraden finden",
+  points: 1,
+  original: "Auf einer Zahlengeraden von −200 bis 100 wurden die Zahlen −150, −90, 0 und 120 eingetragen. Eine davon ist falsch beschriftet. Welche und wie lautet die Korrektur?",
+  steps: [
+    "Eine Zahlengerade ist wie ein Lineal mit gleichmäßigen Abständen zwischen den Strichen. Zuerst schaust du dir an, wie groß der Abstand zwischen zwei benachbarten, bekannten Markierungen (Ticks) ist.",
+    "Zähle die kleinen Striche zwischen den beschrifteten Punkten −200 und 100 auf der Zahlengeraden. Bei diesem Test sind es Zehnerschritte (..., −20, −10, 0, 10, 20, ...).",
+    "Jetzt prüfst du jede eingetragene Zahl: Steht der Pfeil bei −150 wirklich genau auf einem 10er-Strich? Ja. Steht 0 richtig? Ja. Steht 120 richtig? Ja.",
+    "Bei der Zahl, die als −90 beschriftet ist, stimmt die Pfeilspitze nicht mit der Position von −90 überein – der Pfeil zeigt eigentlich auf die Position, die 10 Schritte weiter links liegt.",
+    "Die korrekte Zahl an dieser Stelle ist also −80.",
+    "<b>Warum das wichtig ist:</b> Je weiter eine Zahl rechts auf der Zahlengeraden steht, desto größer ist sie – auch bei negativen Zahlen! −80 ist größer als −90, weil −80 näher an der 0 liegt."
+  ],
+  tip: "Bei negativen Zahlen gilt: Je näher an der Null, desto größer die Zahl. −5 ist größer als −100, obwohl die '5' kleiner aussieht als die '100'.",
+  answer: "Die falsch beschriftete Zahl war −90, korrekt ist −80."
+},
+{
+  id: 6,
+  title: "Aufgabe 4 – Begründen: Teilbarkeit durch 3",
+  points: 1,
+  original: "Tom legt mit den Ziffernkarten 7, 2, 1, 8 eine vierstellige Zahl. Begründe, warum jede gelegte Zahl durch 3 teilbar ist.",
+  steps: [
+    "Es gibt eine geniale Regel für Teilbarkeit durch 3: <b>Eine Zahl ist genau dann durch 3 teilbar, wenn die Summe ihrer Ziffern (die 'Quersumme') durch 3 teilbar ist.</b>",
+    "Egal, in welcher Reihenfolge Tom die vier Karten 7, 2, 1, 8 hinlegt (z. B. 7218 oder 8127 oder 1278) – die einzelnen Ziffern bleiben immer dieselben, nur ihre Reihenfolge ändert sich.",
+    "Also bleibt auch die Quersumme (die Summe aller Ziffern) bei jeder Anordnung genau gleich: 7 + 2 + 1 + 8 = 18.",
+    "Jetzt prüfst du: Ist 18 durch 3 teilbar? 18 : 3 = 6, ja, ohne Rest!",
+    "Weil die Quersumme (18) durch 3 teilbar ist, ist nach der Regel automatisch JEDE mit diesen vier Ziffern gebildete Zahl durch 3 teilbar – egal wie Tom die Karten anordnet."
+  ],
+  tip: "Die Quersummen-Regel funktioniert für die 3 UND für die 9! Für die 9 gilt genauso: Quersumme durch 9 teilbar → ganze Zahl durch 9 teilbar.",
+  answer: "z. B.: Die Quersumme aller möglichen vierstelligen Zahlen ist 18. Da 18 durch 3 teilbar ist, sind auch alle gelegten Zahlen durch 3 teilbar."
+},
+{
+  id: 7,
+  title: "Aufgabe 5 – Runden auf Tausender",
+  points: 1,
+  original: "Runde die Zahl 431 499 auf Tausender.",
+  steps: [
+    "Beim Runden auf Tausender schaust du dir an, zwischen welchen beiden 'glatten' Tausenderzahlen deine Zahl liegt. 431 499 liegt zwischen 431 000 und 432 000.",
+    "Die Entscheidungsregel: Schau dir die Ziffer direkt NACH der Stelle an, auf die du rundest – hier ist das die Hunderterstelle. Ist diese Ziffer 0, 1, 2, 3 oder 4 → abrunden. Ist sie 5, 6, 7, 8 oder 9 → aufrunden.",
+    "Bei 431 499 ist die Hunderterziffer eine 4 (die 4 in '499').",
+    "Da 4 kleiner als 5 ist, wird abgerundet – alle Ziffern ab der Hunderterstelle werden zu Nullen.",
+    "Ergebnis: 431 000."
+  ],
+  tip: "Eselsbrücke: Ab 5 wird aufgerundet ('5 rundet nach oben'), darunter (0-4) wird abgerundet. Schau IMMER nur auf die eine Ziffer direkt hinter der Rundungsstelle.",
+  answer: "431 499 ≈ 431 000"
+},
+{
+  id: 8,
+  title: "Aufgabe 6 – Größte Zahl mit einer Bedingung finden",
+  points: 1,
+  original: "Welche größtmögliche natürliche Zahl passt in das Kästchen, sodass gilt: Kästchen² < 200? (Antwortmöglichkeiten: 10, 11, 14, 15, 19, 20)",
+  steps: [
+    "Das kleine hochgestellte '2' bedeutet: die Zahl im Kästchen wird mit sich selbst multipliziert (quadriert). Gesucht ist die GRÖSSTE Zahl, deren Quadrat noch unter 200 bleibt.",
+    "Am besten probierst du die Antwortmöglichkeiten der Reihe nach durch, von klein nach groß, und rechnest jeweils das Quadrat aus.",
+    "14² = 14 · 14 = 196. Ist 196 kleiner als 200? Ja! Diese Zahl passt schon mal.",
+    "15² = 15 · 15 = 225. Ist 225 kleiner als 200? Nein, 225 ist größer als 200 – diese Zahl ist schon zu groß.",
+    "Da 14 funktioniert (196 < 200) und die nächstgrößere Zahl 15 nicht mehr funktioniert (225 ist nicht kleiner als 200), ist 14 die größtmögliche passende Zahl."
+  ],
+  tip: "Bei 'größtmöglich, sodass eine Bedingung gilt'-Aufgaben: Probiere dich von einer vermuteten Zahl aus nach oben und unten vor, bis du die Grenze findest, an der die Bedingung gerade noch/nicht mehr stimmt.",
+  answer: "14 (weil 14² = 196 < 200, aber 15² = 225 nicht mehr < 200 ist)"
+},
+{
+  id: 9,
+  title: "Aufgabe 7 – Textaufgabe mit drei Multiplikationen",
+  points: 1,
+  original: "Eine Reinigungsfirma putzt die Fenster von 25 Stockwerken. Auf jedem Stockwerk gibt es 12 Wohnungen mit jeweils 4 Fenstern. Wie viele Fenster wurden insgesamt geputzt?",
+  steps: [
+    "Bei Textaufgaben ist der wichtigste erste Schritt: Genau lesen und aufschreiben, was du weißt. Hier: 25 Stockwerke, pro Stockwerk 12 Wohnungen, pro Wohnung 4 Fenster.",
+    "Überlege dir die Reihenfolge: Zuerst findest du heraus, wie viele Fenster EIN Stockwerk hat (Wohnungen mal Fenster pro Wohnung), dann multiplizierst du das mit der Anzahl der Stockwerke.",
+    "Schritt A: Fenster pro Stockwerk = 12 Wohnungen · 4 Fenster = 48 Fenster pro Stockwerk.",
+    "Schritt B: Fenster im ganzen Haus = 25 Stockwerke · 48 Fenster pro Stockwerk.",
+    "25 · 48 rechnest du am einfachsten so: 25 · 48 = 25 · 50 − 25 · 2 = 1250 − 50 = 1200.",
+    "Ergebnis: Insgesamt wurden 1200 Fenster geputzt."
+  ],
+  tip: "Bei mehrstufigen Textaufgaben: Rechne immer erst die 'kleinste Einheit' aus (hier: Fenster pro Stockwerk), bevor du auf die 'große Einheit' hochrechnest (hier: ganzes Haus).",
+  answer: "Es wurden insgesamt 1200 Fenster geputzt."
+},
+{
+  id: 10,
+  title: "Aufgabe 8 – Fehler beim Schätzen beschreiben",
+  points: 1,
+  original: "Michael schätzt die Bohnenanzahl auf einem Bild, indem er nur das Feld A1 zählt und das Ergebnis mit der Anzahl aller Felder multipliziert. Welchen Fehler macht er?",
+  steps: [
+    "Bei dieser Aufgabe geht es nicht ums Rechnen, sondern ums Verstehen und Erklären eines Denkfehlers. Überlege dir: Was müsste gelten, damit Michaels Methode korrekt wäre?",
+    "Michaels Methode würde nur dann perfekt funktionieren, wenn in JEDEM Feld exakt gleich viele Bohnen liegen würden (dann wäre ein Feld wirklich 'typisch' für alle anderen).",
+    "Schau dir das Bild an: Liegen in Feld A1 wirklich ungefähr gleich viele Bohnen wie in den anderen Feldern? Nein – in manchen Feldern liegen sichtbar mehr Bohnen als in A1.",
+    "Weil Feld A1 zufällig eines der Felder mit WENIGER Bohnen ist, unterschätzt Michael mit seiner Rechnung die tatsächliche Gesamtzahl deutlich.",
+    "Der Kernfehler: Er verwendet nur EIN einzelnes, nicht-repräsentatives Feld als Grundlage für die ganze Hochrechnung, statt z. B. mehrere Felder zu zählen und einen Durchschnitt zu bilden."
+  ],
+  tip: "Bei Schätz-/Hochrechnungsaufgaben ist der Fachbegriff 'repräsentativ' wichtig: Eine gute Schätzung braucht eine Stichprobe, die typisch für das Ganze ist – nicht nur einen zufälligen Ausschnitt.",
+  answer: "z. B.: Feld A1 ist nicht repräsentativ, da dort deutlich weniger Bohnen liegen als in den anderen Feldern. Dadurch schätzt Michael die Gesamtzahl zu klein."
+},
+{
+  id: 11,
+  title: "Aufgabe 9 – Rechenterm in Worten beschreiben",
+  points: 1,
+  original: "Welcher Text passt zum Term (128 + 39) · (56 − 8)?",
+  steps: [
+    "Zerlege den Term in seine Bausteine. Schau dir die Klammern einzeln an: Was passiert INNERHALB jeder Klammer, und was passiert ZWISCHEN den beiden Klammern?",
+    "Erste Klammer: (128 + 39) – das ist eine Addition, also eine <b>Summe</b> der Zahlen 128 und 39.",
+    "Zweite Klammer: (56 − 8) – das ist eine Subtraktion, also eine <b>Differenz</b> der Zahlen 56 und 8.",
+    "Zwischen den beiden Klammern steht ein Malpunkt (·) – die beiden Klammerergebnisse werden also <b>multipliziert</b>.",
+    "Jetzt vergleichst du das mit den vier Antworttexten: Gesucht ist der Text, der 'Summe' UND 'Differenz' UND 'multiplizieren' in der richtigen Reihenfolge nennt.",
+    "Das passt nur zu: 'Multipliziere die Summe der Zahlen 128 und 39 mit der Differenz der Zahlen 56 und 8.' Die anderen Texte sprechen fälschlicherweise von Quotient, Addition oder falscher Zuordnung."
+  ],
+  tip: "Fachwörter merken: Summe = Ergebnis einer Addition (+), Differenz = Ergebnis einer Subtraktion (−), Produkt = Ergebnis einer Multiplikation (·), Quotient = Ergebnis einer Division (:).",
+  answer: "\"Multipliziere die Summe der Zahlen 128 und 39 mit der Differenz der Zahlen 56 und 8.\""
+},
+{
+  id: 12,
+  title: "Aufgabe 10 – Abstand Punkt–Gerade messen",
+  points: 1,
+  original: "Bestimme den Abstand d des Punktes P von der Geraden g.",
+  steps: [
+    "Der Abstand eines Punktes von einer Geraden ist IMMER die kürzeste Verbindung – und die kürzeste Verbindung ist immer die, die im rechten Winkel (90°) auf die Gerade trifft (das 'Lot').",
+    "Du brauchst dafür ein Geodreieck: Lege die 90°-Markierung des Geodreiecks so an die Gerade g an, dass die andere Kante genau durch den Punkt P verläuft.",
+    "Zeichne (bzw. stelle dir vor) eine Linie von P senkrecht (im 90°-Winkel) zur Geraden g – das ist die kürzeste Verbindungsstrecke.",
+    "Miss diese Strecke mit dem Lineal in Zentimetern ab (direkt am Original-Testblatt).",
+    "Trage den gemessenen Wert als Ergebnis ein, z. B. d(P; g) = 2 cm."
+  ],
+  tip: "Merksatz: 'Der Abstand ist immer die kürzeste Strecke – und die kürzeste Strecke steht immer im rechten Winkel zur Geraden.' Nie schräg oder diagonal messen!",
+  answer: "Der Abstand ergibt sich durch Messen der senkrechten (90°) Verbindungsstrecke von P zu g mit dem Geodreieck/Lineal (im Originaltest: 2 cm)."
+},
+{
+  id: 13,
+  title: "Aufgabe 11 – Kegel und Pyramide unterscheiden",
+  points: 1,
+  original: "Beschreibe anhand einer geometrischen Eigenschaft, wie sich Kegel und Pyramide unterscheiden.",
+  steps: [
+    "Bei dieser Aufgabe hilft es, sich beide Körper genau vorzustellen oder zu zeichnen: Ein Kegel sieht aus wie eine Eistüte, eine Pyramide wie die Pyramiden in Ägypten.",
+    "Schau dir die <b>Grundfläche</b> (die 'Bodenplatte') jedes Körpers an: Bei der Pyramide ist die Grundfläche ein Vieleck mit geraden Kanten (z. B. ein Quadrat oder Dreieck).",
+    "Beim Kegel dagegen ist die Grundfläche rund – ein Kreis, ganz ohne Ecken oder gerade Kanten.",
+    "Das ist der entscheidende Unterschied, den du als Antwort nennen kannst: rund (Kegel) vs. eckig/vieleckig (Pyramide).",
+    "Zusatzgedanke, falls du mehr schreiben willst: Auch die Seitenfläche ist unterschiedlich – die Pyramide hat ebene (flache) Dreiecksflächen als Seiten, der Kegel hat eine gekrümmte Mantelfläche."
+  ],
+  tip: "Bei 'Unterschied beschreiben'-Aufgaben in Geometrie lohnt sich immer der Blick auf: Grundfläche (rund oder eckig?), Anzahl der Ecken/Kanten, und ob Flächen gebogen oder eben sind.",
+  answer: "z. B.: Kegel haben – anders als Pyramiden – eine kreisförmige (runde) Grundfläche."
+},
+{
+  id: 14,
+  title: "Aufgabe 12 – Faltlinien für einen Quader einzeichnen",
+  points: 1,
+  original: "Simon hat ein Stück Papier ausgeschnitten. Zeichne die fünf Faltlinien ein, sodass er daraus einen Quader falten kann.",
+  steps: [
+    "Ein Quader hat 6 Seitenflächen (oben, unten, vorne, hinten, links, rechts). Wenn man diese 6 Flächen aus einem einzigen zusammenhängenden Papierstück ausschneidet, müssen sie in der richtigen Anordnung zusammenhängen (das nennt man ein 'Netz').",
+    "Stell dir vor, du faltest eine Streichholzschachtel oder einen Karton auf, bis er flach auf dem Tisch liegt – so ein flaches Muster ist ein Quadernetz.",
+    "Um 6 einzelne Flächen wieder zu einem geschlossenen Quader zusammenzufalten, brauchst du genau an den Stellen eine Faltlinie, wo zwei Flächen im fertigen Quader aneinanderstoßen.",
+    "Bei 6 Flächen, die zu einem Quader zusammengefaltet werden, ergeben sich immer genau 5 nötige Faltlinien (eine weniger als die Anzahl der Flächen, weil die Flächen ja aneinanderhängen).",
+    "Praktisch: Zeichne die Linien dort ein, wo im ausgeschnittenen Papier jeweils zwei Rechtecke aneinandergrenzen – dort wird gefaltet, nicht geschnitten."
+  ],
+  tip: "Merkregel für Netze: Bei einem Körper mit n Flächen, die alle in einem Stück zusammenhängen, brauchst du (n−1) Faltlinien, um ihn zusammenzufalten.",
+  answer: "Es müssen alle 5 Faltlinien an den Stellen eingezeichnet werden, an denen im Netz zwei benachbarte Rechtecke aneinandergrenzen."
+},
+{
+  id: 15,
+  title: "Aufgabe 13 – Winkel von 135° zeichnen",
+  points: 1,
+  original: "Zeichne einen Winkel mit dem Maß α = 135° und markiere ihn.",
+  steps: [
+    "Du brauchst ein Geodreieck. Zeichne zuerst einen geraden Strahl (eine Linie mit einem Startpunkt) – das ist der erste Schenkel deines Winkels.",
+    "Lege das Geodreieck so an, dass der Nullpunkt (die kleine Markierung in der Mitte der langen Kante) genau auf dem Startpunkt deines Strahls liegt und die 0°-Linie genau auf deinem Strahl liegt.",
+    "Suche auf der Winkel-Skala des Geodreiecks die Zahl 135 und markiere dort einen Punkt mit dem Bleistift.",
+    "Zeichne jetzt eine Linie vom Startpunkt deines ersten Strahls zu diesem markierten 135°-Punkt – das ist der zweite Schenkel des Winkels.",
+    "Zur Kontrolle: 135° ist mehr als 90° (ein rechter Winkel) aber weniger als 180° (eine gerade Linie) – der Winkel sollte also deutlich 'weiter offen' aussehen als eine Ecke eines Quadrats, aber noch keine komplett gerade Linie sein.",
+    "Zum Schluss: Markiere den Winkel mit einem kleinen Bogen zwischen den beiden Schenkeln und beschrifte ihn mit α = 135°."
+  ],
+  tip: "Ein Winkel zwischen 90° und 180° heißt 'stumpfer Winkel' – er sieht immer 'weiter aufgeklappt' aus als eine rechtwinklige Ecke.",
+  answer: "Ein 135°-Winkel wird mit dem Geodreieck an der Winkel-Skala abgetragen und mit einem Bogen markiert (stumpfer Winkel, da zwischen 90° und 180°)."
+},
+{
+  id: 16,
+  title: "Aufgabe 14 – Flächeneinheiten umrechnen",
+  points: 1,
+  original: "Welches Ergebnis passt zu: 5 cm · 60 mm = ? (Antworten: 30 mm², 300 mm², 3000 mm², 30000 mm²)",
+  steps: [
+    "Ganz wichtiger erster Schritt: Bevor du zwei Längen multiplizierst, MÜSSEN beide in der GLEICHEN Einheit angegeben sein. Hier steht einmal cm und einmal mm – das musst du zuerst angleichen.",
+    "Rechne 5 cm in Millimeter um: 1 cm = 10 mm, also 5 cm = 5 · 10 mm = 50 mm.",
+    "Jetzt hast du beide Längen in derselben Einheit: 50 mm · 60 mm.",
+    "Wenn du zwei Längen miteinander multiplizierst, entsteht automatisch eine FLÄCHE, und die Einheit wird zu 'Quadrat-etwas' – hier also mm² (Quadratmillimeter).",
+    "Rechne die Zahlen: 50 · 60 = 3000.",
+    "Ergebnis: 3000 mm²."
+  ],
+  tip: "Klassischer Fehler: Wenn man vergisst, cm in mm umzurechnen, und einfach 5 · 60 = 300 rechnet, kommt ein falsches Ergebnis heraus (eine der Fallen-Antworten in dieser Aufgabe!). Immer zuerst Einheiten angleichen!",
+  answer: "5 cm · 60 mm = 50 mm · 60 mm = 3000 mm²"
+},
+{
+  id: 17,
+  title: "Aufgabe 15 – Textaufgabe: Einzelpreis berechnen und hochrechnen",
+  points: 1,
+  original: "Alex, Ali und Armin haben zusammen 24 € Eintritt bezahlt. Wie viel bezahlen Lena und ihre sechs Freundinnen (7 Personen) zusammen, beim gleichen Einzelpreis?",
+  steps: [
+    "Auch hier zuerst aufschreiben, was du weißt: 3 Jungs (Alex, Ali, Armin) haben zusammen 24 € bezahlt. Gesucht: Was bezahlen 7 Mädchen (Lena + 6 Freundinnen) zusammen?",
+    "Der Trick bei solchen Aufgaben: Finde zuerst den PREIS PRO PERSON heraus (das nennt man auch den 'Einheitspreis').",
+    "Einzelpreis = Gesamtpreis geteilt durch Anzahl Personen = 24 € : 3 Personen = 8 € pro Person.",
+    "Jetzt zählst du, wie viele Personen in der zweiten Gruppe sind: Lena + ihre 6 Freundinnen = 1 + 6 = 7 Personen.",
+    "Gesamtpreis der zweiten Gruppe = Anzahl Personen · Einzelpreis = 7 · 8 € = 56 €.",
+    "Ergebnis: Lena und ihre Freundinnen bezahlen zusammen 56 €."
+  ],
+  tip: "Merke dir das Muster 'Dreisatz': (1) Gesamt durch Anzahl teilen = Preis für EINS, (2) Preis für eins mal neue Anzahl = neues Gesamtergebnis. Dieses Muster funktioniert bei sehr vielen Textaufgaben!",
+  answer: "Lena und ihre sechs Freundinnen bezahlen zusammen 56 €."
+},
+{
+  id: 18,
+  title: "Aufgabe 16 – Maßstab schätzen",
+  points: 1,
+  original: "Eisbär Kurti ist in Wirklichkeit 250 cm lang mit 160 cm Schulterhöhe. In welchem Maßstab ist er auf dem Bild ungefähr gezeichnet? (1:100, 1:10, 1:1, 10:1, 100:1)",
+  steps: [
+    "Ein Maßstab wie '1:10' bedeutet: 1 cm auf dem Bild entspricht 10 cm in Wirklichkeit. Je größer die zweite Zahl, desto stärker wurde der echte Gegenstand verkleinert.",
+    "Überlege dir zuerst: Ist das Bild größer oder kleiner als der echte Eisbär? Natürlich viel kleiner – ein 250 cm langer Eisbär passt nicht auf eine Testseite!",
+    "Damit fallen '1:1' (gleich groß) sowie '10:1' und '100:1' (das wären VERGRÖSSERUNGEN, also noch größer als real) schon mal komplett weg.",
+    "Bleiben nur noch 1:100 und 1:10 übrig. Überlege: Bei 1:100 wäre ein 160 cm hoher Eisbär nur noch 1,6 cm groß auf dem Bild – das wäre winzig, fast wie eine Briefmarke, viel zu klein, um Details zu erkennen.",
+    "Bei 1:10 wäre der Eisbär auf dem Bild etwa 16-25 cm groß – das passt gut auf eine Testseite und man kann noch alle Details (Fell, Augen, Form) erkennen.",
+    "Deshalb ist 1:10 der realistischste Maßstab für diese Zeichnung."
+  ],
+  tip: "Bei Maßstab-Schätzaufgaben hilft immer die Überlegung: Passt das Objekt bei diesem Maßstab überhaupt plausibel auf ein normales Blatt Papier, und bleiben Details noch erkennbar?",
+  answer: "Der Eisbär ist ungefähr im Maßstab 1:10 gezeichnet."
+},
+{
+  id: 19,
+  title: "Aufgabe 17 – Rechteck mit vorgegebener Fläche zeichnen",
+  points: 1,
+  original: "Zeichne ein Rechteck mit einem Flächeninhalt A von 12 cm².",
+  steps: [
+    "Die Formel für den Flächeninhalt eines Rechtecks ist: Fläche = Länge · Breite. Du suchst also zwei Zahlen, die miteinander multipliziert 12 ergeben.",
+    "Überlege dir mögliche Zahlenpaare, die multipliziert 12 ergeben: 1 · 12 = 12, 2 · 6 = 12, 3 · 4 = 12 – alle diese Paare funktionieren!",
+    "Am einfachsten zu zeichnen (und am 'quadratischsten', also am wenigsten lang und dünn) ist meist 3 cm · 4 cm, weil sich das gut auf einem Kästchenblatt abzählen lässt.",
+    "Zeichne mit dem Lineal ein Rechteck, das 4 cm lang und 3 cm breit ist (also eine Seite 4 Kästchen, die andere 3 Kästchen, wenn jedes Kästchen 1 cm² hat).",
+    "Kontrolle: 4 cm · 3 cm = 12 cm² – passt!"
+  ],
+  tip: "Bei 'zeichne eine Figur mit Fläche X' Aufgaben gibt es fast immer mehrere richtige Lösungen – du musst nur EIN passendes Zahlenpaar finden, keine bestimmte 'einzig richtige' Lösung.",
+  answer: "z. B. ein Rechteck mit 4 cm Länge und 3 cm Breite (4 cm · 3 cm = 12 cm²). Auch 2 cm × 6 cm oder 1 cm × 12 cm wären richtig."
+},
+{
+  id: 20,
+  title: "Aufgabe 18 – Quadrat in zwei Rechtecke aufteilen",
+  points: 1,
+  original: "Ein Quadrat mit Seitenlänge a = 8 cm wird in zwei Rechtecke aufgeteilt. Das größere Rechteck hat einen Umfang von 28 cm. Wie groß ist der Umfang des kleineren Rechtecks?",
+  steps: [
+    "Stell dir das Quadrat vor: Es wird durch einen geraden Schnitt (parallel zu einer Seite) in zwei kleinere Rechtecke geteilt, wie wenn du eine Tafel Schokolade quer durchbrichst.",
+    "Beide entstehenden Rechtecke haben eine Seite, die genau der Quadratseite entspricht: 8 cm (die Breite bleibt beim Durchschneiden gleich).",
+    "Die Formel für den Umfang eines Rechtecks lautet: Umfang = 2 · (Länge + Breite). Für das GRÖSSERE Rechteck weißt du: Umfang = 28 cm und eine Seite = 8 cm.",
+    "Setze das in die Formel ein und löse nach der unbekannten Seite (nenn sie h) auf: 28 = 2 · (8 + h). Teile beide Seiten durch 2: 14 = 8 + h. Ziehe 8 ab: h = 6 cm.",
+    "Das größere Rechteck ist also 8 cm × 6 cm. Da das komplette Quadrat 8 cm hoch ist, muss das KLEINERE Rechteck die restliche Höhe einnehmen: 8 cm − 6 cm = 2 cm.",
+    "Jetzt berechnest du den Umfang des kleineren Rechtecks (8 cm × 2 cm): Umfang = 2 · (8 + 2) = 2 · 10 = 20 cm."
+  ],
+  tip: "Bei zusammengesetzten Figuren-Aufgaben: Finde zuerst die EINE fehlende Seitenlänge über die bekannte Information (hier: über den Umfang des größeren Rechtecks), bevor du zur eigentlichen Frage weiterrechnest.",
+  answer: "Der Umfang des kleineren Rechtecks beträgt 20 cm."
+},
+{
+  id: 21,
+  title: "Aufgabe 19 – Balkendiagramm ergänzen",
+  points: 1,
+  original: "Ein Diagramm zeigt die verkauften Fahrzeuge von Hersteller A (180 000) und B. Hersteller C hat halb so viele Fahrzeuge wie Hersteller A verkauft. Ergänze die Säule für Hersteller C.",
+  steps: [
+    "Lies zuerst genau ab, wie hoch der Balken von Hersteller A im Diagramm ist: 180 000 verkaufte Fahrzeuge.",
+    "Die Aufgabe sagt: Hersteller C hat HALB so viele Fahrzeuge verkauft wie Hersteller A. 'Halb so viel' bedeutet: durch 2 teilen.",
+    "Rechne: 180 000 : 2 = 90 000.",
+    "Jetzt zeichnest du im Diagramm die Säule für Hersteller C so hoch, dass sie bei 90 000 auf der senkrechten Achse endet – also genau bei der Hälfte der Höhe von Balken A.",
+    "Kontrolle: Der Balken von C sollte im Bild etwa halb so hoch aussehen wie der Balken von A – ein guter visueller Check, ob deine Zeichnung stimmt."
+  ],
+  tip: "Bei Diagramm-Aufgaben lohnt sich immer der Blick auf die Achsenbeschriftung (hier: 'Anzahl') und die Skalierung, bevor du eine neue Säule einzeichnest.",
+  answer: "Die Säule für Hersteller C muss bei 90 000 enden (halb so hoch wie die Säule von Hersteller A mit 180 000)."
+}
+];
+
+const toc = document.getElementById('toc');
+toc.innerHTML = '<b>Schnellzugriff:</b><br>' + tasks.map(t => `<a href="#task-${t.id}">Aufgabe ${t.id}</a>`).join('');
+
+const container = document.getElementById('tasksContainer');
+tasks.forEach(t => {
+  const div = document.createElement('div');
+  div.className = 'task';
+  div.id = 'task-' + t.id;
+  div.innerHTML = `
+    <div class="task-title">
+      <span>${t.title}</span>
+      <span class="badge">${t.points} Punkt</span>
+    </div>
+    <div class="task-body">
+      <div class="original-question">📋 Original-Aufgabe: ${t.original}</div>
+      ${t.steps.map((s, i) => `
+        <div class="step">
+          <div class="step-number">${i+1}</div>
+          <div class="step-content">${s}</div>
+        </div>
+      `).join('')}
+      ${t.tip ? `<div class="tip-box">💡 <b>Merktipp:</b> ${t.tip}</div>` : ''}
+      <div class="answer-box">✅ Lösung: ${t.answer}</div>
+    </div>
+  `;
+  container.appendChild(div);
+});
+</script>
+
+</body>
+</html>
