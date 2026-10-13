@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Wind-Diktat für Max</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Baloo+2:wght@600;800&display=swap">
+<style>
+/* Layout: ein Schulheft-Blatt, eine Spalte: Hören → Schreiben → Prüfen → Statistik. Füllerblau zum Schreiben, Rotstift zum Korrigieren. */
+:root{
+  --paper:#f4f7fc; --sheet:#ffffff; --ink:#1b2a4a; --muted:#5a6886; --line:#d5def0;
+  --blue:#2348c9; --blue-soft:#e5ebfc; --red:#c42d28; --red-soft:#fce8e6;
+  --green:#1f7d47; --green-soft:#e1f3e8; --margin:#eea6a2; --amber:#a86a00;
+  --f-display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --f-body:"Andika", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0e1422; --sheet:#161f34; --ink:#e6ebf7; --muted:#9ba8c6; --line:#2a3657;
+  --blue:#86a0ff; --blue-soft:#1e2a52; --red:#ff7f76; --red-soft:#3b1d22;
+  --green:#62d394; --green-soft:#15372a; --margin:#743a3e; --amber:#f0b44c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0e1422; --sheet:#161f34; --ink:#e6ebf7; --muted:#9ba8c6; --line:#2a3657;
+  --blue:#86a0ff; --blue-soft:#1e2a52; --red:#ff7f76; --red-soft:#3b1d22;
+  --green:#62d394; --green-soft:#15372a; --margin:#743a3e; --amber:#f0b44c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;flex-direction:column;gap:2px}
+.eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(1.9rem,6vw,2.6rem);line-height:1.05;margin:0;text-wrap:balance}
+h1 span{color:var(--blue)}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.35rem;margin:0;display:flex;align-items:center;gap:10px}
+h2 .n{display:inline-grid;place-items:center;width:1.7rem;height:1.7rem;border-radius:50%;background:var(--blue);color:var(--sheet);font-size:1rem}
+.lead{color:var(--muted);margin:0;max-width:62ch}
+section.card{background:var(--sheet);border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:14px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1.5px solid var(--line);background:var(--sheet);color:var(--ink);padding:10px 16px;min-height:44px}
+button:hover{border-color:var(--blue)}
+button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+button.primary{background:var(--blue);border-color:var(--blue);color:var(--sheet);font-weight:700}
+button.big{font-family:var(--f-display);font-size:1.25rem;font-weight:800;padding:12px 22px}
+button:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.now{display:flex;flex-direction:column;gap:8px;background:var(--blue-soft);border-radius:12px;padding:14px 16px}
+.now .status{font-family:var(--f-display);font-weight:600;font-size:1.15rem}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:.9rem}
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px 18px}
+.settings label{display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--muted)}
+.settings .chk{flex-direction:row;align-items:center;gap:8px;color:var(--ink)}
+input[type=range]{accent-color:var(--blue);width:100%}
+select{font:inherit;padding:8px;border-radius:8px;border:1.5px solid var(--line);background:var(--sheet);color:var(--ink);min-width:0;width:100%}
+details summary{cursor:pointer;color:var(--muted);font-size:.92rem}
+.parent{margin-top:10px;line-height:1.9}
+.parent span.hl{background:var(--blue-soft);color:var(--blue);border-radius:4px;box-shadow:0 0 0 2px var(--blue-soft)}
+.warn{background:var(--red-soft);color:var(--red);border-radius:10px;padding:10px 14px;font-size:.95rem}
+textarea{width:100%;min-height:22rem;resize:vertical;font-family:var(--f-body);font-size:1.25rem;color:var(--blue);
+  line-height:2.2rem;border:1.5px solid var(--line);border-radius:12px;padding:0 14px 0 3.2rem;
+  background-color:var(--sheet);background-attachment:local;
+  background-image:linear-gradient(to right,transparent 2.4rem,var(--margin) 2.4rem,var(--margin) calc(2.4rem + 2px),transparent calc(2.4rem + 2px)),
+    repeating-linear-gradient(to bottom,transparent 0,transparent calc(2.2rem - 1px),var(--line) calc(2.2rem - 1px),var(--line) 2.2rem)}
+.keys button{min-width:48px;font-size:1.15rem;padding:6px 12px}
+.result-head{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline}
+.score{font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1}
+.score.good{color:var(--green)} .score.mid{color:var(--amber)} .score.bad{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font-size:.85rem;border-radius:99px;padding:3px 11px;background:var(--red-soft);color:var(--red);font-variant-numeric:tabular-nums}
+.chip.ok{background:var(--green-soft);color:var(--green)}
+.checked{font-size:1.15rem;line-height:2.6;overflow-wrap:anywhere}
+.e{display:inline-flex;flex-direction:column;line-height:1.15;vertical-align:bottom;margin:0 1px}
+.e s{color:var(--red);text-decoration-thickness:2px;font-size:.95em}
+.e b{color:var(--green);font-weight:700}
+.e.miss b{border-bottom:2px dashed var(--green)}
+.e.extra s{background:var(--red-soft);border-radius:4px;padding:0 3px}
+.legend{display:flex;flex-wrap:wrap;gap:16px;font-size:.85rem;color:var(--muted)}
+.legend s{color:var(--red)} .legend b{color:var(--green)}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.tile{border:1px solid var(--line);border-radius:12px;padding:12px}
+.tile .v{font-family:var(--f-display);font-weight:800;font-size:1.7rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .k{font-size:.8rem;color:var(--muted)}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-family:var(--f-body);font-size:11px}
+.cats{display:flex;flex-direction:column;gap:8px}
+.cat{display:grid;grid-template-columns:minmax(0,11rem) 1fr 2.2rem;gap:10px;align-items:center;font-size:.92rem}
+.cat .track{height:12px;background:var(--line);border-radius:99px;overflow:hidden}
+.cat .track i{display:block;height:100%;background:var(--red);border-radius:99px}
+.cat .c{text-align:right;font-variant-numeric:tabular-nums}
+.words{display:flex;flex-wrap:wrap;gap:8px}
+.words span{border:1.5px solid var(--line);border-radius:8px;padding:4px 10px;font-size:1.05rem}
+.words small{color:var(--red);font-variant-numeric:tabular-nums;margin-left:4px}
+.muted{color:var(--muted);font-size:.92rem}
+h3{font-family:var(--f-display);font-weight:600;font-size:1.05rem;margin:6px 0 0}
+@media (max-width:520px){.tiles{grid-template-columns:1fr 1fr 1fr}.tile .v{font-size:1.35rem}.cat{grid-template-columns:minmax(0,8rem) 1fr 2rem}}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+<style>html{color-scheme:light}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="wrap" style="padding-bottom:0"><a href="index.html" style="color:var(--blue);text-decoration:none;font-size:.95rem">← Zurück zum Übungsbereich</a></div>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Diktat-Training für Max · Lesebuch S. 77</div>
+    <h1>Der <span>Wind</span> bringt Leben und Tod</h1>
+  </header>
+
+  <section class="card" id="listen">
+    <h2><span class="n">1</span>Hören</h2>
+    <p class="lead">Das Diktat wird in kleinen Teilen vorgelesen, immer zwei Wörter. Satzzeichen werden mitgesprochen. Schreib unten mit, während du zuhörst.</p>
+    <div id="noVoice" class="warn" hidden></div>
+    <div class="now">
+      <div class="status" id="status">Bereit. Tippe auf „Start“.</div>
+      <div class="bar"><i id="prog"></i></div>
+      <div class="count" id="count">Teil 0 von 0</div>
+    </div>
+    <div class="row">
+      <button class="primary big" id="playBtn">▶ Start</button>
+      <button id="repBtn" disabled>↻ Nochmal hören</button>
+      <button id="restartBtn">⏮ Von vorn</button>
+    </div>
+    <div class="settings">
+      <label for="rate">Sprechtempo: <strong id="rateV"></strong>
+        <input type="range" id="rate" min="0.5" max="1.1" step="0.05" value="0.8"></label>
+      <label for="pause">Pause nach jedem Teil: <strong id="pauseV"></strong>
+        <input type="range" id="pause" min="1" max="10" step="0.5" value="3.5"></label>
+      <label for="voice">Stimme
+        <select id="voice"></select></label>
+      <label class="chk" for="intro"><input type="checkbox" id="intro" checked> Jeden Satz zuerst ganz vorlesen</label>
+    </div>
+    <details id="parentBox">
+      <summary>Text anzeigen (für Eltern)</summary>
+      <div class="parent" id="parentText"></div>
+    </details>
+  </section>
+
+  <section class="card" id="write">
+    <h2><span class="n">2</span>Schreiben</h2>
+    <textarea id="answer" spellcheck="false" autocorrect="off" autocapitalize="off" autocomplete="off" placeholder="Hier schreiben … (Überschrift in die erste Zeile)"></textarea>
+    <div class="row keys" aria-label="Sonderzeichen einfügen">
+      <button data-k="ä">ä</button><button data-k="ö">ö</button><button data-k="ü">ü</button>
+      <button data-k="Ä">Ä</button><button data-k="ß">ß</button><button data-k=" – ">–</button>
+    </div>
+    <div class="row">
+      <button class="primary big" id="checkBtn">✓ Prüfen</button>
+      <button id="clearBtn">Blatt leeren</button>
+    </div>
+  </section>
+
+  <section class="card" id="result" hidden>
+    <h2><span class="n">3</span>Ergebnis</h2>
+    <div class="result-head"><div class="score" id="score"></div><div id="scoreMsg" class="lead"></div></div>
+    <div class="chips" id="chips"></div>
+    <div class="legend"><span><s>falsch</s> = so hast du geschrieben</span><span><b>richtig</b> = so ist es richtig</span><span><b style="border-bottom:2px dashed currentColor">Wort</b> = fehlt</span></div>
+    <div class="checked" id="checked"></div>
+  </section>
+
+  <section class="card" id="stats">
+    <h2><span class="n">4</span>Statistik</h2>
+    <div id="statsBody"></div>
+  </section>
+</div>
+
+<script>
+const TITLE = "Der Wind bringt Leben und Tod";
+const BODY = "Wind ist unbeständig, aber durch ihn belebt sich alles. Kein Kontinent wäre bewohnbar, wenn der Wind nicht dem Land das Wasser der Ozeane als Regen brächte. Alle belebten Wesen sind daher vom Wind abhängig. Wind kann aber auch sehr gefährlich sein. Ängstlich wartet jeder, wohin der Wind nach einem Vulkanausbruch die Asche trägt, ob man das Flugzeug benutzen kann oder nicht. Mit unvorstellbarer Gewalt wirkt der Wind, wenn er ganze Häuser aus dem Fundament reißt. Wind, der plötzlich eine enorme Menge Staub mitnahm, verursachte Dutzende von Verkehrsunfällen – dann verschwand der Sand mit einem Mal und der Wind legte sich, als sei nichts gewesen!";
+const NAMES = {".":"Punkt", ",":"Komma", "!":"Ausrufezeichen", "?":"Fragezeichen", "–":"Gedankenstrich", ":":"Doppelpunkt", ";":"Semikolon"};
+const KEY = "wind-diktat-max-v1", DRAFT = "wind-diktat-max-draft";
+
+const $ = id => document.getElementById(id);
+const isP = t => /^[.,!?;:–]$/.test(t);
+function tokenize(s){ return (s.replace(/[—-]/g,"–").match(/[A-Za-zÄÖÜäöüß]+|[.,!?;:–]/g) || []); }
+function joinTok(toks){ return toks.map((t,i)=> (i===0 || (isP(t) && t!=="–")) ? t : " "+t).join(""); }
+function esc(s){ return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---------- Vorlese-Teile bauen ---------- */
+const tTitle = tokenize(TITLE), tBody = tokenize(BODY);
+const TARGET = tTitle.concat(tBody), TITLE_LEN = tTitle.length;
+const chunks = [], sentences = [];
+function addSentence(toks, offset, isTitle){
+  const sid = sentences.length;
+  sentences.push({ plain: (isTitle ? "Überschrift. " : "") + joinTok(toks) });
+  let cur = null, first = true;
+  const push = () => {
+    cur.say = (isTitle && cur.first ? "Überschrift. " : "") + cur.words.join(" ") + (cur.punct ? ", " + NAMES[cur.punct] : "");
+    cur.show = cur.words.join(" ") + (cur.punct ? (cur.punct === "–" ? " –" : cur.punct) : "");
+    chunks.push(cur); cur = null; first = false;
+  };
+  toks.forEach((t, i) => {
+    if (!cur) cur = { words: [], punct: null, sid, first, from: offset + i, to: offset + i };
+    cur.to = offset + i;
+    if (isP(t)) { cur.punct = t; push(); }
+    else { cur.words.push(t); const nx = toks[i+1]; if (cur.words.length === 2 && !(nx && isP(nx))) push(); }
+  });
+  if (cur) push();
+  if (isTitle) { const l = chunks[chunks.length-1]; l.say += ". Neue Zeile"; l.show += " ↵"; }
+}
+addSentence(tTitle, 0, true);
+{ let buf = [], start = TITLE_LEN;
+  tBody.forEach((t, i) => { buf.push(t); if (/[.!?]/.test(t)) { addSentence(buf, start, false); buf = []; start = TITLE_LEN + i + 1; } });
+  if (buf.length) addSentence(buf, start, false); }
+
+/* Elterntext */
+$("parentText").innerHTML = TARGET.map((t,i)=> (i===TITLE_LEN ? "<br>" : (i===0||(isP(t)&&t!=="–") ? "" : " ")) + `<span data-i="${i}">${esc(t)}</span>`).join("");
+
+/* ---------- Sprachausgabe ---------- */
+const synth = window.speechSynthesis;
+let voices = [], voice = null;
+function loadVoices(){
+  if (!synth) return;
+  voices = synth.getVoices().filter(v => /^de/i.test(v.lang));
+  const sel = $("voice");
+  sel.innerHTML = voices.length ? voices.map((v,i)=>`<option value="${i}">${esc(v.name)} (${v.lang})</option>`).join("") : `<option>Standard</option>`;
+  let saved = null; try { saved = localStorage.getItem(KEY+"-voice"); } catch(e){}
+  const idx = Math.max(0, voices.findIndex(v => v.name === saved));
+  sel.value = String(idx); voice = voices[idx] || null;
+  const nv = $("noVoice");
+  if (synth.getVoices().length && !voices.length) { nv.hidden = false; nv.textContent = "Auf diesem Gerät ist keine deutsche Stimme installiert. Das Vorlesen klingt dann falsch. Installiere in den Geräte-Einstellungen eine deutsche Sprachausgabe."; }
+  else nv.hidden = true;
+}
+if (!synth) { const nv=$("noVoice"); nv.hidden=false; nv.textContent="Dieser Browser kann nicht vorlesen. Probier es in Chrome, Edge oder Safari."; }
+else { loadVoices(); synth.addEventListener?.("voiceschanged", loadVoices); }
+$("voice").addEventListener("change", e => { voice = voices[+e.target.value] || null; try { localStorage.setItem(KEY+"-voice", voice ? voice.name : ""); } catch(err){} });
+
+const opt = { get rate(){ return +$("rate").value; }, get pause(){ return +$("pause").value*1000; }, get intro(){ return $("intro").checked; } };
+function showOpts(){ $("rateV").textContent = Math.round(opt.rate*100) + " %"; $("pauseV").textContent = String($("pause").value).replace(".",",") + " s"; }
+$("rate").oninput = $("pause").oninput = showOpts; showOpts();
+
+const st = { ci: 0, intro: false, playing: false, last: -1, timer: null, run: 0, done: false, mode: "" };
+function say(text, rate, cb){
+  if (!synth) { cb && setTimeout(cb, 800); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = voice ? voice.lang : "de-DE"; if (voice) u.voice = voice; u.rate = rate;
+  let fired = false; const f = () => { if (!fired) { fired = true; cb && cb(); } };
+  u.onend = f; u.onerror = f; synth.speak(u);
+}
+function stopAudio(){ st.run++; clearTimeout(st.timer); if (synth) synth.cancel(); }
+
+function ui(){
+  const total = chunks.length;
+  $("prog").style.width = (100 * Math.min(st.ci, total) / total) + "%";
+  $("count").textContent = `Teil ${Math.min(st.ci + (st.playing && !st.done ? 1 : 0), total)} von ${total}`;
+  $("playBtn").textContent = st.playing ? "⏸ Pause" : (st.done ? "▶ Nochmal von vorn" : (st.ci > 0 || st.last >= 0 ? "▶ Weiter" : "▶ Start"));
+  $("repBtn").disabled = st.last < 0;
+  let s;
+  if (st.done) s = "Fertig! Lies deinen Text noch einmal durch und tippe dann auf „Prüfen“.";
+  else if (st.mode === "intro") s = "Hör zu: der ganze Satz …";
+  else if (st.mode === "chunk") s = "Schreib mit …";
+  else if (st.mode === "wait") s = "Schreib jetzt …";
+  else if (!st.playing && (st.ci > 0 || st.last >= 0)) s = "Pause. Tippe auf „Weiter“.";
+  else s = "Bereit. Tippe auf „Start“.";
+  $("status").textContent = s;
+  document.querySelectorAll("#parentText span.hl").forEach(e => e.classList.remove("hl"));
+  const c = chunks[st.mode === "chunk" ? st.ci : st.last];
+  if (c) for (let i = c.from; i <= c.to; i++) document.querySelector(`#parentText span[data-i="${i}"]`)?.classList.add("hl");
+}
+function step(){
+  if (!st.playing) return;
+  if (st.ci >= chunks.length) { st.playing = false; st.done = true; st.mode = ""; ui(); say("Ende des Diktats.", opt.rate); return; }
+  const my = st.run, c = chunks[st.ci];
+  if (opt.intro && c.first && !st.intro) {
+    st.intro = true; st.mode = "intro"; ui();
+    say(sentences[c.sid].plain, Math.min(1.1, opt.rate + 0.1), () => { if (my !== st.run) return; st.mode = "wait"; ui(); st.timer = setTimeout(step, Math.min(opt.pause, 2000)); });
+    return;
+  }
+  st.last = st.ci; st.mode = "chunk"; ui();
+  say(c.say, opt.rate, () => { if (my !== st.run) return; st.ci++; st.intro = false; st.mode = "wait"; ui(); st.timer = setTimeout(step, opt.pause); });
+}
+function restart(){ stopAudio(); Object.assign(st, { ci: 0, intro: false, playing: false, last: -1, done: false, mode: "" }); ui(); }
+$("playBtn").onclick = () => {
+  if (st.playing) { st.playing = false; st.mode = ""; stopAudio(); ui(); return; }
+  if (st.done) restart();
+  st.playing = true; stopAudio(); step();
+};
+$("restartBtn").onclick = restart;
+$("repBtn").onclick = () => {
+  if (st.last < 0) return;
+  stopAudio(); const my = st.run;
+  if (st.last === st.ci && st.mode === "chunk") { st.ci++; st.intro = false; }
+  st.mode = "chunk"; const keep = st.ci; st.ci = st.last; ui(); st.ci = keep;
+  say(chunks[st.last].say, opt.rate, () => { if (my !== st.run) return; st.mode = st.playing ? "wait" : ""; ui(); if (st.playing) st.timer = setTimeout(step, opt.pause); });
+};
+ui();
+
+/* ---------- Schreiben ---------- */
+const ta = $("answer");
+try { ta.value = localStorage.getItem(DRAFT) || ""; } catch(e){}
+ta.addEventListener("input", () => { try { localStorage.setItem(DRAFT, ta.value); } catch(e){} });
+document.querySelectorAll("[data-k]").forEach(b => b.addEventListener("click", () => {
+  const k = b.dataset.k, s = ta.selectionStart, e = ta.selectionEnd;
+  ta.setRangeText(k, s, e, "end"); ta.focus(); ta.dispatchEvent(new Event("input"));
+}));
+let clearArmed = null;
+$("clearBtn").onclick = () => {
+  const b = $("clearBtn");
+  if (!clearArmed) { b.textContent = "Wirklich leeren?"; b.style.borderColor = "var(--red)"; clearArmed = setTimeout(() => { clearArmed = null; b.textContent = "Blatt leeren"; b.style.borderColor = ""; }, 3000); return; }
+  clearTimeout(clearArmed); clearArmed = null; b.textContent = "Blatt leeren"; b.style.borderColor = "";
+  ta.value = ""; ta.dispatchEvent(new Event("input")); $("result").hidden = true;
+};
+
+/* ---------- Prüfen ---------- */
+function lev(a, b){
+  const d = Array.from({length: a.length+1}, (_, i) => [i]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1] + (a[i-1]===b[j-1]?0:1));
+  return d;
+}
+function subCost(a, b){
+  if (a === b) return 0;
+  const pa = isP(a), pb = isP(b);
+  if (pa && pb) return 1;
+  if (pa !== pb) return 5;
+  const al = a.toLowerCase(), bl = b.toLowerCase();
+  if (al === bl) return 0.3;
+  return 0.5 + lev(al, bl)[al.length][bl.length] / Math.max(al.length, bl.length);
+}
+function align(T, U){
+  const n = T.length, m = U.length, D = Array.from({length: n+1}, () => new Float64Array(m+1));
+  for (let i = 1; i <= n; i++) D[i][0] = i;
+  for (let j = 1; j <= m; j++) D[0][j] = j;
+  for (let i = 1; i <= n; i++) for (let j = 1; j <= m; j++)
+    D[i][j] = Math.min(D[i-1][j]+1, D[i][j-1]+1, D[i-1][j-1] + subCost(T[i-1], U[j-1]));
+  const ops = []; let i = n, j = m;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && Math.abs(D[i][j] - (D[i-1][j-1] + subCost(T[i-1], U[j-1]))) < 1e-9) { ops.push({ type: T[i-1]===U[j-1] ? "ok" : "sub", t: T[i-1], u: U[j-1], ti: i-1 }); i--; j--; }
+    else if (i > 0 && Math.abs(D[i][j] - (D[i-1][j] + 1)) < 1e-9) { ops.push({ type: "miss", t: T[i-1], ti: i-1 }); i--; }
+    else { ops.push({ type: "extra", u: U[j-1], ti: i }); j--; }
+  }
+  return ops.reverse();
+}
+function charOps(a, b){
+  const d = lev(a, b), ops = []; let i = a.length, j = b.length;
+  while (i > 0 || j > 0) {
+    if (i > 0 && j > 0 && d[i][j] === d[i-1][j-1] + (a[i-1]===b[j-1]?0:1)) { if (a[i-1] !== b[j-1]) ops.push({ op: "sub", x: a[i-1], y: b[j-1], i: i-1 }); i--; j--; }
+    else if (i > 0 && d[i][j] === d[i-1][j] + 1) { ops.push({ op: "del", x: a[i-1], i: i-1 }); i--; }
+    else { ops.push({ op: "ins", y: b[j-1], i }); j--; }
+  }
+  return ops;
+}
+const pairIs = (x, y, p, q) => (x===p && y===q) || (x===q && y===p);
+function categorize(t, u){
+  const cats = new Set(), a = t.toLowerCase(), b = u.toLowerCase();
+  if (t[0] !== u[0] && a[0] === b[0]) cats.add("Groß/klein");
+  if (a === b) return [...cats];
+  for (const o of charOps(a, b)) {
+    let c = null;
+    if (o.op === "sub") {
+      const { x, y } = o;
+      if (pairIs(x,y,"d","t")) c = "d oder t";
+      else if (pairIs(x,y,"b","p")) c = "b oder p";
+      else if (pairIs(x,y,"g","k")) c = "g oder k";
+      else if (pairIs(x,y,"ä","e")) c = "ä oder e";
+      else if (pairIs(x,y,"ä","a") || pairIs(x,y,"ö","o") || pairIs(x,y,"ü","u")) c = "Umlaut-Punkte";
+      else if (pairIs(x,y,"ß","s")) c = "ß oder s/ss";
+    } else if (o.op === "del") {
+      const x = o.x;
+      if (x === "h") c = "Dehnungs-h";
+      else if (x === a[o.i-1] || x === a[o.i+1]) c = "Doppelkonsonant";
+      else if (x === "e" && a[o.i-1] === "i") c = "ie oder i";
+      else if ((x === "d" && a[o.i+1] === "t") || (x === "t" && a[o.i-1] === "d")) c = "d oder t";
+    } else {
+      const y = o.y;
+      if (y === "h") c = "Dehnungs-h";
+      else if (y === "s" && (a[o.i-1] === "ß" || a[o.i] === "ß")) c = "ß oder s/ss";
+      else if ((y === "d" && a[o.i] === "t") || (y === "t" && a[o.i-1] === "d")) c = "d oder t";
+      else if (y === a[o.i-1] || y === a[o.i]) c = "Doppelkonsonant";
+      else if (y === "e" && a[o.i-1] === "i") c = "ie oder i";
+    }
+    cats.add(c || "Sonstige Rechtschreibung");
+  }
+  return [...cats];
+}
+function check(){
+  const U = tokenize(ta.value);
+  if (!U.length) { ta.focus(); return; }
+  const ops = align(TARGET, U);
+  const cats = {}, words = {}; let errors = 0;
+  const add = (c) => cats[c] = (cats[c]||0) + 1;
+  let html = "", lineBroken = false;
+  const sp = (tok) => (isP(tok) && tok !== "–") ? "" : " ";
+  for (const o of ops) {
+    if (!lineBroken && o.ti >= TITLE_LEN && o.type !== "extra") { html += "<br>"; lineBroken = true; }
+    if (o.type === "ok") { html += sp(o.t) + esc(o.t); continue; }
+    errors++;
+    if (o.type === "sub") {
+      if (isP(o.t) || isP(o.u)) add("Satzzeichen"); else { categorize(o.t, o.u).forEach(add); words[o.t] = (words[o.t]||0) + 1; }
+      html += sp(o.t) + `<span class="e"><b>${esc(o.t)}</b><s>${esc(o.u)}</s></span>`;
+    } else if (o.type === "miss") {
+      if (isP(o.t)) add("Satzzeichen"); else { add("Wort fehlt"); words[o.t] = (words[o.t]||0) + 1; }
+      html += sp(o.t) + `<span class="e miss"><b>${esc(o.t)}</b></span>`;
+    } else {
+      add(isP(o.u) ? "Satzzeichen" : "Wort zu viel");
+      html += " " + `<span class="e extra"><s>${esc(o.u)}</s></span>`;
+    }
+  }
+  $("checked").innerHTML = html.replace(/^\s+/, "");
+  const sc = $("score");
+  sc.textContent = errors === 0 ? "0 Fehler" : errors === 1 ? "1 Fehler" : errors + " Fehler";
+  sc.className = "score " + (errors <= 3 ? "good" : errors <= 10 ? "mid" : "bad");
+  $("scoreMsg").textContent = errors === 0 ? "Fehlerfrei! Super gemacht, Max!" :
+    errors <= 3 ? "Sehr gut! Nur noch ein paar Kleinigkeiten." :
+    errors <= 10 ? "Gut geübt! Schau dir die roten Stellen genau an." : "Nicht aufgeben! Übe die Wörter unten und probier es nochmal.";
+  const entries = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+  $("chips").innerHTML = entries.length ? entries.map(([k,v]) => `<span class="chip">${esc(k)}: ${v}</span>`).join("") : `<span class="chip ok">Keine Fehler</span>`;
+  $("result").hidden = false;
+  const hist = loadHist(); hist.push({ d: Date.now(), e: errors, c: cats, w: words, n: TARGET.length }); saveHist(hist);
+  renderStats();
+  $("result").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+}
+$("checkBtn").onclick = check;
+
+/* ---------- Statistik ---------- */
+function loadHist(){ try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch(e){ return []; } }
+function saveHist(h){ try { localStorage.setItem(KEY, JSON.stringify(h)); } catch(e){} }
+let resetArmed = null;
+function renderStats(){
+  const h = loadHist(), box = $("statsBody");
+  if (!h.length) { box.innerHTML = `<p class="muted">Noch keine Übung gespeichert. Nach dem ersten „Prüfen“ siehst du hier, wie viele Fehler du machst und welche Wörter du noch üben solltest.</p>`; return; }
+  const last = h[h.length-1], best = Math.min(...h.map(x => x.e));
+  const fmt = d => new Date(d).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+  let out = `<div class="tiles">
+    <div class="tile"><div class="v">${h.length}</div><div class="k">Übungen</div></div>
+    <div class="tile"><div class="v">${last.e}</div><div class="k">Fehler zuletzt</div></div>
+    <div class="tile"><div class="v" style="color:var(--green)">${best}</div><div class="k">Bestes Ergebnis</div></div></div>`;
+  // Verlauf
+  const L = h.slice(-12), W = 640, H = 200, pl = 30, pb = 26, pt = 14;
+  const max = Math.max(4, ...L.map(x => x.e)), step = max <= 10 ? 2 : max <= 25 ? 5 : 10, top = Math.ceil(max/step)*step;
+  const bw = (W - pl - 10) / L.length, y = v => pt + (H - pt - pb) * (1 - v/top);
+  let svg = `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Fehler pro Übung">`;
+  for (let v = 0; v <= top; v += step) svg += `<line x1="${pl}" x2="${W-6}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end">${v}</text>`;
+  L.forEach((x, i) => {
+    const cx = pl + i*bw + bw*0.18, w = bw*0.64, col = x.e <= 3 ? "var(--green)" : x.e <= 10 ? "var(--amber)" : "var(--red)";
+    svg += `<rect x="${cx}" y="${y(x.e)}" width="${w}" height="${Math.max(0, y(0)-y(x.e))}" rx="4" fill="${col}"/>`;
+    svg += `<text x="${cx+w/2}" y="${y(x.e)-4}" text-anchor="middle" style="fill:var(--ink);font-weight:700">${x.e}</text>`;
+    svg += `<text x="${cx+w/2}" y="${H-8}" text-anchor="middle">${fmt(x.d)}</text>`;
+  });
+  svg += `</svg>`;
+  out += `<h3>Fehler pro Übung${h.length > 12 ? " (letzte 12)" : ""}</h3>` + svg;
+  // Fehlerarten
+  const cats = {}, words = {};
+  h.forEach(x => { for (const k in x.c) cats[k] = (cats[k]||0) + x.c[k]; for (const k in x.w) words[k] = (words[k]||0) + x.w[k]; });
+  const ce = Object.entries(cats).sort((a,b) => b[1]-a[1]), cmax = ce.length ? ce[0][1] : 1;
+  out += `<h3>Fehlerarten (alle Übungen)</h3>`;
+  out += ce.length ? `<div class="cats">${ce.map(([k,v]) => `<div class="cat"><span>${esc(k)}</span><span class="track"><i style="width:${100*v/cmax}%"></i></span><span class="c">${v}</span></div>`).join("")}</div>` : `<p class="muted">Noch keine Fehler. Klasse!</p>`;
+  const we = Object.entries(words).sort((a,b) => b[1]-a[1]).slice(0, 14);
+  out += `<h3>Diese Wörter solltest du üben</h3>`;
+  out += we.length ? `<div class="words">${we.map(([k,v]) => `<span>${esc(k)}<small>${v}×</small></span>`).join("")}</div>` : `<p class="muted">Keine Wörter falsch geschrieben.</p>`;
+  out += `<div class="row" style="margin-top:6px"><button id="resetBtn">Statistik löschen</button><span class="muted">Gespeichert nur in diesem Browser auf diesem Gerät.</span></div>`;
+  box.innerHTML = out;
+  $("resetBtn").onclick = () => {
+    const b = $("resetBtn");
+    if (!resetArmed) { b.textContent = "Wirklich alles löschen?"; b.style.borderColor = "var(--red)"; resetArmed = setTimeout(() => { resetArmed = null; b.textContent = "Statistik löschen"; b.style.borderColor = ""; }, 3000); return; }
+    clearTimeout(resetArmed); resetArmed = null; saveHist([]); renderStats();
+  };
+}
+renderStats();
+</script>
+
+</body>
+</html>
