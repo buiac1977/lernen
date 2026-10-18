@@ -1,0 +1,185 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sardinien 2027 mit vier Familien</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Layout: one column planner; summary bar on top, then choice lists that drive the budget */
+:root{
+  --bg:#f3f6f6; --surface:#ffffff; --fg:#14272b; --muted:#56696d; --line:#d5dfe0;
+  --sea:#0b6e79; --sea-soft:#dcefef; --sand:#c98b3a; --ok:#2f7d4f; --warn:#a4651a;
+  --display:"Fraunces",Georgia,serif; --body:"Source Sans 3",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1b1d; --surface:#16262a; --fg:#e4eeee; --muted:#9fb3b5; --line:#2a3e42;
+  --sea:#4fb7c2; --sea-soft:#183a3f; --sand:#e0a95e; --ok:#6cc08d; --warn:#e0a95e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1b1d; --surface:#16262a; --fg:#e4eeee; --muted:#9fb3b5; --line:#2a3e42;
+  --sea:#4fb7c2; --sea-soft:#183a3f; --sand:#e0a95e; --ok:#6cc08d; --warn:#e0a95e; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding-block:28px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:28px}
+h1,h2{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,5vw,42px)}
+h2{font-size:24px}
+.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:12px;font-weight:700;color:var(--sea)}
+.lede{color:var(--muted);max-width:65ch;margin:6px 0 0}
+.facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{background:var(--sea-soft);color:var(--fg);border-radius:999px;padding:4px 12px;font-size:14px}
+.summary{background:var(--sea);color:#fff;border-radius:14px;padding:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}
+:root[data-theme="dark"] .summary{color:#0f1b1d}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .summary{color:#0f1b1d}}
+.summary .lbl{font-size:13px;opacity:.85}
+.summary .num{font-family:var(--display);font-size:30px;font-variant-numeric:tabular-nums}
+.summary .sub{font-size:13px;opacity:.85}
+section{display:grid;gap:12px}
+.list{display:grid;gap:10px}
+.opt{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;cursor:pointer}
+.opt:has(input:checked){border-color:var(--sea);box-shadow:0 0 0 1px var(--sea)}
+.opt input{margin-top:5px;accent-color:var(--sea);width:18px;height:18px}
+.opt .name{font-weight:700}
+.opt .meta{color:var(--muted);font-size:14px}
+.opt .price{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
+.opt .price small{display:block;font-weight:400;color:var(--muted);font-size:13px}
+.opt>div{min-width:0}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:1px 8px;border-radius:999px;margin-left:6px;vertical-align:1px}
+.tag.rec{background:var(--sea-soft);color:var(--sea)}
+.tag.warn{background:transparent;border:1px solid var(--warn);color:var(--warn)}
+a{color:var(--sea)}
+.grouphead{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-top:6px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.card p{margin:.3em 0}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+td,th{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:15px}
+td.r,th.r{text-align:right}
+.tablewrap{overflow-x:auto}
+.note{color:var(--muted);font-size:14px}
+input:focus-visible{outline:2px solid var(--sand);outline-offset:2px}
+@media (max-width:520px){.opt{grid-template-columns:auto 1fr}.opt .price{grid-column:2;text-align:left}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Gruppenreise · Stand 18.10.2026</div>
+    <h1>Sardinien 2027 mit vier Familien</h1>
+    <p class="lede">Zwei Wochen am Meer für 8 Erwachsene und 4 Kinder (11, 12, 15 und 15 Jahre). Wähle unten Unterkunft und Ausflüge, das Budget pro Familie rechnet sofort mit.</p>
+    <div class="facts">
+      <span class="chip">Sa 21.08. – Sa 04.09.2027 · 14 Nächte</span>
+      <span class="chip">Nürnberg → Olbia nonstop</span>
+      <span class="chip">Budget 4.000–7.000 € pro Familie</span>
+    </div>
+  </header>
+
+  <div class="summary" aria-live="polite">
+    <div><div class="lbl">Pro Familie (3 Personen)</div><div class="num" id="perFam">–</div><div class="sub" id="budgetState">–</div></div>
+    <div><div class="lbl">Gesamt für alle 12</div><div class="num" id="total">–</div><div class="sub">ohne Essen vor Ort</div></div>
+    <div><div class="lbl">Gewählte Unterkunft</div><div class="num" style="font-size:20px" id="accName">–</div><div class="sub" id="accWhere">–</div></div>
+  </div>
+
+  <section>
+    <h2>Flug</h2>
+    <div class="card">
+      <p><strong>Condor-Gruppentarif (Marabu), Sa 21.08. 12:55 → 14:40, zurück Sa 04.09. 15:30 → 17:20</strong></p>
+      <p>390,98 € pro Person inklusive Steuern und Gebühren, für alle 12 zusammen 4.692 €. Dazu rechne ich ca. 160 € Gepäck pro Familie.</p>
+      <p class="note">Ab 10 Personen läuft das bei Condor als Gruppenbuchung: Namensänderungen bis 2 Werktage vor Abflug kostenlos, 10 % der Gruppe bis 28 Tage vorher kostenlos stornierbar. Am Mittwoch 18.08. ist das Gruppenkontingent schon erschöpft. Für 2,5 Wochen ginge Do 19.08. bis So 05.09. zum gleichen Preis, der Rückflug landet dann aber erst um 1:10 Uhr.</p>
+      <p class="note"><a href="https://www.condor.com/de/flug-buchen-planen/flug/gruppenbuchung.jsp" target="_blank" rel="noopener">Condor-Gruppenrechner öffnen</a></p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Unterkunft</h2>
+    <div class="grouphead">Hotel in Cala Gonone (Ostküste, ca. 1,5 Std. ab Olbia)</div>
+    <div class="list" id="acc"></div>
+  </section>
+
+  <section>
+    <h2>Mietwagen und Transfer</h2>
+    <div class="card">
+      <p>Ein Kompakt-SUV pro Familie ab Flughafen Olbia, ca. 569 € für 14 Tage (Preis aus der letzten Abfrage für eure Familie). So bleibt jede Familie flexibel.</p>
+      <p class="note">Fahrzeiten ab Flughafen: Cala Gonone ca. 1,5 Std., Monte Petrosu ca. 20 Min., San Teodoro ca. 30 Min.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ausflüge</h2>
+    <p class="note" style="margin:0">Preise sind Richtwerte pro Person. Mit dem Hotel in Cala Gonone liegen die Bootstouren direkt vor der Tür, vom Ferienhaus im Nordosten sind La Maddalena und Tavolara näher.</p>
+    <div class="list" id="act"></div>
+  </section>
+
+  <section>
+    <h2>Kosten pro Familie im Detail</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Posten</th><th class="r">Pro Familie</th><th class="r">Gruppe</th></tr></thead>
+      <tbody id="breakdown"></tbody>
+    </table></div>
+    <p class="note">Unterkunftspreise sind heute live auf Booking.com abgefragt und gelten für alle 4 Familien zusammen. Sie können sich bis zur Buchung ändern.</p>
+  </section>
+</div>
+
+<script>
+const FLIGHT_PP = 390.98, BAGS_FAM = 160, CAR_FAM = 569, FAMS = 4;
+const acc = [
+  {id:"favorita", group:"hotel", name:"La Favorita Hotel", where:"Cala Gonone, direkt am Strand", rating:"8,8 (509 Bewertungen)", rooms:"4 × Standard-Dreibettzimmer, Frühstück inklusive", total:12134, tag:"Empfehlung Hotel", tagCls:"rec"},
+  {id:"nettuno", group:"hotel", name:"Hotel Nettuno", where:"Cala Gonone, 250 m zum Strand", rating:"9,1 (939 Bewertungen)", rooms:"Dreibett-, Vierbett- und Doppelzimmer, Frühstück inklusive", total:14677},
+  {id:"buemarino", group:"hotel", name:"BUE MARINO Hotel & Rooftop Bar", where:"Cala Gonone, am Strand", rating:"8,8 (901 Bewertungen)", rooms:"Dreibettzimmer, Junior Suite, Doppelzimmer", total:12418, tag:"Genius-Preis", tagCls:"warn"},
+  {id:"elena", group:"house", name:"Elegant Villa Elena", where:"Monte Petrosu bei San Teodoro, 2,6 km zu Cala Brandinchi", rating:"10 (6 externe Bewertungen, neu)", rooms:"7 Schlafzimmer, 5 Bäder, 377 m², Terrasse, Meerblick", total:4284, tag:"Neu, nur Barzahlung", tagCls:"warn"},
+  {id:"minda", group:"house", name:"Ferienhaus La Minda", where:"San Teodoro, ca. 6 km vom Ort", rating:"9,3 (3 Bewertungen)", rooms:"5 Schlafzimmer, 4 Bäder, 190 m², 10 Betten", total:6054, tag:"Empfehlung Haus", tagCls:"rec"}
+];
+const act = [
+  {id:"luna", name:"Bootstour Cala Luna und Grotta del Bue Marino", meta:"Ab Hafen Cala Gonone, Baden in der Bucht", pp:45, on:true},
+  {id:"tiscali", name:"Nuraghendorf Tiscali mit Wanderung", meta:"Kultur und Natur, ca. 2 Std. zu Fuß", pp:10, on:true},
+  {id:"gorropu", name:"Gorropu-Schlucht", meta:"Eine der tiefsten Schluchten Europas, ideal für die Jugendlichen", pp:10, on:true},
+  {id:"kayak", name:"Kajak- oder SUP-Tour", meta:"Halbtags entlang der Küste", pp:50, on:true},
+  {id:"madd", name:"Bootstag La Maddalena", meta:"Ab Palau, Inselhopping mit Badestopps", pp:50, on:false},
+  {id:"tav", name:"Bootstour Tavolara", meta:"Ab San Teodoro oder Porto San Paolo", pp:35, on:false},
+  {id:"aqua", name:"Wasserpark Aquadream", meta:"Baja Sardinia, Rutschen für alle Altersstufen", pp:30, on:false},
+  {id:"olbia", name:"Olbia Altstadt und Archäologisches Museum", meta:"Halbtag, Eintritt frei", pp:0, on:false}
+];
+const eur = n => n.toLocaleString("de-DE",{style:"currency",currency:"EUR",maximumFractionDigits:0});
+let state = {acc:"favorita", act:Object.fromEntries(act.map(a=>[a.id,a.on]))};
+try{const s=JSON.parse(localStorage.getItem("sard4")); if(s&&s.acc) state=s;}catch(e){}
+
+const accEl = document.getElementById("acc");
+let houseHeadDone=false;
+acc.forEach(a=>{
+  if(a.group==="house" && !houseHeadDone){const h=document.createElement("div");h.className="grouphead";h.textContent="Ferienhaus für alle (Nordosten, nahe Flughafen)";accEl.after(h);houseHeadDone=true;
+    const l=document.createElement("div");l.className="list";l.id="acc2";h.after(l);}
+  const target = a.group==="house"?document.getElementById("acc2"):accEl;
+  const lab=document.createElement("label");lab.className="opt";
+  lab.innerHTML=`<input type="radio" name="acc" id="acc-${a.id}" value="${a.id}">
+    <div><div class="name">${a.name}${a.tag?`<span class="tag ${a.tagCls}">${a.tag}</span>`:""}</div>
+    <div class="meta">${a.where} · Bewertung ${a.rating}</div><div class="meta">${a.rooms}</div></div>
+    <div class="price">${eur(a.total/FAMS)}<small>pro Familie · ${eur(a.total)} gesamt</small></div>`;
+  target.appendChild(lab);
+});
+const actEl=document.getElementById("act");
+act.forEach(a=>{
+  const lab=document.createElement("label");lab.className="opt";
+  lab.innerHTML=`<input type="checkbox" id="act-${a.id}" value="${a.id}">
+    <div><div class="name">${a.name}</div><div class="meta">${a.meta}</div></div>
+    <div class="price">${a.pp?eur(a.pp*3):"frei"}<small>${a.pp?`pro Familie · ca. ${a.pp} € p. P.`:"Eintritt frei"}</small></div>`;
+  actEl.appendChild(lab);
+});
+function render(){
+  document.querySelectorAll('input[name=acc]').forEach(i=>i.checked=i.value===state.acc);
+  act.forEach(a=>document.getElementById("act-"+a.id).checked=!!state.act[a.id]);
+  const A=acc.find(a=>a.id===state.acc)||acc[0];
+  const fl=FLIGHT_PP*3, accF=A.total/FAMS, actF=act.filter(a=>state.act[a.id]).reduce((s,a)=>s+a.pp*3,0);
+  const rows=[["Flug (3 × 390,98 €)",fl],["Gepäck (Schätzung)",BAGS_FAM],["Unterkunft: "+A.name,accF],["Mietwagen",CAR_FAM],["Ausflüge",actF]];
+  const fam=rows.reduce((s,r)=>s+r[1],0);
+  document.getElementById("breakdown").innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td class="r">${eur(r[1])}</td><td class="r">${eur(r[1]*FAMS)}</td></tr>`).join("")+`<tr><th>Summe</th><th class="r">${eur(fam)}</th><th class="r">${eur(fam*FAMS)}</th></tr>`;
+  document.getElementById("perFam").textContent=eur(fam);
+  document.getElementById("total").textContent=eur(fam*FAMS);
+  document.getElementById("budgetState").textContent= fam<=7000 ? (fam<4000?"unter eurem Budget":"im Budget von 4.000–7.000 €") : "über dem Budget";
+  document.getElementById("accName").textContent=A.name;
+  document.getElementById("accWhere").textContent=A.where;
+  try{localStorage.setItem("sard4",JSON.stringify(state));}catch(e){}
+}
+document.addEventListener("change",e=>{
+  if(e.target.name==="acc") state.acc=e.target.value;
+  else if(e.target.id&&e.target.id.startsWith("act-")) state.act[e.target.value]=e.target.checked;
+  render();
+});
+render();
+</script>
+
+</body></html>
