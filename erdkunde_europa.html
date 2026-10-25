@@ -62,6 +62,13 @@ button.ghost{background:transparent}
 .chip[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue);font-weight:700}
 .chip[aria-pressed="false"]{color:var(--muted)}
 .chip .n{font-size:.78rem;color:var(--muted);font-weight:400}
+.cpick{display:flex;flex-direction:column;gap:12px}
+.cpick .grp{border:1px solid var(--line);border-left:4px solid var(--c);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.cpick .grp-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-family:var(--f-display);font-weight:600}
+.cpick .grp-head .n{font-family:var(--f-body);font-weight:400;font-size:.85rem;color:var(--muted);margin-right:auto}
+.cpick .grp-head button{min-height:34px;padding:3px 12px;font-size:.85rem;font-family:var(--f-body);font-weight:400}
+.cpick .chip{min-height:36px;padding:4px 12px;font-size:.92rem}
+.cpick .chip .tick{width:1.1em;text-align:center}
 
 /* Karten */
 svg.map{display:block;width:100%;height:auto;border-radius:12px;background:var(--sea)}
@@ -195,6 +202,10 @@ td .alt{display:block;font-size:.8rem;color:var(--muted)}
     <section class="card" id="quizSetup">
       <h2>2. Quiz einstellen</h2>
       <div class="setup-grid">
+        <div class="field">
+          <span>Welche Länder sollen getestet werden?</span>
+          <div id="countryPick" class="cpick"></div>
+        </div>
         <div class="field">
           <span>Was soll gefragt werden?</span>
           <div class="chips" id="typeChips"></div>
@@ -341,6 +352,9 @@ let count = store.get('count', '10');
 const $ = id => document.getElementById(id);
 const regionOf = id => REGIONS.find(r => r.id === id);
 const pool = () => COUNTRIES.filter(c => selRegions.has(c.r));
+// Länder, die im Quiz abgefragt werden: gewählte Regionen ohne abgewählte Länder
+let offCountries = new Set(store.get('off', []));
+const quizPool = () => pool().filter(c => !offCountries.has(c.kfz));
 const esc = s => String(s).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
@@ -464,13 +478,30 @@ function renderSetup(){
   $('typeChips').innerHTML = TYPES.map(t => `<button class="chip" aria-pressed="${selTypes.has(t.id)}" onclick="toggleType('${t.id}')">${t.label}</button>`).join('');
   document.querySelectorAll('#modeSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === mode));
   document.querySelectorAll('#countSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === count));
-  const names = REGIONS.filter(r => selRegions.has(r.id)).map(r => r.name);
-  $('poolInfo').textContent = `${pool().length} Länder aus ${selRegions.size === REGIONS.length ? 'ganz Europa' : names.join(', ')}`;
+  let pick = '';
+  for (const r of REGIONS) {
+    if (!selRegions.has(r.id)) continue;
+    const cs = COUNTRIES.filter(c => c.r === r.id);
+    const on = cs.filter(c => !offCountries.has(c.kfz)).length;
+    pick += `<div class="grp" style="--c:var(--r-${r.id})"><div class="grp-head">${r.name} <span class="n">${on} von ${cs.length}</span>
+      <button onclick="setRegionCountries('${r.id}',true)">alle</button><button onclick="setRegionCountries('${r.id}',false)">keine</button></div>
+      <div class="chips">${cs.map(c => `<button class="chip" aria-pressed="${!offCountries.has(c.kfz)}" onclick="toggleCountry('${c.kfz}')"><span class="tick">${offCountries.has(c.kfz) ? '○' : '✓'}</span>${esc(c.staat)}</button>`).join('')}</div></div>`;
+  }
+  $('countryPick').innerHTML = pick;
+  $('poolInfo').textContent = `${quizPool().length} von ${pool().length} Ländern ausgewählt`;
   $('setupWarn').hidden = true;
 }
 function toggleType(id){
   selTypes.has(id) ? selTypes.delete(id) : selTypes.add(id);
   store.set('types', [...selTypes]); renderSetup();
+}
+function toggleCountry(kfz){
+  offCountries.has(kfz) ? offCountries.delete(kfz) : offCountries.add(kfz);
+  store.set('off', [...offCountries]); renderSetup();
+}
+function setRegionCountries(rid, on){
+  for (const c of COUNTRIES) if (c.r === rid) on ? offCountries.delete(c.kfz) : offCountries.add(c.kfz);
+  store.set('off', [...offCountries]); renderSetup();
 }
 function setMode(m){ mode = m; store.set('mode', m); renderSetup(); }
 function setCount(n){ count = n; store.set('count', n); renderSetup(); }
@@ -496,7 +527,8 @@ function makeQuestions(countries){
 }
 function startQuiz(list){
   if (!selTypes.size) { $('setupWarn').textContent = 'Wähle mindestens eine Frageart aus.'; $('setupWarn').hidden = false; return; }
-  Q = {list: Array.isArray(list) ? list : makeQuestions(pool()), i: 0, right: 0, wrong: []};
+  if (!Array.isArray(list) && !quizPool().length) { $('setupWarn').textContent = 'Wähle mindestens ein Land aus.'; $('setupWarn').hidden = false; return; }
+  Q = {list: Array.isArray(list) ? list : makeQuestions(quizPool()), i: 0, right: 0, wrong: []};
   $('quizSetup').hidden = true; $('quizEnd').hidden = true; $('quizRun').hidden = false;
   showQuestion();
   $('quizRun').scrollIntoView({behavior: 'smooth', block: 'start'});
