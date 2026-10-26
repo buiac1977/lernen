@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bruch-Trainer 29.10.</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&family=Kalam:wght@400;700&display=swap">
+<style>
+/* Layout: eine ruhige Spalte auf Karopapier wie im Matheheft; Textmarker-Gelb vom Themenzettel als Akzent, Rotstift für Fehler, Füllerblau für die Tinte. */
+:root {
+  --paper: #f7f9fc;
+  --grid: #e3eaf4;
+  --card: #ffffff;
+  --ink: #1c2948;
+  --muted: #5b6886;
+  --line: #d4deec;
+  --blue: #2b56c9;
+  --blue-soft: #e6edfc;
+  --marker: #ffe24a;
+  --marker-ink: #2a2300;
+  --ok: #18884a;
+  --ok-soft: #e3f5ea;
+  --bad: #cf3a2a;
+  --bad-soft: #fde9e6;
+  --warn: #b86a00;
+  --warn-soft: #fff1d6;
+  --shape: #b9cdf5;
+  --font-display: "Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --font-body: "Nunito", "Segoe UI", system-ui, sans-serif;
+  --font-hand: "Kalam", "Comic Sans MS", cursive;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #111726; --grid: #1a2236; --card: #192136; --ink: #e7ecf8; --muted: #9aa6c2;
+    --line: #2b3652; --blue: #7ea3ff; --blue-soft: #22305a; --marker: #e9cf3c; --marker-ink: #1d1800;
+    --ok: #4cc782; --ok-soft: #173426; --bad: #ff7564; --bad-soft: #3a1d1b; --warn: #f0a640; --warn-soft: #3a2a12;
+    --shape: #3a5596; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #111726; --grid: #1a2236; --card: #192136; --ink: #e7ecf8; --muted: #9aa6c2;
+  --line: #2b3652; --blue: #7ea3ff; --blue-soft: #22305a; --marker: #e9cf3c; --marker-ink: #1d1800;
+  --ok: #4cc782; --ok-soft: #173426; --bad: #ff7564; --bad-soft: #3a1d1b; --warn: #f0a640; --warn-soft: #3a2a12;
+  --shape: #3a5596; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  min-height: 100vh;
+}
+.wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  padding-block: 18px 60px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+button { font: inherit; color: inherit; }
+a { color: var(--blue); }
+:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
+
+/* Brüche */
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; line-height: 1.12; margin: 0 .14em; font-variant-numeric: tabular-nums; font-weight: 700; }
+.fr > span { display: block; padding: 0 .22em; white-space: nowrap; }
+.fr > span:first-child { border-bottom: 2px solid currentColor; }
+.mx { display: inline-flex; align-items: center; gap: .04em; font-weight: 700; white-space: nowrap; }
+.mark { background: linear-gradient(transparent 12%, var(--marker) 12%, var(--marker) 88%, transparent 88%); color: var(--marker-ink); padding: 0 .2em; border-radius: 3px; }
+
+/* Kopf */
+.top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+.back { font-weight: 700; text-decoration: none; font-size: .95em; }
+.chip { display: inline-flex; align-items: center; gap: 6px; background: var(--card); border: 1.5px solid var(--line); border-radius: 999px; padding: 4px 12px; font-size: .88em; font-weight: 700; color: var(--muted); }
+.chip.hot { border-color: var(--bad); color: var(--bad); }
+.hero { padding: 6px 0 18px; }
+.hero h1 { font-size: clamp(2rem, 6vw, 2.9rem); font-weight: 800; letter-spacing: -.01em; }
+.hero h1 .mark { padding: 0 .15em; }
+.hero p { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.zettel { margin: 16px 0 6px; background: var(--marker); color: var(--marker-ink); border-radius: 4px 4px 14px 4px; padding: 14px 16px; box-shadow: 0 2px 0 rgba(0,0,0,.08); transform: rotate(-.4deg); font-size: .93em; }
+.zettel b { font-family: var(--font-display); font-size: 1.1em; }
+
+/* Gesamtfortschritt */
+.overall { display: flex; gap: 12px; flex-wrap: wrap; margin: 14px 0 22px; }
+.stat { flex: 1 1 140px; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 10px 14px; }
+.stat .k { font-size: .78em; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 800; }
+.stat .v { font-family: var(--font-display); font-size: 1.6em; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+
+.section-label { font-size: .8em; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 800; margin: 22px 0 10px; }
+.topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.topic {
+  text-align: left; cursor: pointer; background: var(--card); border: 1.5px solid var(--line); border-radius: var(--radius);
+  padding: 14px 16px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0;
+  transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.topic:hover { transform: translateY(-2px); border-color: var(--blue); box-shadow: 0 6px 18px rgba(30,50,110,.12); }
+.topic .nr { font-family: var(--font-hand); color: var(--blue); font-size: 1.05em; }
+.topic h3 { font-size: 1.22em; }
+.topic .pg { font-size: .85em; color: var(--muted); font-weight: 700; }
+.stars { letter-spacing: 2px; font-size: 1.05em; color: var(--line); }
+.stars .on { color: #f2b705; }
+.topic.special { background: var(--blue); border-color: var(--blue); color: var(--card); }
+.topic.special .nr, .topic.special .pg { color: var(--card); opacity: .85; }
+.topic.fehler { border-style: dashed; border-color: var(--bad); }
+.topic.fehler .nr { color: var(--bad); }
+
+/* Karten allgemein */
+.card { background: var(--card); border: 1.5px solid var(--line); border-radius: var(--radius); padding: 18px 18px; }
+.learn h2 { font-size: 1.7em; }
+.learn h3 { font-size: 1.2em; margin-top: 18px; margin-bottom: 6px; }
+.learn p { margin: 6px 0; }
+.merke { background: var(--blue-soft); border-radius: 10px; padding: 12px 14px; margin: 12px 0; }
+.merke .t { font-family: var(--font-hand); font-weight: 700; color: var(--blue); font-size: 1.15em; }
+.bsp { border: 2px dashed var(--line); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+.bsp .t, .falle .t { font-family: var(--font-hand); font-weight: 700; font-size: 1.1em; }
+.falle { background: var(--bad-soft); border-radius: 10px; padding: 10px 14px; margin: 12px 0; }
+.falle .t { color: var(--bad); }
+.hand { font-family: var(--font-hand); }
+.calc { font-size: 1.15em; line-height: 2.4; }
+.tbl { overflow-x: auto; }
+.tbl table { border-collapse: collapse; width: 100%; font-size: .95em; }
+.tbl td, .tbl th { border-bottom: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: middle; }
+.tbl th { font-size: .8em; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.startrow { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+
+.btn { cursor: pointer; border: 2px solid transparent; border-radius: 12px; padding: 11px 18px; font-weight: 800; font-size: 1em; background: var(--blue-soft); color: var(--blue); }
+.btn:hover { filter: brightness(.97); }
+.btn.primary { background: var(--blue); color: var(--card); }
+.btn.ghost { background: transparent; border-color: var(--line); color: var(--muted); }
+.btn:disabled { opacity: .45; cursor: default; }
+
+/* Quiz */
+.qhead { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.bar { flex: 1; height: 12px; background: var(--card); border: 1.5px solid var(--line); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--ok); border-radius: 99px; transition: width .3s ease; }
+.qcount { font-weight: 800; font-variant-numeric: tabular-nums; color: var(--muted); font-size: .9em; white-space: nowrap; }
+.streak { font-weight: 800; color: var(--warn); font-size: .9em; white-space: nowrap; }
+.qcard { position: relative; }
+.qmeta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
+.src { font-family: var(--font-hand); font-weight: 700; background: var(--marker); color: var(--marker-ink); padding: 1px 10px; border-radius: 4px; font-size: .95em; }
+.tag { font-size: .78em; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.tag.twin { color: var(--blue); }
+.tag.rep { color: var(--bad); }
+.qtitle { font-size: 1.35em; margin-bottom: 8px; }
+.qbody { font-size: 1.12em; }
+.qbody .big { font-size: 1.5em; line-height: 2.1; }
+.answer { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.fin { display: inline-flex; align-items: center; gap: 6px; }
+.fin .stack { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; }
+.fin .stack hr { width: 100%; border: 0; border-top: 3px solid var(--ink); margin: 0; }
+.fin input, .num input {
+  width: 4.2em; padding: 7px 6px; text-align: center; font: inherit; font-weight: 800; font-size: 1.15em;
+  border: 2px solid var(--line); border-radius: 10px; background: var(--paper); color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+.fin input.w { width: 3.4em; font-size: 1.4em; }
+.fin input:focus, .num input:focus { outline: none; border-color: var(--blue); background: var(--card); }
+.fin .lbl { font-size: .72em; color: var(--muted); font-weight: 700; }
+.fin .wbox { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.num { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.num label { font-weight: 700; }
+.num .unit { font-weight: 800; color: var(--muted); }
+.or { color: var(--muted); font-weight: 700; }
+.opts { display: grid; gap: 8px; width: 100%; }
+.opt { text-align: left; cursor: pointer; border: 2px solid var(--line); border-radius: 12px; padding: 10px 14px; background: var(--paper); font-weight: 700; }
+.opt:hover { border-color: var(--blue); }
+.opt.sel { border-color: var(--blue); background: var(--blue-soft); }
+.opt.right { border-color: var(--ok); background: var(--ok-soft); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.cmp { display: flex; gap: 10px; }
+.cmp button { width: 64px; height: 56px; font-size: 1.8em; font-weight: 800; border-radius: 12px; border: 2px solid var(--line); background: var(--paper); cursor: pointer; }
+.cmp button.sel { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); }
+.cmpline { display: flex; align-items: center; gap: 14px; font-size: 1.5em; flex-wrap: wrap; }
+.slot { display: inline-flex; width: 1.6em; height: 1.6em; border: 2px dashed var(--muted); border-radius: 6px; align-items: center; justify-content: center; color: var(--blue); font-weight: 800; }
+.pool, .seq { display: flex; flex-wrap: wrap; gap: 8px; min-height: 64px; width: 100%; padding: 8px; border-radius: 12px; align-items: center; }
+.pool { background: var(--paper); border: 2px solid var(--line); }
+.seq { border: 2px dashed var(--blue); }
+.seq:empty::before { content: "Tippe die Brüche der Reihe nach an – mit dem kleinsten anfangen."; color: var(--muted); font-size: .9em; }
+.piece { cursor: pointer; border: 2px solid var(--line); background: var(--card); border-radius: 10px; padding: 4px 10px; font-size: 1.15em; }
+.piece:hover { border-color: var(--blue); }
+.seq .piece { border-color: var(--blue); }
+.lt { color: var(--muted); font-weight: 800; }
+.actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+.actions .btn.primary { margin-left: auto; }
+.msg { color: var(--bad); font-weight: 700; margin-top: 8px; min-height: 1em; }
+.tipbox { margin-top: 14px; background: var(--marker); color: var(--marker-ink); border-radius: 10px; padding: 10px 14px; }
+.tipbox .t { font-family: var(--font-hand); font-weight: 700; font-size: 1.1em; }
+
+/* Rückmeldung */
+.fb { margin-top: 16px; border-radius: 12px; padding: 14px 16px; border: 2px solid; }
+.fb.ok { background: var(--ok-soft); border-color: var(--ok); }
+.fb.bad { background: var(--bad-soft); border-color: var(--bad); }
+.fb.warn { background: var(--warn-soft); border-color: var(--warn); }
+.fbh { font-family: var(--font-display); font-weight: 800; font-size: 1.4em; }
+.fb.ok .fbh { color: var(--ok); }
+.fb.bad .fbh { color: var(--bad); }
+.fb.warn .fbh { color: var(--warn); }
+.why { margin: 8px 0; padding: 8px 12px; border-left: 4px solid var(--bad); background: var(--card); border-radius: 0 8px 8px 0; }
+.fb.warn .why { border-left-color: var(--warn); }
+.solline { margin: 10px 0 4px; font-weight: 700; }
+.solline .s { font-size: 1.35em; }
+.youline { color: var(--muted); font-size: .95em; }
+details summary { cursor: pointer; font-weight: 800; color: var(--blue); margin-top: 6px; }
+ol.steps { list-style: none; padding: 0; margin: 10px 0 0; counter-reset: st; display: grid; gap: 8px; }
+ol.steps li { background: var(--card); border: 1.5px solid var(--line); border-radius: 10px; padding: 8px 12px 10px; counter-increment: st; }
+ol.steps li .sh { font-family: var(--font-hand); font-weight: 700; color: var(--blue); font-size: 1.1em; display: block; }
+ol.steps li .sh::before { content: "Schritt " counter(st) ": "; }
+ol.steps li.trick { border: 2px solid var(--ok); }
+ol.steps li.trick .sh { color: var(--ok); }
+ol.steps li.trick .sh::before, ol.steps li.alert .sh::before, ol.steps li.sep .sh::before { content: ""; }
+ol.steps li.trick, ol.steps li.alert, ol.steps li.sep { counter-increment: none; }
+ol.steps li.alert { border: 2px solid var(--warn); }
+ol.steps li.alert .sh { color: var(--warn); }
+ol.steps li.sep { background: transparent; border: 0; padding: 4px 0 0; }
+ol.steps li.sep .sh { color: var(--muted); }
+ol.steps .calc { line-height: 2.5; }
+.hint { font-size: .9em; color: var(--muted); margin-top: 4px; }
+.later { font-size: .9em; color: var(--muted); margin: 10px 0 0; }
+svg .s-fill { fill: var(--shape); }
+svg .s-on { fill: var(--blue); }
+svg .s-off { fill: var(--card); }
+svg .s-line { stroke: var(--ink); fill: none; }
+svg .s-edge { stroke: var(--ink); }
+svg .s-dash { stroke: var(--muted); fill: none; stroke-dasharray: 5 4; }
+svg .s-txt { fill: var(--ink); font-family: var(--font-body); font-weight: 800; }
+svg .s-red { fill: var(--bad); }
+svg .s-redl { stroke: var(--bad); }
+.fig { max-width: 100%; height: auto; display: block; margin: 8px 0; }
+.figrow { overflow-x: auto; }
+
+/* Auswertung */
+.result { text-align: center; }
+.ring { width: 150px; height: 150px; margin: 6px auto; display: block; }
+.ring .bg { stroke: var(--line); }
+.ring .fg { stroke: var(--ok); transition: stroke-dashoffset 1s ease; }
+.ring text { fill: var(--ink); font-family: var(--font-display); font-weight: 800; }
+.result h2 { font-size: 1.8em; }
+.result .note { font-family: var(--font-hand); font-size: 1.3em; color: var(--blue); }
+.mistakes { text-align: left; display: grid; gap: 10px; margin-top: 16px; }
+.mistake { border: 1.5px solid var(--line); border-left: 5px solid var(--bad); border-radius: 10px; padding: 10px 12px; background: var(--card); }
+.mistake .src { font-size: .85em; }
+.mistake .q { margin: 6px 0; }
+.mistake .a { font-weight: 700; }
+.mistake .d { font-size: .93em; color: var(--muted); }
+.resbtns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-top: 18px; }
+.empty { color: var(--muted); text-align: center; padding: 20px 10px; }
+
+#confetti { position: fixed; inset: 0; pointer-events: none; z-index: 50; }
+@media (max-width: 480px) {
+  body { font-size: 16px; }
+  .actions .btn.primary { margin-left: 0; flex: 1 1 100%; order: -1; }
+  .cmp button { width: 58px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="wrap" id="app"></div>
+
+<script>
+/* ===================== Helfer ===================== */
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) { const t = a % b; a = b; b = t; } return a; };
+const lcm = (a, b) => a / gcd(a, b) * b;
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const de = x => String(Math.round(x * 1000) / 1000).replace('.', ',');
+const MINUS = '−';
+
+const fr = (n, d) => `<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+// Term [Ganze, Zähler, Nenner]; natürliche Zahl = [w, 0, 1]
+const tH = t => {
+  const [w, n, d] = t;
+  if (d === 1) return `${w}`;
+  if (w === 0) return fr(n, d);
+  if (n === 0) return `${w}`;
+  return `<span class="mx">${w}${fr(n, d)}</span>`;
+};
+const mxH = (w, n, d) => tH([w, n, d]);
+const imp = t => ({ n: t[0] * t[2] + t[1], d: t[2] });
+const eqv = (a, b) => a.n * b.d === b.n * a.d;
+const simp = (n, d) => { const g = gcd(n, d) || 1; return { n: n / g, d: d / g }; };
+// gekürzt und als gemischte Zahl
+const parts = (n, d) => { const s = simp(n, d); return { w: Math.floor(s.n / s.d), n: s.n % s.d, d: s.d }; };
+const nice = (n, d) => { const p = parts(n, d); if (p.n === 0) return `${p.w}`; return mxH(p.w, p.n, p.d); };
+const opH = o => o === '-' ? ` ${MINUS} ` : ' + ';
+const exprH = (t, o) => t.map((x, i) => (i ? opH(o[i - 1]) : '') + tH(x)).join('');
+
+/* ===================== Bilder ===================== */
+function barSVG(d, z, w = 300) {
+  if (d > 40) return '';
+  const h = 34, seg = (w - 2) / d;
+  let r = '';
+  for (let i = 0; i < d; i++) r += `<rect x="${1 + i * seg}" y="1" width="${seg}" height="${h}" class="${i < z ? 's-on' : 's-off'} s-edge" stroke-width="1.5"/>`;
+  return `<svg class="fig" viewBox="0 0 ${w} ${h + 2}" width="${w}" role="img" aria-label="${z} von ${d} Teilen gefärbt">${r}</svg>`;
+}
+const SHAPES = [
+  '<rect x="36" y="6" width="28" height="88" rx="2" class="s-fill s-edge" stroke-width="2"/>',
+  '<polygon points="50,6 94,50 50,94 6,50" class="s-fill s-edge" stroke-width="2"/>',
+  '<polygon points="50,8 94,92 6,92" class="s-fill s-edge" stroke-width="2"/>',
+  '<polygon points="32,94 32,36 50,8 68,36 68,94" class="s-fill s-edge" stroke-width="2"/>',
+  '<polygon points="36,6 64,6 64,36 94,36 94,64 64,64 64,94 36,94 36,64 6,64 6,36 36,36" class="s-fill s-edge" stroke-width="2"/>'
+];
+function shapeSVG(s, d) {
+  const y = s === 2 ? 66 : 50;
+  return `<svg class="fig" viewBox="0 0 100 100" width="130" role="img" aria-label="Figur, die ein ${d}-tel des Ganzen ist">${SHAPES[s]}
+    <text x="50" y="${y - 6}" text-anchor="middle" class="s-txt" font-size="15">1</text>
+    <line x1="42" x2="58" y1="${y}" y2="${y}" class="s-line" stroke-width="2"/>
+    <text x="50" y="${y + 16}" text-anchor="middle" class="s-txt" font-size="15">${d}</text></svg>`;
+}
+function wholeSVG(d) {
+  const cols = Math.min(d, 6), rows = Math.ceil(d / cols), s = 40;
+  let r = '';
+  for (let i = 0; i < d; i++) {
+    const x = 2 + (i % cols) * s, y = 2 + Math.floor(i / cols) * s;
+    r += i === 0 ? `<rect x="${x}" y="${y}" width="${s}" height="${s}" class="s-on s-edge" stroke-width="1.5"/>`
+                 : `<rect x="${x + 2}" y="${y + 2}" width="${s - 4}" height="${s - 4}" class="s-dash" stroke-width="2"/>`;
+  }
+  return `<svg class="fig" viewBox="0 0 ${cols * s + 4} ${rows * s + 4}" width="${cols * s + 4}" role="img" aria-label="${d} Teile ergeben das Ganze">${r}</svg>`;
+}
+function strahlSVG(t, letter) {
+  const x0 = 24, st = 18; let r = '';
+  r += `<line x1="${x0 - 6}" x2="${x0 + 33 * st}" y1="56" y2="56" class="s-line" stroke-width="2"/>`;
+  r += `<polygon points="${x0 + 33 * st + 8},56 ${x0 + 33 * st - 2},51 ${x0 + 33 * st - 2},61" class="s-txt"/>`;
+  for (let i = 0; i <= 32; i++) {
+    const x = x0 + i * st, h = i % 10 === 0 ? 22 : i % 5 === 0 ? 15 : 9;
+    r += `<line x1="${x}" x2="${x}" y1="${56 - h}" y2="56" class="s-line" stroke-width="${i % 10 === 0 ? 2.2 : 1.4}"/>`;
+    if (i % 10 === 0) r += `<text x="${x}" y="80" text-anchor="middle" class="s-txt" font-size="16">${i / 10}</text>`;
+  }
+  const xp = x0 + t * st;
+  r += `<line x1="${xp}" x2="${xp}" y1="28" y2="56" class="s-redl" stroke-width="3"/>`;
+  r += `<text x="${xp}" y="20" text-anchor="middle" class="s-red" font-size="18" font-weight="800">${letter}</text>`;
+  return `<div class="figrow"><svg class="fig" viewBox="0 0 ${x0 + 33 * st + 16} 88" width="640" style="min-width:520px" role="img" aria-label="Zahlenstrahl von 0 bis 3 mit markiertem Punkt">${r}</svg></div>`;
+}
+
+/* ===================== Aufgaben-Generatoren ===================== */
+const GEN = {};
+
+/* --- Thema 1: Bruch als Division --- */
+GEN.division = {
+  title: 'Bruch als Division',
+  make({ a, b, c }) {
+    const body = {
+      pizza: `${a} Pizzen werden gerecht an ${b} Kinder verteilt. Welchen Anteil einer Pizza bekommt jedes Kind?`,
+      kuchen: `${a} Kuchen werden gerecht auf ${b} Teller verteilt. Wie viel Kuchen liegt auf jedem Teller?`,
+      liter: `${a} Liter Saft werden gleichmäßig in ${b} Flaschen gefüllt. Wie viele Liter sind in jeder Flasche?`,
+      plain: `Schreibe die Divisionsaufgabe <span class="big">${a} : ${b}</span> als Bruch.`
+    }[c];
+    const steps = [{ h: 'Der Bruchstrich bedeutet „geteilt durch“', b: `Die Zahl, die <b>geteilt wird</b> (${a}), kommt nach oben in den <b>Zähler</b>.<br>Die Zahl, <b>durch die</b> geteilt wird (${b}), kommt nach unten in den <b>Nenner</b>.` }];
+    if (c !== 'plain') steps.push({ h: 'Warum ist das so?', b: `Man schneidet jedes der ${a} Ganzen in ${b} gleich große Stücke. Jeder bekommt von jedem Ganzen genau ein Stück, also ${a}-mal ${fr(1, b)}. Das sind zusammen ${fr(a, b)}.` });
+    steps.push({ h: 'Aufschreiben', b: `<span class="calc">${a} : ${b} = ${fr(a, b)}</span>` });
+    if (a > b) steps.push({ h: 'Als gemischte Zahl (geht auch)', b: `<span class="calc">${a} : ${b} = ${Math.floor(a / b)} Rest ${a % b} → ${fr(a, b)} = ${nice(a, b)}</span>` });
+    return {
+      kind: 'frac', whole: true, form: 'any', ans: { n: a, d: b }, body,
+      sol: fr(a, b) + (a > b ? ' = ' + nice(a, b) : ''),
+      tip: `Der Bruchstrich ist ein Geteilt-Zeichen. Was wird geteilt? Das kommt nach oben.`,
+      steps,
+      diag: U => eqv(U, { n: b, d: a }) ? `Du hast Zähler und Nenner vertauscht. Was geteilt wird (${a}), steht oben – wodurch geteilt wird (${b}), steht unten.` : null
+    };
+  },
+  rand() { let a = R(1, 9), b = R(2, 10); if (a === b) b++; return { a, b, c: pick(['pizza', 'kuchen', 'liter', 'plain', 'plain']) }; },
+  book: [
+    { s: 'Bruch als Division', p: { a: 3, b: 4, c: 'pizza' } },
+    { s: 'Bruch als Division', p: { a: 5, b: 8, c: 'plain' } },
+    { s: 'Bruch als Division', p: { a: 2, b: 3, c: 'kuchen' } },
+    { s: 'Bruch als Division', p: { a: 7, b: 4, c: 'plain' } },
+    { s: 'Bruch als Division', p: { a: 3, b: 5, c: 'liter' } }
+  ]
+};
+
+GEN.divRev = {
+  title: 'Bruch als Division',
+  make({ n, d }) {
+    return {
+      kind: 'choice', body: `Welche Divisionsaufgabe gehört zum Bruch <span class="big">${fr(n, d)}</span>?`,
+      opts: shuffle([
+        { h: `${n} : ${d}`, ok: true },
+        { h: `${d} : ${n}`, ok: false, note: 'Vertauscht! Der Zähler wird geteilt, er steht vorne.' },
+        { h: `${n} · ${d}`, ok: false, note: 'Der Bruchstrich bedeutet „geteilt“, nicht „mal“.' },
+        { h: `${n} ${MINUS} ${d}`, ok: false, note: 'Der Bruchstrich bedeutet „geteilt“, nicht „minus“.' }
+      ]),
+      sol: `${n} : ${d}`,
+      tip: 'Lies den Bruchstrich als „geteilt durch“ – von oben nach unten.',
+      steps: [{ h: 'Bruchstrich = geteilt durch', b: `Man liest von oben nach unten: ${fr(n, d)} = ${n} geteilt durch ${d} = <b>${n} : ${d}</b>` }]
+    };
+  },
+  rand() { let n = R(1, 12), d = R(2, 12); if (n === d) d++; return { n, d }; },
+  book: [{ s: 'Bruch als Division', p: { n: 4, d: 9 } }, { s: 'Bruch als Division', p: { n: 11, d: 3 } }]
+};
+
+GEN.ganzes = {
+  title: 'Figur zum Ganzen ergänzen',
+  make({ d, s }) {
+    return {
+      kind: 'nums',
+      body: `Die Figur ist ${fr(1, d)} eines Ganzen.${shapeSVG(s, d)}Wie viele solche Teile braucht man für das Ganze? Wie viele Teile musst du noch dazulegen?`,
+      fields: [{ label: 'Teile für das Ganze:', ans: d }, { label: 'Noch ergänzen:', ans: d - 1 }],
+      sol: `${d} Teile insgesamt, also noch ${d - 1} ergänzen`,
+      tip: 'Schau auf den Nenner. Er sagt, in wie viele gleich große Teile das Ganze geteilt ist.',
+      steps: [
+        { h: 'Der Nenner verrät die Anzahl', b: `Bei ${fr(1, d)} ist das Ganze in <b>${d}</b> gleich große Teile geteilt. Für das Ganze braucht man also ${d} solche Figuren.` },
+        { h: 'Eine ist schon da', b: `${d} ${MINUS} 1 = <b>${d - 1}</b> Teile musst du noch dazulegen.${wholeSVG(d)}` },
+        { h: 'Tipp für das Heft (S. 15/4)', b: 'Lege die Teile so an, dass ein schönes Ganzes entsteht. Wenn du sie spiegelbildlich anlegst, entsteht eine achsensymmetrische Figur – zeichne dann die Symmetrieachse ein.' }
+      ],
+      diag: v => {
+        if (v[0] !== d) return `Der Nenner ist ${d}. Also besteht das Ganze aus ${d} gleich großen Teilen.`;
+        if (v[1] === d) return `Ein Teil ist ja schon da! Du musst nur noch ${d} ${MINUS} 1 = ${d - 1} ergänzen.`;
+        return null;
+      }
+    };
+  },
+  rand() { return { d: R(2, 10), s: R(0, 4) }; },
+  book: [
+    { s: 'S. 15/4 a', p: { d: 5, s: 0 } }, { s: 'S. 15/4 b', p: { d: 4, s: 1 } }, { s: 'S. 15/4 c', p: { d: 6, s: 2 } },
+    { s: 'S. 15/4 d', p: { d: 8, s: 3 } }, { s: 'S. 15/4 e', p: { d: 3, s: 4 } }
+  ]
+};
+
+/* --- Thema 2: Anteile bestimmen --- */
+const UNITS = { '€': 'Euro', kg: 'kg', m: 'm', cm: 'cm', min: 'min', h: 'h', ml: 'ml', g: 'g', t: 't', km: 'km', mm: 'mm' };
+GEN.anteil = {
+  title: 'Bruchteil berechnen',
+  make({ z, d, G, u }) {
+    const e = G / d, ans = e * z;
+    const steps = [
+      { h: `Erst durch den Nenner teilen`, b: `${fr(1, d)} von ${G} ${u} – das Ganze wird in ${d} gleiche Teile geteilt:<br><span class="calc">${G} ${u} : ${d} = <b>${e} ${u}</b></span>` + (d <= 25 ? barSVG(d, z) + `<div class="hint">Jedes Kästchen ist ${e} ${u} groß.</div>` : '') }
+    ];
+    if (z > 1) steps.push({ h: `Dann mal den Zähler`, b: `Du brauchst ${z} solche Teile:<br><span class="calc">${e} ${u} · ${z} = <b>${ans} ${u}</b></span>` });
+    else steps.push({ h: 'Der Zähler ist 1', b: `Bei einem Stammbruch bist du nach dem Teilen schon fertig: <b>${ans} ${u}</b>.` });
+    steps.push({ h: 'Kurz aufgeschrieben', b: `<span class="calc">${fr(z, d)} von ${G} ${u} = ${G} ${u} : ${d} · ${z} = ${ans} ${u}</span><div class="hint">Merksatz: „Durch den Nenner, mal den Zähler.“ Das Wort „von“ bedeutet „mal“.</div>` });
+    return {
+      kind: 'nums', body: `Berechne: <span class="big">${fr(z, d)} von ${G} ${u}</span>`,
+      fields: [{ label: 'Ergebnis:', ans, unit: u }], sol: `${ans} ${u}`,
+      tip: `Wie viel ist erst einmal ${fr(1, d)} von ${G} ${u}? Teile durch ${d}.`,
+      steps,
+      diag: v => {
+        const x = v[0];
+        if (z > 1 && x === e) return `Du hast nur ${fr(1, d)} berechnet (${G} : ${d} = ${e}). Jetzt noch mal ${z}!`;
+        if (x === G * z) return `Du hast mit ${z} malgenommen, aber vergessen durch ${d} zu teilen.`;
+        if (Math.abs(x - G / z * d) < 1e-9) return 'Zähler und Nenner vertauscht: Man teilt durch den Nenner (unten) und nimmt mal den Zähler (oben).';
+        return null;
+      }
+    };
+  },
+  rand() {
+    const d = pick([3, 4, 5, 6, 8, 10, 12, 20, 25]); let z; do { z = R(1, d - 1); } while (gcd(z, d) !== 1);
+    return { z, d, G: d * R(2, 24), u: pick(['€', 'kg', 'm', 'cm', 'min', 'ml', 'g', 't', 'km']) };
+  },
+  book: [
+    ['a', 2, 3, 90, 'cm'], ['b', 3, 4, 120, '€'], ['c', 2, 5, 25, 'kg'], ['d', 3, 10, 20, 'min'], ['e', 5, 6, 24, 'h'], ['f', 3, 8, 1000, 'ml'],
+    ['g', 1, 6, 72, 'm'], ['h', 5, 12, 60, 'min'], ['i', 3, 125, 1875, 't'], ['j', 8, 100, 2400, '€'], ['k', 12, 25, 300, 'mm'], ['l', 9, 32, 480, 'kg']
+  ].map(([l, z, d, G, u]) => ({ s: 'S. 21/1 ' + l, p: { z, d, G, u } }))
+};
+
+const CONV = [['m', 'cm', 100], ['m', 'mm', 1000], ['kg', 'g', 1000], ['t', 'kg', 1000], ['min', 's', 60], ['h', 'min', 60], ['m²', 'dm²', 100], ['€', 'ct', 100], ['km', 'm', 1000], ['l', 'ml', 1000]];
+GEN.anteilEinheit = {
+  title: 'Bruchteil mit Umwandeln',
+  make({ z, d, G, u, su, f }) {
+    const big = G * f, e = big / d, ans = e * z;
+    return {
+      kind: 'nums',
+      body: `Berechne <span class="big">${fr(z, d)} von ${G} ${u}</span><br>Wandle die Größe zuerst in eine kleinere Einheit (${su}) um.`,
+      fields: [{ label: 'Ergebnis:', ans, unit: su }], sol: `${ans} ${su}`,
+      tip: `1 ${u} = ${f} ${su}. Wie viele ${su} sind also ${G} ${u}?`,
+      steps: [
+        { h: 'Warum umwandeln?', b: `${G} lässt sich nicht glatt durch ${d} teilen. In der kleineren Einheit klappt es ohne Komma.` },
+        { h: `In ${su} umwandeln`, b: `1 ${u} = ${f} ${su}, also <span class="calc">${G} ${u} = ${G} · ${f} ${su} = <b>${big} ${su}</b></span>` },
+        { h: 'Durch den Nenner teilen', b: `<span class="calc">${big} ${su} : ${d} = <b>${e} ${su}</b></span>` },
+        { h: 'Mal den Zähler', b: z > 1 ? `<span class="calc">${e} ${su} · ${z} = <b>${ans} ${su}</b></span>` : `Der Zähler ist 1 – fertig: <b>${ans} ${su}</b>` }
+      ],
+      diag: v => {
+        const x = v[0];
+        if (Math.abs(x - ans / f) < 1e-9) return `Das wäre das Ergebnis in ${u}. Gefragt ist aber ${su}: Du musst noch mal ${f} rechnen.`;
+        if (z > 1 && x === e) return `Du hast nur ${fr(1, d)} berechnet (${big} : ${d} = ${e}). Jetzt noch mal ${z}!`;
+        if (x === G * z / d || x === G / d) return `Du hast vergessen, ${G} ${u} zuerst in ${su} umzuwandeln (1 ${u} = ${f} ${su}).`;
+        return null;
+      }
+    };
+  },
+  rand() {
+    for (;;) {
+      const [u, su, f] = pick(CONV), d = pick([4, 5, 8, 10, 12, 20, 25]); let z; do { z = R(1, d - 1); } while (gcd(z, d) !== 1);
+      const G = R(1, 12);
+      if ((G * f) % d === 0 && G % d !== 0) return { z, d, G, u, su, f };
+    }
+  },
+  book: [
+    ['a', 7, 25, 10, 'm', 'cm', 100], ['b', 3, 5, 4, 'kg', 'g', 1000], ['c', 5, 8, 12, 't', 'kg', 1000],
+    ['d', 5, 24, 8, 'min', 's', 60], ['e', 7, 12, 6, 'm²', 'dm²', 100], ['f', 22, 125, 7, 'm', 'mm', 1000]
+  ].map(([l, z, d, G, u, su, f]) => ({ s: 'S. 21/3 ' + l, p: { z, d, G, u, su, f } }))
+};
+
+/* --- Thema 3: Echte und unechte Brüche --- */
+function bruchArt(n, d) {
+  if (n % d === 0) return 'schein';
+  return n < d ? 'echt' : 'unecht';
+}
+GEN.art = {
+  title: 'Welche Art von Bruch?',
+  make({ n, d }) {
+    const t = bruchArt(n, d);
+    const opts = [
+      { h: 'echter Bruch', ok: t === 'echt' || (t === 'schein' && n === 0), note: t === 'schein' && n === 0 ? `Stimmt auch. Genauer: ${fr(0, d)} = 0 ist ein Scheinbruch, weil er eine natürliche Zahl ist.` : `Ein echter Bruch hat einen Zähler, der <b>kleiner</b> ist als der Nenner. Hier ist ${n} ${n < d ? '<' : '≥'} ${d}.` },
+      { h: 'unechter Bruch', ok: t === 'unecht' || (t === 'schein' && n >= d), note: t === 'schein' ? `Stimmt. Noch genauer: Es ist ein <b>Scheinbruch</b>, denn ${n} : ${d} = ${n / d} ist eine natürliche Zahl.` : `Ein unechter Bruch hat einen Zähler, der <b>größer oder gleich</b> dem Nenner ist. Hier ist ${n} < ${d}.` },
+      { h: 'Scheinbruch (eine natürliche Zahl)', ok: t === 'schein', note: `Ein Scheinbruch lässt sich ohne Rest teilen. ${n} : ${d} geht aber nicht auf.` }
+    ];
+    const reason = {
+      echt: `Der Zähler ${n} ist <b>kleiner</b> als der Nenner ${d}. Der Bruch ist also kleiner als 1 Ganzes → <b>echter Bruch</b>.`,
+      unecht: `Der Zähler ${n} ist <b>größer</b> als der Nenner ${d}. Der Bruch ist also größer als 1 Ganzes → <b>unechter Bruch</b>. Man kann ihn als gemischte Zahl schreiben: ${fr(n, d)} = ${nice(n, d)}.`,
+      schein: `${n} : ${d} = ${n / d} geht ohne Rest auf. Der Bruch ist in Wirklichkeit die natürliche Zahl ${n / d} → <b>Scheinbruch</b>.` + (n >= d ? ' (Scheinbrüche mit Wert ab 1 gehören zu den unechten Brüchen.)' : '')
+    }[t];
+    const steps = [{ h: 'Zähler und Nenner vergleichen', b: `${fr(n, d)}: Zähler = ${n}, Nenner = ${d}` }, { h: 'Entscheiden', b: reason }];
+    if (n === 1 && d > 1) steps.push({ h: 'Extra', b: 'Weil der Zähler 1 ist, ist es außerdem ein <b>Stammbruch</b>.' });
+    return {
+      kind: 'choice', body: `Um welche Art von Bruch handelt es sich?<br><span class="big">${fr(n, d)}</span>`, opts,
+      sol: { echt: 'echter Bruch', unecht: 'unechter Bruch', schein: `Scheinbruch (= ${n / d})` }[t],
+      tip: 'Vergleiche Zähler und Nenner: Ist oben weniger, gleich viel oder mehr? Geht die Division ohne Rest auf?',
+      steps
+    };
+  },
+  rand() {
+    const d = R(2, 12), k = R(0, 2);
+    if (k === 0) return { n: R(1, d - 1), d };
+    if (k === 1) { let n; do { n = R(d + 1, 4 * d); } while (n % d === 0); return { n, d }; }
+    return { n: d * R(1, 6), d };
+  },
+  book: [[3, 8], [5, 4], [12, 6], [9, 12], [16, 5], [9, 10], [7, 7], [1, 25], [123, 25], [35, 7], [12, 11], [10, 1], [0, 4], [100, 10], [0, 5]]
+    .map(([n, d]) => ({ s: 'S. 23/1', p: { n, d } }))
+};
+
+GEN.toMixed = {
+  title: 'Als gemischte Zahl schreiben',
+  make({ n, d }) {
+    const w = Math.floor(n / d), r = n % d;
+    return {
+      kind: 'frac', whole: true, form: 'mixed', ans: { n, d }, expect: [{ w, n: r, d }],
+      body: `Schreibe als gemischte Zahl: <span class="big">${fr(n, d)}</span>`,
+      sol: mxH(w, r, d),
+      tip: `Wie oft passt ${d} in ${n}? Das sind die Ganzen. Was übrig bleibt, kommt in den Zähler.`,
+      steps: [
+        { h: `Wie oft passt der Nenner in den Zähler?`, b: `<span class="calc">${n} : ${d} = <b>${w}</b> Rest <b>${r}</b></span><div class="hint">denn ${w} · ${d} = ${w * d} und ${n} ${MINUS} ${w * d} = ${r}</div>` },
+        { h: 'Aufschreiben', b: `Die ${w} sind die Ganzen. Der Rest ${r} bleibt über dem Nenner ${d}:<br><span class="calc">${fr(n, d)} = ${mxH(w, r, d)}</span>` },
+        { h: 'Probe', b: `${w} · ${d} + ${r} = ${n} ✔` }
+      ],
+      diag: (U, inp) => {
+        const x = inp[0];
+        if (x.w !== w) return `${d} passt ${w}-mal in ${n} (${w} · ${d} = ${w * d}). Also sind es ${w} Ganze.`;
+        if (x.d !== d) return 'Der Nenner bleibt beim Umwandeln gleich!';
+        return `Der Rest stimmt nicht: ${n} ${MINUS} ${w * d} = ${r}.`;
+      }
+    };
+  },
+  rand() { const d = R(2, 10); return { n: R(1, 6) * d + R(1, d - 1), d }; },
+  book: [[3, 2], [8, 3], [13, 3], [5, 4], [15, 4], [9, 5], [11, 5], [17, 10]].map(([n, d]) => ({ s: 'S. 23/5 a', p: { n, d } }))
+};
+
+GEN.toImproper = {
+  title: 'Als unechten Bruch schreiben',
+  make({ w, n, d }) {
+    const N = w * d + n;
+    return {
+      kind: 'frac', whole: false, form: 'improper', ans: { n: N, d }, expect: [{ w: 0, n: N, d }],
+      body: `Schreibe als unechten Bruch: <span class="big">${mxH(w, n, d)}</span>`,
+      sol: fr(N, d),
+      tip: `Wie viele ${d}-tel sind ${w} Ganze? Dann noch die ${n} dazu.`,
+      steps: [
+        { h: 'Die Ganzen in Bruchteile umwandeln', b: `1 Ganzes = ${fr(d, d)}, also <span class="calc">${w} Ganze = ${fr(`${w} · ${d}`, d)} = ${fr(w * d, d)}</span>` },
+        { h: 'Den Bruchteil dazuzählen', b: `<span class="calc">${fr(w * d, d)} + ${fr(n, d)} = <b>${fr(N, d)}</b></span>` },
+        { h: 'Merksatz', b: `„Ganze mal Nenner plus Zähler – der Nenner bleibt.“<br><span class="calc">${mxH(w, n, d)} = ${fr(`${w} · ${d} + ${n}`, d)} = ${fr(N, d)}</span>` }
+      ],
+      diag: U => {
+        if (eqv(U, { n: w + n, d })) return `Du hast nur ${w} + ${n} gerechnet. Die Ganzen müssen zuerst mal den Nenner genommen werden: ${w} · ${d} = ${w * d}.`;
+        if (eqv(U, { n: w * n, d })) return `Nicht Ganze mal Zähler, sondern Ganze mal <b>Nenner</b> plus Zähler.`;
+        if (eqv(U, { n: w * d, d })) return `Du hast den Bruchteil ${fr(n, d)} vergessen dazuzuzählen.`;
+        return null;
+      }
+    };
+  },
+  rand() { const d = R(2, 10); return { w: R(1, 6), n: R(1, d - 1), d }; },
+  book: [[2, 1, 2], [1, 2, 3], [3, 1, 4], [4, 3, 5], [3, 5, 6], [2, 7, 8]].map(([w, n, d]) => ({ s: 'S. 23/5 b', p: { w, n, d } }))
+};
+
+/* --- Thema 4: Erweitern und Kürzen --- */
+GEN.erweitern = {
+  title: 'Erweitern',
+  make({ w, n, d, k }) {
+    const steps = [];
+    if (w > 0) steps.push({ h: 'Die Ganzen bleiben stehen', b: `Bei ${mxH(w, n, d)} werden nur Zähler und Nenner des Bruchteils erweitert – die ${w} Ganze bleiben ${w}.` });
+    steps.push({ h: `Zähler und Nenner mal ${k}`, b: `<span class="calc">${fr(n, d)} = ${fr(`${n} · ${k}`, `${d} · ${k}`)} = <b>${fr(n * k, d * k)}</b></span>` });
+    steps.push({ h: 'Der Wert bleibt gleich', b: (d * k <= 40 && n <= d ? barSVG(d, n) + barSVG(d * k, n * k) : '') + `Die Teile werden nur ${k}-mal feiner geschnitten. Es ist immer noch gleich viel.` });
+    const res = w > 0 ? mxH(w, n * k, d * k) : fr(n * k, d * k);
+    return {
+      kind: 'frac', whole: w > 0, form: 'exact', ans: { n: w * d * k + n * k, d: d * k }, expect: [{ w, n: n * k, d: d * k }],
+      body: `Erweitere mit <b>${k}</b>: <span class="big">${mxH(w, n, d)}</span>`,
+      sol: res,
+      tip: `Erweitern heißt: Zähler <b>und</b> Nenner mit derselben Zahl (${k}) malnehmen.`,
+      steps,
+      diag: (U, inp) => {
+        const x = inp[0];
+        if (x.n === n * k && x.d === d) return `Du hast nur den Zähler mit ${k} multipliziert. Der Nenner muss auch mal ${k}!`;
+        if (x.d === d * k && x.n === n) return `Du hast nur den Nenner mit ${k} multipliziert. Der Zähler muss auch mal ${k}!`;
+        if (w > 0 && x.w === w * k) return `Die Ganzen werden nicht erweitert – sie bleiben ${w}.`;
+        if (eqv(U, imp([w, n, d]))) return `Der Wert stimmt, aber gefragt war: erweitern mit genau ${k}. Dann ist der neue Nenner ${d} · ${k} = ${d * k}.`;
+        return null;
+      }
+    };
+  },
+  rand() {
+    const d = R(2, 12), n = R(1, d + 3), k = R(2, 10), w = Math.random() < .25 ? R(1, 5) : 0;
+    return { w, n: w ? Math.max(1, n % d || 1) : n, d, k };
+  },
+  book: [
+    ['a', 2, [[0, 2, 3], [0, 8, 9], [0, 36, 17], [1, 7, 11]]], ['b', 3, [[0, 5, 6], [0, 7, 9], [0, 36, 17], [2, 9, 13]]],
+    ['c', 7, [[0, 1, 7], [0, 4, 9], [0, 15, 11], [3, 5, 8]]], ['d', 9, [[0, 2, 7], [0, 6, 9], [0, 13, 15], [2, 5, 8]]],
+    ['e', 10, [[0, 2, 3], [0, 5, 6], [0, 17, 13], [8, 3, 4]]], ['f', 13, [[0, 1, 2], [0, 8, 9], [0, 0, 10], [1, 5, 7]]]
+  ].flatMap(([l, k, list]) => list.map(([w, n, d]) => ({ s: 'S. 25/5 ' + l, p: { w, n, d, k } })))
+};
+
+GEN.erweiternAuf = {
+  title: 'Auf einen Nenner erweitern',
+  make({ w, n, d, T }) {
+    const k = T / d, start = w > 0 ? mxH(w, n, d) : fr(n, d);
+    const res = w > 0 ? mxH(w, n * k, T) : fr(n * k, T);
+    return {
+      kind: 'nums',
+      body: `Erweitere <span class="big">${start}</span> auf den Nenner <b>${T}</b>.<br><span class="calc">${start} = ${w > 0 ? w : ''}${fr('?', T)}</span>`,
+      fields: [{ label: 'Erweiterungszahl:', ans: k }, { label: 'Neuer Zähler:', ans: n * k }],
+      sol: `Erweiterungszahl ${k}: ${start} = ${res}`,
+      tip: `Mit welcher Zahl musst du ${d} malnehmen, damit ${T} herauskommt? Rechne ${T} : ${d}.`,
+      steps: [
+        { h: 'Erweiterungszahl finden', b: `Mit welcher Zahl muss man den Nenner ${d} malnehmen, um ${T} zu bekommen?<br><span class="calc">${T} : ${d} = <b>${k}</b></span>` },
+        { h: 'Zähler mit derselben Zahl malnehmen', b: `<span class="calc">${fr(n, d)} = ${fr(`${n} · ${k}`, `${d} · ${k}`)} = <b>${fr(n * k, T)}</b></span>` + (w > 0 ? `<div class="hint">Die ${w} Ganze bleiben einfach stehen: ${res}</div>` : '') }
+      ],
+      diag: v => {
+        if (v[0] !== k) return `Die Erweiterungszahl findest du mit ${T} : ${d} = ${k}.`;
+        if (v[1] === n) return `Der Zähler muss auch mit ${k} multipliziert werden: ${n} · ${k} = ${n * k}.`;
+        return `Der neue Zähler ist ${n} · ${k} = ${n * k}.`;
+      }
+    };
+  },
+  rand() {
+    const T = pick([100, 40, 60, 24, 36, 30, 1000, 48]);
+    const divs = []; for (let i = 2; i < T; i++) if (T % i === 0 && T / i <= 50) divs.push(i);
+    const d = pick(divs); return { w: 0, n: R(1, d + 2), d, T };
+  },
+  book: [
+    ...[[2, 50], [3, 10], [12, 25], [15, 20], [3, 2], [7, 4]].map(([n, d]) => ({ s: 'S. 26/8 a', p: { w: 0, n, d, T: 100 } })),
+    ...[[0, 1, 4], [0, 5, 8], [0, 3, 5], [0, 13, 2], [0, 7, 10], [1, 3, 20]].map(([w, n, d]) => ({ s: 'S. 26/8 b', p: { w, n, d, T: 40 } }))
+  ]
+};
+
+const EASY = [100, 50, 25, 20, 12, 10, 9, 8, 7, 6, 5, 4, 3, 2, 11, 13, 17, 19, 23, 29, 31, 37];
+function divReason(c, a, b) {
+  if (c % 10 === 0) return `beide enden auf 0`;
+  if (c === 5 || c === 25) return `beide enden auf 0 oder 5`;
+  if (c === 2 || c === 4 || c === 8) return `beide sind gerade` + (c > 2 ? ` und in der ${c}er-Reihe` : '');
+  if (c === 3 || c === 9) return `Quersumme ist durch ${c} teilbar`;
+  return `beide sind in der ${c}er-Reihe (${a} = ${a / c} · ${c}, ${b} = ${b / c} · ${c})`;
+}
+function kuerzSteps(n, d) {
+  const out = []; let a = n, b = d;
+  while (gcd(a, b) > 1) {
+    const g = gcd(a, b); const c = EASY.find(x => g % x === 0) || g;
+    out.push(`<span class="calc">${fr(a, b)} = ${fr(`${a} : ${c}`, `${b} : ${c}`)} = ${fr(a / c, b / c)}</span> <span class="hint">(${divReason(c, a, b)})</span>`);
+    a /= c; b /= c;
+  }
+  return out;
+}
+GEN.kuerzen = {
+  title: 'So weit wie möglich kürzen',
+  make({ n, d }) {
+    const g = gcd(n, d), s = simp(n, d), chain = kuerzSteps(n, d);
+    const steps = [{ h: 'Gemeinsame Teiler suchen', b: `Teilbarkeitsregeln helfen: gerade → durch 2, Endziffer 0 oder 5 → durch 5, Quersumme durch 3 → durch 3.` },
+      { h: 'Schritt für Schritt kürzen', b: chain.join('<br>') },
+      { h: 'Fertig?', b: `${s.n} und ${s.d} haben keinen gemeinsamen Teiler mehr außer 1. Der Bruch ist vollständig gekürzt: <b>${fr(s.n, s.d)}</b>` }];
+    if (chain.length > 1) steps.push({ trick: true, h: 'Am schnellsten: mit dem ggT kürzen', b: `Der größte gemeinsame Teiler von ${n} und ${d} ist <b>${g}</b>. Dann geht es in einem Schritt:<br><span class="calc">${fr(n, d)} = ${fr(`${n} : ${g}`, `${d} : ${g}`)} = ${fr(s.n, s.d)}</span>` });
+    return {
+      kind: 'frac', whole: false, form: 'lowest', ans: { n, d }, expect: [{ w: 0, n: s.n, d: s.d }],
+      body: `Kürze so weit wie möglich: <span class="big">${fr(n, d)}</span>`,
+      sol: fr(s.n, s.d),
+      tip: `Durch welche Zahl kannst du ${n} <b>und</b> ${d} teilen? Probiere 2, 3, 5, 10 …`,
+      steps,
+      diag: () => `Zähler und Nenner müssen immer durch <b>dieselbe</b> Zahl geteilt werden. Prüfe deine Divisionen nochmal.`
+    };
+  },
+  rand() {
+    let d, n; do { d = R(2, 13); n = R(1, d - 1); } while (gcd(n, d) !== 1);
+    const g = pick([4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 25]); return { n: n * g, d: d * g };
+  },
+  book: [
+    ...[[50, 100], [2, 14], [15, 75], [6, 36], [72, 80]].map(([n, d]) => ({ s: 'S. 26/9 a', p: { n, d } })),
+    ...[[48, 60], [24, 40], [27, 81], [39, 169], [600, 900]].map(([n, d]) => ({ s: 'S. 26/9 b', p: { n, d } })),
+    ...[[56, 70], [126, 140], [64, 124], [125, 150], [160, 256]].map(([n, d]) => ({ s: 'S. 26/9 c', p: { n, d } }))
+  ]
+};
+
+/* --- Thema 5: Brüche ordnen --- */
+function cmpSym(A, B) { const x = A.n * B.d - B.n * A.d; return x < 0 ? '<' : x > 0 ? '>' : '='; }
+function cmpFrSteps(P, Q, R2, S) {
+  const sym = cmpSym({ n: P, d: Q }, { n: R2, d: S }), out = [];
+  if ((P < Q && R2 > S) || (P > Q && R2 < S)) {
+    out.push({ trick: true, h: 'Trick: mit 1 Ganzen vergleichen', b: `${fr(P, Q)} ist ${P < Q ? 'kleiner' : 'größer'} als 1 (Zähler ${P < Q ? '<' : '>'} Nenner), ${fr(R2, S)} ist ${R2 < S ? 'kleiner' : 'größer'} als 1.<br>Also: <span class="calc">${fr(P, Q)} ${sym} ${fr(R2, S)}</span>` });
+    return out;
+  }
+  if (Q === S) {
+    out.push({ h: 'Gleicher Nenner → Zähler vergleichen', b: `Beide haben ${Q}-tel. Wer mehr Teile hat, ist größer: ${P} ${sym} ${R2}, also <span class="calc">${fr(P, Q)} ${sym} ${fr(R2, S)}</span>` });
+  } else if (P === R2) {
+    out.push({ h: 'Gleicher Zähler → Nenner vergleichen', b: `Beide haben ${P} Teile. Je größer der Nenner, desto <b>kleiner</b> sind die Teile (eine Pizza in ${Math.max(Q, S)} Stücke gibt kleinere Stücke als in ${Math.min(Q, S)}).<br>Also: <span class="calc">${fr(P, Q)} ${sym} ${fr(R2, S)}</span>` });
+  } else {
+    const H = lcm(Q, S), a = P * H / Q, b = R2 * H / S;
+    out.push({ h: 'Gleichnamig machen', b: `Hauptnenner von ${Q} und ${S} ist ${H}.<br><span class="calc">${fr(P, Q)} = ${fr(a, H)}</span> und <span class="calc">${fr(R2, S)} = ${fr(b, H)}</span>` });
+    out.push({ h: 'Zähler vergleichen', b: `${a} ${sym} ${b}, also <span class="calc">${fr(P, Q)} ${sym} ${fr(R2, S)}</span>` });
+  }
+  return out;
+}
+function cmpSteps(a, b) {
+  const A = imp(a), B = imp(b), sym = cmpSym(A, B), out = [];
+  const nat = t => t[2] === 1, mix = t => t[0] > 0 && t[1] > 0 && t[2] !== 1;
+  if (nat(a) || nat(b)) {
+    const [x, y] = nat(a) ? [a, b] : [b, a];
+    const den = y[2], W = x[0];
+    out.push({ h: 'Natürliche Zahl als Bruch schreiben', b: `<span class="calc">${W} = ${fr(W * den, den)}</span>` + (mix(y) ? ` und <span class="calc">${tH(y)} = ${fr(imp(y).n, den)}</span>` : '') });
+    const L = nat(a) ? W * den : imp(a).n, Rr = nat(b) ? W * den : imp(b).n;
+    out.push({ h: 'Zähler vergleichen', b: `${L} ${sym} ${Rr}, also <span class="calc">${tH(a)} ${sym} ${tH(b)}</span>` });
+    return out;
+  }
+  if (mix(a) && mix(b)) {
+    if (a[0] !== b[0]) { out.push({ trick: true, h: 'Zuerst die Ganzen vergleichen', b: `${a[0]} Ganze ${sym} ${b[0]} Ganze – fertig: <span class="calc">${tH(a)} ${sym} ${tH(b)}</span>` }); return out; }
+    out.push({ h: 'Die Ganzen sind gleich', b: `Beide haben ${a[0]} Ganze. Dann entscheiden nur die Bruchteile ${fr(a[1], a[2])} und ${fr(b[1], b[2])}.` });
+    out.push(...cmpFrSteps(a[1], a[2], b[1], b[2]));
+    out.push({ h: 'Ergebnis', b: `<span class="calc">${tH(a)} ${sym} ${tH(b)}</span>` });
+    return out;
+  }
+  if (mix(a) || mix(b)) {
+    const m = mix(a) ? a : b;
+    out.push({ h: 'Gemischte Zahl in unechten Bruch umwandeln', b: `<span class="calc">${tH(m)} = ${fr(`${m[0]} · ${m[2]} + ${m[1]}`, m[2])} = ${fr(imp(m).n, m[2])}</span>` });
+  }
+  out.push(...cmpFrSteps(A.n, A.d, B.n, B.d));
+  if (mix(a) || mix(b)) out.push({ h: 'Ergebnis', b: `<span class="calc">${tH(a)} ${sym} ${tH(b)}</span>` });
+  return out;
+}
+GEN.vergleich = {
+  title: 'Setze <, > oder =',
+  make({ a, b }) {
+    const sym = cmpSym(imp(a), imp(b));
+    return {
+      kind: 'cmp', ans: sym,
+      body: `Setze <b>&lt;</b>, <b>&gt;</b> oder <b>=</b> ein:<div class="cmpline big">${tH(a)} <span class="slot" id="slot"></span> ${tH(b)}</div>`,
+      sol: `<span class="calc">${tH(a)} ${sym} ${tH(b)}</span>`,
+      tip: 'Gleicher Nenner? → Zähler vergleichen. Gleicher Zähler? → kleinerer Nenner = größere Teile. Sonst: gleichnamig machen.',
+      steps: cmpSteps(a, b),
+      diag: s => s === '=' && sym !== '=' ? 'Die beiden Zahlen sind nicht gleich groß. Mach sie gleichnamig, dann siehst du den Unterschied.' : sym === '=' ? 'Die beiden Brüche sind gleichwertig! Kürze oder erweitere, dann siehst du es.' : 'Denk an das Krokodil: Das offene Maul zeigt immer zur größeren Zahl.'
+    };
+  },
+  rand() {
+    const k = R(0, 4), d = R(3, 12);
+    if (k === 0) { let n1 = R(1, d - 1), n2 = R(1, d - 1); if (n1 === n2) n2 = n2 % (d - 1) + 1; return { a: [0, n1, d], b: [0, n2, d] }; }
+    if (k === 1) { const n = R(1, 5), d1 = R(n + 1, 12); let d2 = R(n + 1, 12); if (d2 === d1) d2 = d1 + 1; return { a: [0, n, d1], b: [0, n, d2] }; }
+    if (k === 2) { const n = R(1, d - 1), m = R(2, 4); return Math.random() < .5 ? { a: [0, n, d], b: [0, n * m, d * m] } : { a: [0, n * m, d * m], b: [0, n, d] }; }
+    if (k === 3) { const w = R(1, 3), d2 = R(2, 9); return { a: [w, R(1, d - 1), d], b: [w, R(1, d2 - 1), d2] }; }
+    const d2 = pick([2, 3, 4, 5, 6]), d1 = d2 * pick([2, 3]); return { a: [0, R(1, d1 - 1), d1], b: [0, R(1, d2 - 1), d2] };
+  },
+  book: [
+    ...[[[0, 2, 5], [0, 4, 5]], [[0, 7, 8], [0, 6, 8]], [[1, 1, 2], [0, 3, 2]], [[0, 2, 3], [0, 1, 3]], [[0, 7, 9], [0, 8, 9]], [[0, 4, 8], [0, 2, 4]], [[0, 4, 5], [0, 9, 10]], [[2, 1, 6], [2, 1, 2]], [[0, 12, 6], [2, 0, 1]]]
+      .map(([a, b]) => ({ s: 'S. 29/1 a', p: { a, b } })),
+    ...[[[0, 1, 4], [0, 1, 2]], [[0, 2, 3], [0, 2, 5]], [[0, 5, 8], [0, 5, 6]], [[0, 7, 10], [0, 7, 25]], [[0, 3, 4], [0, 6, 20]], [[0, 5, 8], [0, 10, 4]], [[0, 4, 5], [1, 0, 1]], [[0, 4, 6], [0, 8, 12]], [[1, 4, 5], [1, 2, 7]]]
+      .map(([a, b]) => ({ s: 'S. 29/1 b', p: { a, b } }))
+  ]
+};
+
+GEN.strahl = {
+  title: 'Zahlenstrahl ablesen',
+  make({ t, L }) {
+    const s = simp(t, 10), w = Math.floor(t / 10), r = t % 10;
+    const forms = [fr(t, 10)];
+    if (s.d === 1) forms.push(`${s.n}`); else if (s.d !== 10) forms.push(fr(s.n, s.d));
+    forms.push(fr(t * 2, 20));
+    if (w > 0 && r > 0) forms.push(mxH(w, r, 10));
+    return {
+      kind: 'frac', whole: true, count: 2, form: 'any2', ans: { n: t, d: 10 },
+      expect: [{ w: 0, n: t, d: 10 }, { w: 0, n: t * 2, d: 20 }],
+      body: `Welche Zahl ist beim Buchstaben <b>${L}</b> markiert? Gib <b>zwei verschiedene</b> Brüche an, die diese Zahl darstellen.${strahlSVG(t, L)}`,
+      sol: forms.join(' = '),
+      tip: 'Zähle, in wie viele Teile eine Einheit (von 0 bis 1) geteilt ist. Dann zähle die Striche von 0 bis zum Buchstaben.',
+      steps: [
+        { h: 'Unterteilung finden', b: 'Von 0 bis 1 sind es <b>10</b> gleich große Abstände. Ein kleiner Strich bedeutet also ' + fr(1, 10) + '. (Der mittlere, etwas längere Strich ist ' + fr(5, 10) + ' = ' + fr(1, 2) + '.)' },
+        { h: 'Striche zählen', b: `${L} liegt ${t} Striche rechts von 0 → <span class="calc">${fr(t, 10)}</span>` + (w > 0 ? `<div class="hint">Oder: ${w} Ganze${r ? ` und noch ${r} Striche → ${mxH(w, r, 10)}` : ''}</div>` : '') },
+        { h: 'Zweiten Bruch finden: kürzen oder erweitern', b: `<span class="calc">${forms.join(' = ')}</span><div class="hint">Alle diese Brüche sind gleichwertig – sie liegen an derselben Stelle.</div>` }
+      ],
+      diag: (U, inp, bad) => {
+        if (bad === 'same') return 'Du hast zweimal denselben Bruch geschrieben. Erweitere oder kürze, dann bekommst du einen zweiten.';
+        const x = inp.map(i => (i.w * i.d + i.n) / i.d);
+        if (x.some(v => Math.abs(v - (t + 1) / 10) < 1e-9 || Math.abs(v - (t - 1) / 10) < 1e-9)) return 'Du hast dich um einen Strich verzählt. Fang bei 0 an und zähle jeden kleinen Strich.';
+        return 'Eine Einheit hat 10 kleine Abstände – jeder ist ein Zehntel.';
+      }
+    };
+  },
+  rand() { let t; do { t = R(1, 29); } while (t % 10 === 0 && Math.random() < .7); return { t, L: pick(['A', 'B', 'C', 'P', 'X', 'Q']) }; },
+  book: [['A', 2], ['B', 5], ['C', 6], ['D', 12], ['E', 15], ['F', 18], ['G', 20], ['H', 24]].map(([L, t]) => ({ s: 'S. 29/2', p: { t, L } }))
+};
+
+GEN.ordnen = {
+  title: 'Der Größe nach ordnen',
+  make({ items }) {
+    const vals = items.map(imp), H = vals.reduce((a, v) => lcm(a, v.d), 1);
+    const conv = items.map((t, i) => ({ t, i, N: vals[i].n * H / vals[i].d }));
+    const sorted = conv.slice().sort((x, y) => x.N - y.N);
+    const chain = sorted.map((x, j) => (j ? (sorted[j - 1].N === x.N ? ' = ' : ' < ') : '') + tH(x.t)).join('');
+    return {
+      kind: 'order', items: items.map((t, i) => ({ h: tH(t), v: vals[i].n / vals[i].d })),
+      body: 'Ordne der Größe nach. Beginne mit der kleinsten Zahl.',
+      sol: `<span class="calc">${chain}</span>`,
+      tip: `Mach alle Brüche gleichnamig. Hier passt der Nenner ${H} gut.`,
+      steps: [
+        { h: 'Gemeinsamen Nenner wählen', b: `Alle Nenner (${[...new Set(vals.map(v => v.d))].join(', ')}) passen in <b>${H}</b>.` },
+        { h: `Alles in ${H}-tel umwandeln`, b: conv.map(x => `<span class="calc">${tH(x.t)} = ${fr(x.N, H)}</span>`).join(' &nbsp; ') },
+        { h: 'Nach dem Zähler sortieren', b: `<span class="calc">${sorted.map((x, j) => (j ? (sorted[j - 1].N === x.N ? ' = ' : ' < ') : '') + fr(x.N, H)).join('')}</span>` },
+        { h: 'Ergebnis', b: `<span class="calc">${chain}</span>` }
+      ],
+      diag: () => 'Vergleiche nicht nur die Zähler oder nur die Nenner. Erst gleichnamig machen, dann ordnen.'
+    };
+  },
+  rand() {
+    const base = pick([[2, 4, 8], [2, 5, 10], [3, 6, 12], [2, 3, 6]]), items = [], seen = new Set();
+    while (items.length < 5) {
+      const d = pick(base), n = R(1, 2 * d); const key = n + '/' + d; if (seen.has(key)) continue; seen.add(key);
+      items.push(n > d && n % d !== 0 && Math.random() < .4 ? [Math.floor(n / d), n % d, d] : [0, n, d]);
+    }
+    return { items };
+  },
+  book: [
+    { s: 'S. 29/3 a', p: { items: [[0, 1, 2], [0, 6, 5], [1, 1, 2], [0, 7, 10], [0, 1, 5], [0, 15, 10], [0, 5, 5]] } },
+    { s: 'S. 29/3 b', p: { items: [[0, 3, 8], [0, 7, 4], [0, 1, 2], [0, 3, 4], [0, 3, 2], [0, 6, 8], [0, 4, 2]] } }
+  ]
+};
+
+/* --- Thema 6: Addieren und Subtrahieren --- */
+function calcData(t, o) {
+  const v = t.map(imp);
+  const dens = [...new Set(t.filter(x => x[2] !== 1).map(x => x[2]))];
+  const HN = dens.reduce((a, b) => lcm(a, b), 1);
+  const sg = i => i === 0 ? 1 : (o[i - 1] === '+' ? 1 : -1);
+  let sum = 0; v.forEach((f, i) => { sum += sg(i) * f.n * (HN / f.d); });
+  return { v, HN, dens, sum, sg };
+}
+function finishSteps(sum, HN) {
+  const S = [], g = gcd(sum, HN);
+  let n = sum, d = HN;
+  if (g > 1 && sum !== 0) { S.push({ h: 'Kürzen', b: `<span class="calc">${fr(n, d)} = ${fr(`${n} : ${g}`, `${d} : ${g}`)} = ${fr(n / g, d / g)}</span><div class="hint">${n} und ${d} sind beide durch ${g} teilbar.</div>` }); n /= g; d /= g; }
+  if (d === 1) { if (g > 1 || HN === 1) S.push({ h: 'Natürliche Zahl', b: `Das Ergebnis ist die natürliche Zahl <b>${n}</b>.` }); else S.push({ h: 'Natürliche Zahl', b: `<span class="calc">${fr(n, 1)} = ${n}</span>` }); }
+  else if (n >= d) S.push({ h: 'In eine gemischte Zahl umwandeln', b: `<span class="calc">${n} : ${d} = ${Math.floor(n / d)} Rest ${n % d} → ${fr(n, d)} = ${nice(n, d)}</span>` });
+  return S;
+}
+function calcSteps(t, o) {
+  const { v, HN, dens, sum, sg } = calcData(t, o), S = [];
+  const mixed = t.filter(x => x[0] > 0 && x[1] > 0 && x[2] !== 1);
+  const hasWhole = t.some(x => x[0] > 0);
+  // schneller Weg mit Ganzen
+  if (hasWhole) {
+    let W = 0, Fn = 0; t.forEach((x, i) => { W += sg(i) * x[0]; if (x[2] !== 1) Fn += sg(i) * x[1] * (HN / x[2]); });
+    const fracTerms = t.map((x, i) => ({ x, i })).filter(e => e.x[2] !== 1 && e.x[1] > 0);
+    if (W >= 0 && Fn >= 0) {
+      const fe = fracTerms.map((e, j) => (j ? opH(o[e.i - 1]) : (sg(e.i) < 0 ? MINUS + ' ' : '')) + fr(e.x[1] * HN / e.x[2], HN)).join('');
+      const we = t.map((x, i) => ({ x, i })).filter(e => e.x[0] > 0).map((e, j) => (j ? opH(o[e.i - 1]) : '') + e.x[0]).join('');
+      let b = `<b>Ganze:</b> ${we} = ${W}<br><b>Brüche:</b> <span class="calc">${fe} = ${fr(Fn, HN)}</span>`;
+      if (dens.length > 1) b = `Erst alle Brüche auf den Hauptnenner ${HN} bringen.<br>` + b;
+      b += `<br><b>Zusammen:</b> <span class="calc">${W} + ${fr(Fn, HN)} = ${nice(W * HN + Fn, HN)}</span>`;
+      S.push({ trick: true, h: 'Am einfachsten: Ganze und Brüche getrennt rechnen', b });
+      S.push({ sep: true, h: 'Der sichere Weg – klappt immer:' });
+    } else if (Fn < 0) {
+      S.push({ alert: true, h: 'Achtung: Hier reicht der Bruch nicht!', b: `Wenn man Ganze und Brüche getrennt rechnet, müsste man bei den Brüchen mehr abziehen, als da ist. Dann muss man <b>ein Ganzes entbündeln</b> (1 = ${fr(HN, HN)}) – oder man wandelt gleich alles in unechte Brüche um. Das ist der sichere Weg:` });
+    }
+  }
+  if (mixed.length) S.push({ h: 'Gemischte Zahlen in unechte Brüche umwandeln', b: mixed.map(x => `<span class="calc">${tH(x)} = ${fr(`${x[0]} · ${x[2]} + ${x[1]}`, x[2])} = ${fr(x[0] * x[2] + x[1], x[2])}</span>`).join('<br>') + `<div class="hint">Ganze mal Nenner plus Zähler – der Nenner bleibt.</div>` });
+  if (dens.length > 1) {
+    const m = Math.max(...dens), mult = []; for (let k = 1; m * k <= HN; k++) mult.push(m * k);
+    S.push({ h: 'Hauptnenner finden', b: `Die Nenner sind ${dens.join(' und ')}. Gesucht ist die kleinste Zahl, durch die alle Nenner teilbar sind.<br>Gehe die Vielfachen des größten Nenners durch: ${mult.join(', ')} → <b>${HN}</b><div class="hint">Probe: ${dens.map(x => `${HN} : ${x} = ${HN / x}`).join(', ')} ✔</div>` });
+  }
+  const need = t.map((x, i) => ({ x, i, f: v[i] })).filter(e => e.f.d !== HN);
+  if (need.length) {
+    S.push({ h: dens.length > 1 ? `Alle Brüche auf ${HN} erweitern` : 'Ganze Zahl als Bruch schreiben', b: need.map(e => e.x[2] === 1 ? `<span class="calc">${e.x[0]} = ${fr(e.x[0] * HN, HN)}</span>` : `<span class="calc">${fr(e.f.n, e.f.d)} = ${fr(`${e.f.n} · ${HN / e.f.d}`, `${e.f.d} · ${HN / e.f.d}`)} = ${fr(e.f.n * HN / e.f.d, HN)}</span>`).join('<br>') });
+  }
+  const Ns = v.map(f => f.n * HN / f.d);
+  const left = Ns.map((N, i) => (i ? opH(o[i - 1]) : '') + fr(N, HN)).join('');
+  const top = Ns.map((N, i) => (i ? opH(o[i - 1]).trim() + ' ' : '') + N).join(' ');
+  S.push({ h: 'Zähler rechnen – der Nenner bleibt gleich', b: `<span class="calc">${left} = ${fr(top, HN)} = ${fr(sum, HN)}</span><div class="hint">Nur die Zähler werden addiert bzw. subtrahiert. Der Nenner sagt nur, wie groß die Stücke sind.</div>` });
+  S.push(...finishSteps(sum, HN));
+  S.push({ h: 'Ergebnis', b: `<span class="calc">${exprH(t, o)} = <span class="mark">${nice(sum, HN)}</span></span>` });
+  return S;
+}
+function calcDiag(t, o) {
+  const { HN, dens, sum, sg } = calcData(t, o);
+  return (U, inp) => {
+    const fracOnly = t.every(x => x[0] === 0 && x[2] !== 1);
+    if (fracOnly) {
+      let nn = 0, nd = 0; t.forEach((x, i) => { nn += sg(i) * x[1]; nd += x[2]; });
+      if (nn >= 0 && eqv(U, { n: nn, d: nd })) return `Du hast auch die Nenner addiert – das ist der Fehler von Tobi (S. 35/9)! Der Nenner sagt nur, wie groß die Stücke sind. Er wird <b>nie</b> addiert. ${dens.length > 1 ? 'Mach die Brüche gleichnamig und rechne dann nur mit den Zählern.' : 'Hier sind die Nenner schon gleich – also nur die Zähler rechnen, der Nenner bleibt stehen.'}`;
+      if (dens.length > 1) { let n2 = 0; t.forEach((x, i) => { n2 += sg(i) * x[1]; }); if (n2 >= 0 && eqv(U, { n: n2, d: HN })) return `Den Hauptnenner ${HN} hast du richtig gefunden, aber die Zähler nicht mit erweitert. Beim Erweitern wird der Zähler mit derselben Zahl malgenommen wie der Nenner.`; }
+    }
+    if (t.some(x => x[0] > 0)) {
+      let Fn = 0; t.forEach((x, i) => { if (x[2] !== 1) Fn += sg(i) * x[1] * (HN / x[2]); });
+      if (Fn > 0 && Fn !== sum && eqv(U, { n: Fn, d: HN })) return 'Du hast die Ganzen vergessen! Rechne sie extra aus und schreibe sie vorne dazu.';
+      if (Fn < 0 && t.length === 2 && o[0] === '-') {
+        let W = t[0][0] - t[1][0]; if (eqv(U, { n: W * HN - Fn, d: HN })) return `Du hast den kleineren Bruch vom größeren abgezogen (umgedreht). Das geht nicht! Entbündle ein Ganzes: ${tH(t[0])} = ${mxH(t[0][0] - 1, t[0][1] * HN / t[0][2] + HN, HN)}.`;
+      }
+    }
+    if (o.includes('-')) { const allPlus = calcData(t, o.map(() => '+')).sum; if (eqv(U, { n: allPlus, d: HN })) return `Achte auf die Rechenzeichen – da steht auch ein Minus!`; }
+    return null;
+  };
+}
+function makeCalc({ t, o }) {
+  const { HN, sum } = calcData(t, o), p = parts(sum, HN);
+  return {
+    kind: 'frac', whole: true, form: 'lowestMixed', ans: { n: sum, d: HN }, expect: [{ w: p.w, n: p.n, d: p.n ? p.d : 1 }],
+    body: `Berechne und kürze so weit wie möglich. Gib das Ergebnis, wenn nötig, als gemischte Zahl an.<div class="big calc">${exprH(t, o)} = ?</div>`,
+    sol: nice(sum, HN),
+    tip: t.every(x => x[2] === t[0][2] || x[2] === 1) ? 'Die Nenner sind gleich: Rechne nur mit den Zählern, der Nenner bleibt.' : 'Die Nenner sind verschieden. Suche zuerst den Hauptnenner und erweitere alle Brüche darauf.',
+    steps: calcSteps(t, o), diag: calcDiag(t, o)
+  };
+}
+function randCalc(same) {
+  for (;;) {
+    let t = [], o = [], cnt = Math.random() < .3 ? 3 : 2;
+    const dPool = same ? [R(3, 12)] : pick([[2, 3], [3, 4], [4, 6], [2, 5], [3, 8], [6, 9], [4, 10], [5, 6], [8, 12], [3, 12], [10, 15], [6, 8], [4, 5]]);
+    for (let i = 0; i < cnt; i++) {
+      const d = dPool[i % dPool.length], n = R(1, d - 1), w = Math.random() < .3 ? R(1, 6) : 0;
+      t.push([w, n, d]); if (i) o.push(Math.random() < .5 ? '+' : '-');
+    }
+    const { sum } = calcData(t, o);
+    if (sum > 0) return { t, o };
+  }
+}
+GEN.addGleich = {
+  title: 'Gleichnamige Brüche rechnen',
+  make: makeCalc, rand: () => randCalc(true),
+  book: [
+    ['a', [[0, 1, 6], [0, 3, 6]], '+'], ['b', [[0, 5, 7], [0, 3, 7]], '-'], ['c', [[0, 3, 5], [0, 4, 5], [0, 1, 5]], '++'], ['d', [[1, 1, 3], [2, 1, 3]], '+'],
+    ['e', [[5, 5, 6], [0, 2, 6]], '-'], ['f', [[0, 2, 8], [0, 3, 8]], '+'], ['g', [[0, 3, 5], [0, 2, 5]], '-'], ['h', [[0, 4, 12], [0, 5, 12], [0, 2, 12]], '++'],
+    ['i', [[3, 5, 9], [4, 3, 9]], '+'], ['j', [[2, 4, 7], [1, 2, 7]], '-'], ['k', [[0, 3, 9], [0, 4, 9]], '+'], ['l', [[0, 7, 9], [0, 4, 9]], '-'],
+    ['m', [[0, 3, 8], [0, 6, 8], [0, 7, 8]], '++'], ['n', [[2, 5, 8], [3, 0, 1]], '+'], ['o', [[7, 4, 9], [3, 4, 9]], '-'], ['p', [[0, 3, 10], [0, 7, 10]], '+'],
+    ['q', [[0, 8, 10], [0, 2, 10]], '-'], ['r', [[0, 10, 11], [0, 4, 11], [0, 6, 11]], '++'], ['s', [[1, 6, 7], [3, 5, 7]], '+'], ['t', [[7, 1, 4], [3, 3, 4]], '-']
+  ].map(([l, t, o]) => ({ s: 'S. 31/2 ' + l, p: { t, o: o.split('') } }))
+};
+GEN.addUngleich = {
+  title: 'Ungleichnamige Brüche rechnen',
+  make: makeCalc, rand: () => randCalc(false),
+  book: [
+    ['a', [[0, 1, 15], [0, 3, 10]], '+'], ['b', [[0, 2, 3], [0, 1, 8]], '-'], ['c', [[0, 1, 10], [0, 3, 33]], '+'], ['d', [[0, 9, 16], [0, 1, 2]], '-'],
+    ['e', [[0, 1, 3], [0, 2, 9], [0, 11, 9]], '++'], ['f', [[1, 0, 1], [0, 1, 10], [0, 3, 5]], '--'], ['g', [[0, 4, 5], [0, 2, 25]], '+'], ['h', [[0, 7, 9], [0, 3, 18]], '-'],
+    ['i', [[0, 3, 12], [0, 3, 5]], '+'], ['j', [[1, 5, 8], [0, 9, 6]], '-'], ['k', [[1, 1, 2], [0, 7, 8], [0, 3, 4]], '++'], ['l', [[3, 2, 5], [0, 7, 10], [0, 1, 3]], '--']
+  ].map(([l, t, o]) => ({ s: 'S. 35/3 ' + l, p: { t, o: o.split('') } }))
+};
+
+/* --- Thema 7: Fachbegriffe --- */
+const BEGR = [
+  { q: `Wie heißt die Zahl <b>über</b> dem Bruchstrich?`, o: ['Zähler', 'Nenner', 'Bruchstrich', 'Teiler'], ex: `Der <b>Zähler</b> zählt, wie viele Teile man hat. Bei ${fr(3, 4)} ist 3 der Zähler.` },
+  { q: `Wie heißt die Zahl <b>unter</b> dem Bruchstrich?`, o: ['Nenner', 'Zähler', 'Faktor', 'Summand'], ex: `Der <b>Nenner</b> nennt, in wie viele gleich große Teile das Ganze geteilt ist. Bei ${fr(3, 4)} ist 4 der Nenner (Viertel).` },
+  { q: 'Was ist ein <b>Stammbruch</b>?', o: ['Ein Bruch mit dem Zähler 1', 'Ein Bruch mit dem Nenner 1', 'Ein Bruch, der größer als 1 ist', 'Ein Bruch, den man nicht kürzen kann'], ex: `Stammbrüche haben den Zähler 1: ${fr(1, 2)}, ${fr(1, 3)}, ${fr(1, 8)} … Aus ihnen sind alle anderen Brüche „gebaut“: ${fr(3, 8)} = 3 · ${fr(1, 8)}.` },
+  { q: 'Welcher Bruch ist ein <b>echter Bruch</b>?', o: [fr(3, 8), fr(7, 4), fr(4, 4), fr(9, 3)], ex: `Bei einem echten Bruch ist der Zähler <b>kleiner</b> als der Nenner. Er ist kleiner als 1 Ganzes: ${fr(3, 8)}.` },
+  { q: 'Was ist ein <b>unechter Bruch</b>?', o: ['Zähler ist größer als der Nenner oder gleich groß', 'Zähler ist kleiner als der Nenner', 'Ein Bruch mit Komma', 'Ein Bruch mit dem Zähler 0'], ex: `Bei einem unechten Bruch ist der Zähler größer oder gleich dem Nenner, z. B. ${fr(7, 4)} oder ${fr(4, 4)}. Er ist mindestens 1 Ganzes.` },
+  { q: 'Was ist eine <b>gemischte Zahl</b>?', o: [`Eine natürliche Zahl und ein echter Bruch, z. B. ${mxH(2, 3, 4)}`, `Ein Bruch mit gemischten Nennern`, `Zwei Brüche, die man addiert`, `Ein Bruch wie ${fr(1, 2)}`], ex: `${mxH(2, 3, 4)} bedeutet 2 Ganze und noch ${fr(3, 4)}, also 2 + ${fr(3, 4)} = ${fr(11, 4)}.` },
+  { q: 'Was ist ein <b>Scheinbruch</b>?', o: [`Ein Bruch, der eine natürliche Zahl darstellt, z. B. ${fr(12, 4)}`, 'Ein Bruch, der falsch gerechnet ist', 'Ein Bruch mit dem Zähler 1', 'Ein Bruch kleiner als 1'], ex: `Bei einem Scheinbruch geht die Division ohne Rest auf: ${fr(12, 4)} = 12 : 4 = 3. Er „scheint“ nur ein Bruch zu sein.` },
+  { q: 'Was bedeutet <b>Erweitern</b>?', o: ['Zähler und Nenner mit derselben Zahl multiplizieren', 'Nur den Zähler vergrößern', 'Zähler und Nenner durch dieselbe Zahl dividieren', 'Zu Zähler und Nenner dieselbe Zahl addieren'], ex: `Beim Erweitern multipliziert man Zähler <b>und</b> Nenner mit derselben Zahl: ${fr(2, 3)} = ${fr(8, 12)} (mit 4). Der Wert bleibt gleich, die Teile werden nur feiner.` },
+  { q: 'Was bedeutet <b>Kürzen</b>?', o: ['Zähler und Nenner durch dieselbe Zahl dividieren', 'Zähler und Nenner mit derselben Zahl multiplizieren', 'Vom Zähler und Nenner dieselbe Zahl abziehen', 'Den Bruchstrich kürzer zeichnen'], ex: `Beim Kürzen dividiert man Zähler <b>und</b> Nenner durch dieselbe Zahl: ${fr(12, 18)} = ${fr(2, 3)} (durch 6). Der Wert bleibt gleich, die Teile werden gröber.` },
+  { q: 'Was sind <b>gleichnamige</b> Brüche?', o: ['Brüche mit gleichem Nenner', 'Brüche mit gleichem Zähler', 'Brüche mit gleichem Wert', 'Brüche, die man kürzen kann'], ex: `Gleichnamige Brüche haben denselben Nenner (denselben „Namen“), z. B. ${fr(2, 7)} und ${fr(5, 7)} – beides Siebtel. Nur gleichnamige Brüche kann man direkt addieren.` },
+  { q: 'Was ist der <b>Hauptnenner</b>?', o: ['Der kleinste gemeinsame Nenner (das kgV der Nenner)', 'Der größte Nenner in einer Aufgabe', 'Das Produkt aus Zähler und Nenner', 'Der Nenner des ersten Bruchs'], ex: `Der Hauptnenner ist der kleinste Nenner, auf den man alle Brüche erweitern kann. Bei ${fr(1, 4)} und ${fr(1, 6)} ist er 12 (kgV von 4 und 6).` },
+  { q: 'Wann ist ein Bruch <b>vollständig gekürzt</b>?', o: ['Wenn Zähler und Nenner keinen gemeinsamen Teiler außer 1 haben', 'Wenn der Zähler 1 ist', 'Wenn der Nenner eine gerade Zahl ist', 'Wenn man einmal gekürzt hat'], ex: `Erst wenn Zähler und Nenner nur noch den gemeinsamen Teiler 1 haben, ist man fertig. ${fr(12, 18)} → ${fr(6, 9)} ist noch nicht fertig, ${fr(2, 3)} schon.` },
+  { q: '<b>Gleichwertige</b> Brüche sind Brüche, …', o: ['… die denselben Wert haben, z. B. ' + fr(1, 2) + ' und ' + fr(3, 6), '… die denselben Zähler haben', '… die denselben Nenner haben', '… die beide größer als 1 sind'], ex: `Gleichwertige Brüche liegen an derselben Stelle auf dem Zahlenstrahl: ${fr(1, 2)} = ${fr(2, 4)} = ${fr(3, 6)}. Man erhält sie durch Erweitern oder Kürzen.` },
+  { q: 'Was bedeutet der <b>Bruchstrich</b>?', o: ['geteilt durch', 'mal', 'plus', 'minus'], ex: `Der Bruchstrich ist ein Geteilt-Zeichen: ${fr(3, 4)} = 3 : 4.` },
+  { q: 'Was ist der <b>ggT</b> von 12 und 18? (Den braucht man zum Kürzen.)', o: ['6', '3', '36', '2'], ex: 'Teiler von 12: 1, 2, 3, 4, <b>6</b>, 12. Teiler von 18: 1, 2, 3, <b>6</b>, 9, 18. Der größte gemeinsame Teiler ist 6.' },
+  { q: 'Was ist das <b>kgV</b> von 4 und 6? (Das ist der Hauptnenner.)', o: ['12', '24', '2', '10'], ex: 'Vielfache von 6: 6, <b>12</b>, 18 … – 12 ist auch durch 4 teilbar. Also ist das kleinste gemeinsame Vielfache 12.' }
+];
+GEN.begriff = {
+  title: 'Fachbegriff',
+  make({ i }) {
+    const b = BEGR[i];
+    return {
+      kind: 'choice', body: b.q,
+      opts: shuffle(b.o.map((h, j) => ({ h, ok: j === 0, note: '' }))),
+      sol: b.o[0], tip: 'Lies jede Antwort genau – und denk an ein Beispiel.',
+      steps: [{ h: 'Erklärung', b: b.ex }]
+    };
+  },
+  rand() { return { i: R(0, BEGR.length - 1) }; },
+  book: BEGR.map((_, i) => ({ s: 'Fachbegriffe', p: { i } }))
+};
+
+/* ===================== Themen ===================== */
+const TOPICS = [
+  { id: 'div', name: 'Bruch als Division', pages: 'S. 15/4', gens: ['division', 'divRev', 'ganzes'] },
+  { id: 'anteil', name: 'Anteile bestimmen', pages: 'S. 21/1, 3', gens: ['anteil', 'anteilEinheit'] },
+  { id: 'echt', name: 'Echte und unechte Brüche', pages: 'S. 23/1, 5', gens: ['art', 'toMixed', 'toImproper'] },
+  { id: 'erw', name: 'Erweitern und Kürzen', pages: 'S. 25/5, S. 26/8, 9', gens: ['erweitern', 'erweiternAuf', 'kuerzen'] },
+  { id: 'ord', name: 'Brüche ordnen', pages: 'S. 29/1, 2, 3', gens: ['vergleich', 'strahl', 'ordnen'] },
+  { id: 'add', name: 'Addieren und Subtrahieren', pages: 'S. 31/2, S. 35/3', gens: ['addGleich', 'addUngleich'] },
+  { id: 'begr', name: 'Fachbegriffe', pages: 'Arbeitsblätter & Heft', gens: ['begriff'] }
+];
+
+const LEARN = {
+  div: () => `
+    <div class="merke"><div class="t">Merke</div>Der Bruchstrich bedeutet <b>„geteilt durch“</b>. Jede Divisionsaufgabe kann man als Bruch schreiben:
+    <div class="calc">3 : 4 = ${fr(3, 4)} &nbsp;&nbsp; 7 : 2 = ${fr(7, 2)}</div>Oben steht, <b>was</b> geteilt wird (Zähler). Unten steht, <b>durch wie viel</b> geteilt wird (Nenner).</div>
+    <div class="bsp"><div class="t">Beispiel</div>3 Pizzen werden an 4 Kinder verteilt. Jede Pizza wird in 4 Stücke geschnitten. Jedes Kind bekommt von jeder Pizza ein Stück, also 3 · ${fr(1, 4)} = <b>${fr(3, 4)} Pizza</b>.</div>
+    <h3>Figur zum Ganzen ergänzen (S. 15/4)</h3>
+    <p>Ist eine Figur ${fr(1, 5)} des Ganzen, dann braucht man <b>5</b> solche Teile für das Ganze. Eine ist schon da, also musst du noch <b>4</b> dazulegen. Der Nenner verrät dir die Anzahl.</p>
+    ${shapeSVG(0, 5)}
+    <p class="hand">Tipp: Legt man die Teile spiegelbildlich an, wird das Ganze achsensymmetrisch.</p>
+    <div class="falle"><div class="t">Typischer Fehler</div>Zähler und Nenner vertauschen: 3 : 4 ist <b>nicht</b> ${fr(4, 3)}. Die Zahl, die geteilt wird, kommt immer nach oben.</div>`,
+  anteil: () => `
+    <div class="merke"><div class="t">Merke</div><b>„Durch den Nenner, mal den Zähler.“</b> Das Wort „von“ bedeutet „mal“.</div>
+    <div class="bsp"><div class="t">Beispiel: ${fr(2, 3)} von 90 cm</div>
+      <div class="calc">90 cm : 3 = 30 cm &nbsp; (das ist ${fr(1, 3)})<br>30 cm · 2 = <span class="mark">60 cm</span> &nbsp; (das sind ${fr(2, 3)})</div>${barSVG(3, 2)}</div>
+    <h3>Mit Umwandeln (S. 21/3)</h3>
+    <p>Geht die Zahl nicht glatt durch den Nenner, wandelst du zuerst in eine kleinere Einheit um.</p>
+    <div class="bsp"><div class="t">Beispiel: ${fr(7, 25)} von 10 m</div><div class="calc">10 m = 1000 cm<br>1000 cm : 25 = 40 cm<br>40 cm · 7 = <span class="mark">280 cm</span></div></div>
+    <div class="tbl"><table><tr><th>Größe</th><th>Umrechnung</th></tr>
+      <tr><td>Länge</td><td>1 m = 10 dm = 100 cm = 1000 mm; 1 km = 1000 m</td></tr>
+      <tr><td>Masse</td><td>1 kg = 1000 g; 1 t = 1000 kg</td></tr>
+      <tr><td>Zeit</td><td>1 h = 60 min; 1 min = 60 s</td></tr>
+      <tr><td>Fläche</td><td>1 m² = 100 dm²; 1 dm² = 100 cm²</td></tr>
+      <tr><td>Geld</td><td>1 € = 100 ct</td></tr></table></div>
+    <div class="falle"><div class="t">Typischer Fehler</div>Nur durch den Nenner teilen und dann vergessen, mit dem Zähler malzunehmen. Frag dich am Ende: Habe ich wirklich ${fr(2, 3)} – oder erst ${fr(1, 3)}?</div>`,
+  echt: () => `
+    <div class="tbl"><table><tr><th>Art</th><th>Erkennungszeichen</th><th>Beispiel</th></tr>
+      <tr><td><b>echter Bruch</b></td><td>Zähler &lt; Nenner (kleiner als 1)</td><td>${fr(3, 8)}</td></tr>
+      <tr><td><b>unechter Bruch</b></td><td>Zähler ≥ Nenner (mindestens 1)</td><td>${fr(5, 4)}</td></tr>
+      <tr><td><b>Scheinbruch</b></td><td>Division geht ohne Rest auf → natürliche Zahl</td><td>${fr(12, 6)} = 2</td></tr>
+      <tr><td><b>Stammbruch</b></td><td>Zähler ist 1</td><td>${fr(1, 25)}</td></tr>
+      <tr><td><b>gemischte Zahl</b></td><td>Ganze + echter Bruch</td><td>${mxH(2, 3, 4)}</td></tr></table></div>
+    <h3>Unechter Bruch → gemischte Zahl</h3>
+    <div class="bsp"><div class="t">Beispiel: ${fr(13, 3)}</div><div class="calc">13 : 3 = 4 Rest 1 → ${fr(13, 3)} = <span class="mark">${mxH(4, 1, 3)}</span></div>Wie oft passt der Nenner in den Zähler? Das sind die Ganzen. Der Rest kommt in den Zähler.</div>
+    <h3>Gemischte Zahl → unechter Bruch</h3>
+    <div class="bsp"><div class="t">Beispiel: ${mxH(4, 3, 5)}</div><div class="calc">${mxH(4, 3, 5)} = ${fr('4 · 5 + 3', 5)} = <span class="mark">${fr(23, 5)}</span></div></div>
+    <div class="merke"><div class="t">Merksatz</div>„Ganze mal Nenner plus Zähler – der Nenner bleibt.“</div>
+    <div class="falle"><div class="t">Typischer Fehler</div>${mxH(4, 3, 5)} = ${fr(7, 5)}? Falsch! Man darf die Ganzen nicht einfach zum Zähler addieren. 4 Ganze sind ${fr(20, 5)}.</div>`,
+  erw: () => `
+    <div class="merke"><div class="t">Erweitern</div>Zähler <b>und</b> Nenner mit derselben Zahl <b>multiplizieren</b>. Der Wert bleibt gleich – die Teile werden feiner.
+      <div class="calc">${fr(3, 4)} = ${fr('3 · 2', '4 · 2')} = ${fr(6, 8)}</div>${barSVG(4, 3, 240)}${barSVG(8, 6, 240)}</div>
+    <div class="merke"><div class="t">Kürzen</div>Zähler <b>und</b> Nenner durch dieselbe Zahl <b>dividieren</b>. Der Wert bleibt gleich – die Teile werden gröber.
+      <div class="calc">${fr(12, 18)} = ${fr('12 : 6', '18 : 6')} = ${fr(2, 3)}</div></div>
+    <h3>Auf einen bestimmten Nenner erweitern (S. 26/8)</h3>
+    <div class="bsp"><div class="t">Beispiel: ${fr(3, 10)} auf 100</div><div class="calc">100 : 10 = 10 → Erweiterungszahl 10<br>${fr(3, 10)} = ${fr('3 · 10', '10 · 10')} = <span class="mark">${fr(30, 100)}</span></div></div>
+    <h3>So weit wie möglich kürzen (S. 26/9)</h3>
+    <p>Kürze so lange, bis Zähler und Nenner keinen gemeinsamen Teiler mehr haben. Am schnellsten geht es mit dem <b>ggT</b> (größter gemeinsamer Teiler).</p>
+    <div class="tbl"><table><tr><th>Teilbar durch</th><th>wenn …</th></tr>
+      <tr><td>2</td><td>die Zahl gerade ist</td></tr><tr><td>3</td><td>die Quersumme durch 3 teilbar ist (126 → 1+2+6 = 9 ✔)</td></tr>
+      <tr><td>4</td><td>die letzten zwei Ziffern durch 4 teilbar sind</td></tr><tr><td>5</td><td>die letzte Ziffer 0 oder 5 ist</td></tr>
+      <tr><td>9</td><td>die Quersumme durch 9 teilbar ist</td></tr><tr><td>10</td><td>die letzte Ziffer 0 ist</td></tr></table></div>
+    <div class="falle"><div class="t">Typische Fehler</div>Nur den Zähler multiplizieren · bei gemischten Zahlen die Ganzen mit erweitern · nach dem ersten Kürzen aufhören, obwohl es noch weitergeht.</div>`,
+  ord: () => `
+    <div class="merke"><div class="t">Drei Wege zum Vergleichen</div>
+      <b>1. Gleicher Nenner:</b> Der größere Zähler gewinnt. ${fr(7, 8)} &gt; ${fr(6, 8)}<br>
+      <b>2. Gleicher Zähler:</b> Der kleinere Nenner gewinnt, weil die Stücke größer sind. ${fr(1, 2)} &gt; ${fr(1, 4)}<br>
+      <b>3. Sonst:</b> Gleichnamig machen, dann die Zähler vergleichen. ${fr(4, 5)} = ${fr(8, 10)} &lt; ${fr(9, 10)}</div>
+    <div class="bsp"><div class="t">Schnelle Tricks</div>Gemischte Zahlen: zuerst die Ganzen vergleichen. ${mxH(1, 4, 5)} und ${mxH(1, 2, 7)}: Ganze gleich → nur ${fr(4, 5)} und ${fr(2, 7)} vergleichen.<br>Einer kleiner, einer größer als 1? Dann bist du sofort fertig: ${fr(5, 8)} &lt; 1 &lt; ${fr(10, 4)}.</div>
+    <p class="hand">Das Krokodil &lt; &gt; frisst immer die größere Zahl – das offene Maul zeigt zur größeren Zahl.</p>
+    <h3>Zahlenstrahl (S. 29/2)</h3>
+    <p>Zähle zuerst, in wie viele gleiche Abstände eine Einheit (0 bis 1) geteilt ist. Bei 10 Abständen ist jeder Strich ${fr(1, 10)}.</p>${strahlSVG(6, 'C')}
+    <p>C liegt beim 6. Strich: ${fr(6, 10)} = ${fr(3, 5)} = ${fr(12, 20)}.</p>
+    <h3>Ordnen (S. 29/3)</h3>
+    <p>Alle Brüche auf denselben Nenner bringen, dann nach den Zählern sortieren. Gleichwertige Brüche bekommen ein „=“.</p>
+    <div class="falle"><div class="t">Typischer Fehler</div>${fr(2, 5)} &gt; ${fr(1, 2)}, weil 5 größer als 2 ist? Falsch! Je größer der Nenner, desto kleiner die Stücke. Erst gleichnamig machen: ${fr(4, 10)} &lt; ${fr(5, 10)}.</div>`,
+  add: () => `
+    <div class="merke"><div class="t">Gleichnamige Brüche (S. 31/2)</div>Nur die Zähler addieren oder subtrahieren. Der Nenner bleibt gleich.
+      <div class="calc">${fr(2, 8)} + ${fr(3, 8)} = ${fr('2 + 3', 8)} = ${fr(5, 8)}</div></div>
+    <div class="merke"><div class="t">Ungleichnamige Brüche (S. 35/3) – 5 Schritte</div>
+      1. Hauptnenner finden (Vielfache des größten Nenners durchgehen)<br>2. Alle Brüche darauf erweitern<br>3. Zähler rechnen, Nenner bleibt<br>4. Kürzen<br>5. Wenn nötig: gemischte Zahl
+      <div class="calc">${fr(1, 15)} + ${fr(3, 10)} = ${fr(2, 30)} + ${fr(9, 30)} = ${fr(11, 30)}</div></div>
+    <h3>Mit gemischten Zahlen</h3>
+    <div class="bsp"><div class="t">Am einfachsten: Ganze und Brüche getrennt</div><div class="calc">${mxH(3, 5, 9)} + ${mxH(4, 3, 9)} → 3 + 4 = 7 und ${fr(5, 9)} + ${fr(3, 9)} = ${fr(8, 9)} → <span class="mark">${mxH(7, 8, 9)}</span></div></div>
+    <div class="bsp"><div class="t">Wenn der Bruch nicht reicht: entbündeln</div><div class="calc">${mxH(7, 1, 4)} ${MINUS} ${mxH(3, 3, 4)} = ${mxH(6, 5, 4)} ${MINUS} ${mxH(3, 3, 4)} = ${mxH(3, 2, 4)} = <span class="mark">${mxH(3, 1, 2)}</span></div><div class="hint">Ein Ganzes wird zu ${fr(4, 4)} und zu ${fr(1, 4)} dazugezählt.</div></div>
+    <div class="falle"><div class="t">Der größte Fehler (Tobi, S. 35/9)</div>${fr(3, 4)} + ${fr(2, 3)} = ${fr('3 + 2', '4 + 3')} = ${fr(5, 7)}? <b>Falsch!</b> Nenner werden nie addiert.<br>Richtig: ${fr(9, 12)} + ${fr(8, 12)} = ${fr(17, 12)} = ${mxH(1, 5, 12)}.<br><span class="hand">Probe-Trick: ${fr(5, 7)} ist kleiner als ${fr(3, 4)} – beim Addieren muss es aber größer werden!</span></div>`,
+  begr: () => `
+    <div class="tbl"><table><tr><th>Begriff</th><th>Bedeutung</th><th>Beispiel</th></tr>
+      <tr><td><b>Zähler</b></td><td>Zahl über dem Bruchstrich: wie viele Teile</td><td>${fr('<span class="mark">3</span>', 4)}</td></tr>
+      <tr><td><b>Nenner</b></td><td>Zahl unter dem Bruchstrich: in wie viele Teile geteilt</td><td>${fr(3, '<span class="mark">4</span>')}</td></tr>
+      <tr><td><b>Bruchstrich</b></td><td>bedeutet „geteilt durch“</td><td>${fr(3, 4)} = 3 : 4</td></tr>
+      <tr><td><b>Stammbruch</b></td><td>Zähler ist 1</td><td>${fr(1, 6)}</td></tr>
+      <tr><td><b>echter / unechter Bruch</b></td><td>Zähler kleiner / größer oder gleich Nenner</td><td>${fr(2, 5)} / ${fr(7, 5)}</td></tr>
+      <tr><td><b>Scheinbruch</b></td><td>stellt eine natürliche Zahl dar</td><td>${fr(12, 6)} = 2</td></tr>
+      <tr><td><b>gemischte Zahl</b></td><td>Ganze + echter Bruch</td><td>${mxH(1, 2, 5)}</td></tr>
+      <tr><td><b>erweitern / kürzen</b></td><td>Zähler und Nenner mal / durch dieselbe Zahl</td><td>${fr(1, 2)} = ${fr(4, 8)}</td></tr>
+      <tr><td><b>gleichwertig</b></td><td>gleicher Wert</td><td>${fr(1, 2)} = ${fr(3, 6)}</td></tr>
+      <tr><td><b>gleichnamig</b></td><td>gleicher Nenner</td><td>${fr(2, 7)}, ${fr(5, 7)}</td></tr>
+      <tr><td><b>Hauptnenner</b></td><td>kleinster gemeinsamer Nenner (kgV)</td><td>${fr(1, 4)}, ${fr(1, 6)} → 12</td></tr>
+      <tr><td><b>ggT</b></td><td>größter gemeinsamer Teiler – zum Kürzen</td><td>ggT(12, 18) = 6</td></tr>
+      <tr><td><b>kgV</b></td><td>kleinstes gemeinsames Vielfaches – Hauptnenner</td><td>kgV(4, 6) = 12</td></tr></table></div>`
+};
+
+/* ===================== Speicher ===================== */
+const store = {
+  get(k, def) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch (e) { return def; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+};
+const FKEY = 'bruch-fehlerheft-v1', SKEY = 'bruch-stats-v1';
+const itemId = it => it.key + ':' + JSON.stringify(it.p);
+function addFehler(it) { const f = store.get(FKEY, []); if (!f.some(x => itemId(x) === itemId(it))) f.push({ key: it.key, p: it.p, s: it.s }); store.set(FKEY, f); }
+function removeFehler(it) { store.set(FKEY, store.get(FKEY, []).filter(x => itemId(x) !== itemId(it))); }
+
+/* ===================== Bewertung ===================== */
+function grade(q, input) {
+  // Rückgabe: { ok, form: Text bei Formfehler, diag: Text, bad }
+  if (q.kind === 'frac') {
+    const U = input.map(x => ({ n: x.w * x.d + x.n, d: x.d }));
+    if (q.count === 2) {
+      const allOk = U.every(u => eqv(u, q.ans));
+      const same = input[0].w === input[1].w && input[0].n === input[1].n && input[0].d === input[1].d;
+      if (allOk && same) return { ok: false, form: 'Beide Brüche haben den richtigen Wert – aber es sind zweimal dieselben. Gesucht sind zwei verschiedene.', diag: q.diag(U[0], input, 'same') };
+      if (allOk) return { ok: true };
+      return { ok: false, diag: q.diag(U[0], input) };
+    }
+    const x = input[0], u = U[0];
+    if (!eqv(u, q.ans)) return { ok: false, diag: q.diag ? q.diag(u, input) : null };
+    const g = gcd(x.n, x.d);
+    switch (q.form) {
+      case 'exact': {
+        const e = q.expect[0];
+        if (x.w === e.w && x.n === e.n && x.d === e.d) return { ok: true };
+        return { ok: false, form: q.diag(u, input) || 'Der Wert stimmt, aber die Form passt nicht zur Aufgabe.' };
+      }
+      case 'lowest':
+        if (g === 1 || x.n === 0) return { ok: true };
+        return { ok: false, form: `Richtig gerechnet, aber noch nicht fertig: ${fr(x.n, x.d)} kann man noch durch ${g} kürzen. „So weit wie möglich“ heißt: bis es nicht mehr geht.` };
+      case 'mixed':
+        if (x.w > 0 && x.n < x.d) return { ok: true };
+        return { ok: false, form: 'Der Wert stimmt, aber gefragt ist eine gemischte Zahl: Ganze vorne, dahinter ein echter Bruch.' };
+      case 'improper':
+        if (x.w === 0) return { ok: true };
+        return { ok: false, form: 'Gefragt ist ein unechter Bruch – ohne Ganze davor.' };
+      case 'lowestMixed': {
+        if (x.n === 0) return { ok: true };
+        if (x.n >= x.d) return { ok: false, form: x.w === 0 ? `Richtig gerechnet! Aber ${fr(x.n, x.d)} ist ein unechter Bruch – schreibe ihn als ${q.ans.n % q.ans.d === 0 ? 'natürliche Zahl' : 'gemischte Zahl'}: ${q.sol}.` : 'Der Bruchteil hinter den Ganzen muss ein echter Bruch sein.' };
+        if (g > 1) return { ok: false, form: `Richtig gerechnet, aber noch nicht gekürzt: ${fr(x.n, x.d)} = ${fr(x.n / g, x.d / g)} (durch ${g}).` };
+        return { ok: true };
+      }
+      default: return { ok: true };
+    }
+  }
+  if (q.kind === 'nums') {
+    const bad = q.fields.some((f, i) => Math.abs(input[i] - f.ans) > 1e-9);
+    return bad ? { ok: false, diag: q.diag ? q.diag(input) : null } : { ok: true };
+  }
+  if (q.kind === 'choice') {
+    const o = q.opts[input];
+    return o.ok ? { ok: true, note: o.note && q.opts.filter(x => x.ok).length > 1 ? o.note : '' } : { ok: false, diag: o.note || null };
+  }
+  if (q.kind === 'cmp') return input === q.ans ? { ok: true } : { ok: false, diag: q.diag(input) };
+  if (q.kind === 'order') {
+    for (let i = 1; i < input.length; i++) if (q.items[input[i]].v < q.items[input[i - 1]].v - 1e-9) return { ok: false, diag: q.diag() };
+    return { ok: true };
+  }
+  return { ok: false };
+}
+
+/* ===================== App ===================== */
+const app = document.getElementById('app');
+let RUN = null;
+const PRAISE = ['Super!', 'Klasse gerechnet!', 'Genau so!', 'Stark!', 'Perfekt!', 'Du hast es drauf!', 'Sauber gelöst!', 'Richtig gut!'];
+
+function makeItem(it) { const q = GEN[it.key].make(it.p); q.title = GEN[it.key].title; return q; }
+function twinOf(it) { return { key: it.key, p: GEN[it.key].rand(), s: 'Ähnlich wie ' + it.s, twin: true }; }
+function bookItems(topicId) { const T = TOPICS.find(t => t.id === topicId); return T.gens.flatMap(k => GEN[k].book.map(b => ({ key: k, p: b.p, s: b.s }))); }
+function shortRound(topicId, n = 8) {
+  const T = TOPICS.find(t => t.id === topicId), pools = T.gens.map(k => shuffle(GEN[k].book.map(b => ({ key: k, p: b.p, s: b.s }))));
+  const out = []; let i = 0;
+  while (out.length < n && pools.some(p => p.length)) { const p = pools[i % pools.length]; if (p.length) out.push(p.pop()); i++; }
+  return out;
+}
+function probeItems() {
+  const plan = { division: 1, divRev: 1, ganzes: 1, anteil: 2, anteilEinheit: 1, art: 2, toMixed: 1, toImproper: 1, erweitern: 1, erweiternAuf: 1, kuerzen: 2, vergleich: 2, strahl: 1, ordnen: 1, addGleich: 2, addUngleich: 2, begriff: 2 };
+  const out = [];
+  Object.entries(plan).forEach(([k, c]) => shuffle(GEN[k].book).slice(0, c).forEach(b => out.push({ key: k, p: b.p, s: b.s })));
+  return out;
+}
+
+function daysLeft() {
+  const now = new Date(), t0 = new Date(now.getFullYear(), now.getMonth(), now.getDate()), test = new Date(2026, 9, 29);
+  return Math.round((test - t0) / 86400000);
+}
+function countdownText() {
+  const d = daysLeft();
+  if (d > 1) return `Noch ${d} Tage bis zum Test`;
+  if (d === 1) return 'Morgen ist der Test!';
+  if (d === 0) return 'Heute ist der Test – viel Erfolg!';
+  return 'Test am 29.10. geschafft – Üben hilft trotzdem';
+}
+function starsH(pct) {
+  const n = pct == null ? 0 : pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 40 ? 1 : 0;
+  return `<span class="stars" aria-label="${n} von 3 Sternen">${[0, 1, 2].map(i => `<span class="${i < n ? 'on' : ''}">★</span>`).join('')}</span>`;
+}
+
+function home() {
+  RUN = null;
+  const stats = store.get(SKEY, {}), fehler = store.get(FKEY, []);
+  const done = TOPICS.filter(t => stats[t.id] != null).length;
+  app.innerHTML = `
+    <div class="top"><!--REPO-ONLY--><a class="back" href="index.html">← Übungsbereich</a><!--/REPO-ONLY--><span class="chip ${daysLeft() <= 1 ? 'hot' : ''}">${countdownText()}</span></div>
+    <div class="hero">
+      <h1><span class="mark">Bruch</span>-Trainer</h1>
+      <p>Mathe-Test am Donnerstag, 29.10.26 – Realschule, 6. Klasse. Jede Aufgabe mit Rechenweg. Jeder Fehler wird erklärt und kommt nochmal dran, bis er sitzt.</p>
+    </div>
+    <div class="zettel"><b>Themen für den 1. Test</b><br>Bruch als Division · Anteile bestimmen · Echte und unechte Brüche · Brüche erweitern und kürzen · Brüche ordnen · Brüche addieren und subtrahieren · Fachbegriffe</div>
+    <div class="overall">
+      <div class="stat"><div class="k">Themen geübt</div><div class="v">${done} / ${TOPICS.length}</div></div>
+      <div class="stat"><div class="k">Offene Fehler</div><div class="v">${fehler.length}</div></div>
+      <div class="stat"><div class="k">Bester Probetest</div><div class="v">${stats.probe != null ? stats.probe + ' %' : '–'}</div></div>
+    </div>
+    <div class="section-label">Themen vom gelben Zettel</div>
+    <div class="topics">
+      ${TOPICS.map((t, i) => `<button class="topic" data-topic="${t.id}"><span class="nr">Thema ${i + 1}</span><h3>${t.name}</h3><span class="pg">${t.pages}</span>${starsH(stats[t.id])}</button>`).join('')}
+    </div>
+    <div class="section-label">Wenn du alle Themen geübt hast</div>
+    <div class="topics">
+      <button class="topic special" id="probe"><span class="nr">Generalprobe</span><h3>Probetest</h3><span class="pg">24 gemischte Aufgaben mit Note</span></button>
+      <button class="topic fehler" id="fehler"><span class="nr">Fehlerheft</span><h3>Meine Fehler üben</h3><span class="pg">${fehler.length ? fehler.length + ' Aufgabe' + (fehler.length > 1 ? 'n' : '') + ' warten' : 'Noch keine Fehler gespeichert'}</span></button>
+    </div>`;
+  app.querySelectorAll('[data-topic]').forEach(b => b.onclick = () => learn(b.dataset.topic));
+  document.getElementById('probe').onclick = () => startRun({ mode: 'probe', title: 'Probetest', items: probeItems() });
+  document.getElementById('fehler').onclick = () => {
+    const f = store.get(FKEY, []);
+    if (!f.length) { app.querySelector('#fehler .pg').textContent = 'Super – gerade ist dein Fehlerheft leer!'; return; }
+    startRun({ mode: 'fehlerheft', title: 'Fehlerheft', items: f.flatMap(it => [{ ...it, rep: true }, twinOf(it)]) });
+  };
+  window.scrollTo(0, 0);
+}
+
+function learn(id) {
+  const T = TOPICS.find(t => t.id === id), all = bookItems(id);
+  app.innerHTML = `
+    <div class="top"><a class="back" href="#" id="bk">← Alle Themen</a><span class="chip">${T.pages}</span></div>
+    <div class="card learn">
+      <span class="src">Lernkarte</span>
+      <h2 style="margin-top:8px">${T.name}</h2>
+      ${LEARN[id]()}
+      <div class="startrow">
+        <button class="btn primary" id="short">Kurzrunde: ${Math.min(8, all.length)} Aufgaben</button>
+        <button class="btn" id="all">Alle Buchaufgaben (${all.length})</button>
+        <button class="btn ghost" id="new">Mit neuen Zahlen üben</button>
+      </div>
+    </div>`;
+  document.getElementById('bk').onclick = e => { e.preventDefault(); home(); };
+  document.getElementById('short').onclick = () => startRun({ mode: 'topic', topic: id, title: T.name, items: shortRound(id) });
+  document.getElementById('all').onclick = () => startRun({ mode: 'topic', topic: id, title: T.name, items: all });
+  document.getElementById('new').onclick = () => startRun({ mode: 'topic', topic: id, title: T.name, items: shortRound(id).map(it => ({ ...twinOf(it), s: 'Neue Zahlen', twin: false })) });
+  window.scrollTo(0, 0);
+}
+
+function startRun(cfg) {
+  RUN = { ...cfg, idx: 0, results: [], streak: 0 };
+  showQ();
+}
+
+function fracInputH(q, i) {
+  const wb = q.whole ? `<div class="wbox"><input class="w" id="w${i}" inputmode="numeric" autocomplete="off" aria-label="Ganze"><span class="lbl">Ganze</span></div>` : '';
+  return `<div class="fin">${wb}<div class="stack"><input id="n${i}" inputmode="numeric" autocomplete="off" aria-label="Zähler"><hr><input id="d${i}" inputmode="numeric" autocomplete="off" aria-label="Nenner"></div></div>`;
+}
+
+function showQ() {
+  const it = RUN.items[RUN.idx], q = makeItem(it);
+  RUN.q = q; RUN.answered = false; RUN.sel = null; RUN.seq = [];
+  const total = RUN.items.length;
+  let ans = '';
+  if (q.kind === 'frac') ans = q.count === 2 ? fracInputH(q, 0) + '<span class="or">und</span>' + fracInputH(q, 1) : fracInputH(q, 0);
+  if (q.kind === 'nums') ans = q.fields.map((f, i) => `<div class="num"><label for="f${i}">${f.label}</label><input id="f${i}" inputmode="decimal" autocomplete="off">${f.unit ? `<span class="unit">${f.unit}</span>` : ''}</div>`).join('');
+  if (q.kind === 'choice') ans = `<div class="opts">${q.opts.map((o, i) => `<button class="opt" data-i="${i}">${o.h}</button>`).join('')}</div>`;
+  if (q.kind === 'cmp') ans = `<div class="cmp">${['<', '=', '>'].map(s => `<button data-s="${s}" aria-label="${s}">${s === '<' ? '&lt;' : s === '>' ? '&gt;' : '='}</button>`).join('')}</div>`;
+  if (q.kind === 'order') ans = `<div class="pool" id="pool">${q.items.map((x, i) => `<button class="piece" data-i="${i}">${x.h}</button>`).join('')}</div><div class="seq" id="seq"></div><button class="btn ghost" id="reset">Zurücksetzen</button>`;
+  const tag = it.rep ? '<span class="tag rep">Fehler von vorhin</span>' : it.twin ? '<span class="tag twin">Zwillingsaufgabe</span>' : '';
+  app.innerHTML = `
+    <div class="top"><a class="back" href="#" id="bk">← Abbrechen</a><span class="chip">${RUN.title}</span></div>
+    <div class="qhead"><div class="bar"><i style="width:${RUN.idx / total * 100}%"></i></div><span class="qcount">${RUN.idx + 1} / ${total}</span>${RUN.streak >= 2 ? `<span class="streak">${RUN.streak} richtig in Folge</span>` : ''}</div>
+    <div class="card qcard">
+      <div class="qmeta"><span class="src">${it.s}</span>${tag}</div>
+      <h2 class="qtitle">${q.title}</h2>
+      <div class="qbody">${q.body}</div>
+      <div class="answer">${ans}</div>
+      <div class="msg" id="msg"></div>
+      <div class="tipbox" id="tip" hidden><span class="t">Tipp:</span> ${q.tip}</div>
+      <div class="actions" id="actions">
+        <button class="btn ghost" id="tipb">Tipp</button>
+        <button class="btn ghost" id="idk">Zeig mir den Weg</button>
+        <button class="btn primary" id="check">Prüfen</button>
+      </div>
+      <div id="fb"></div>
+    </div>`;
+  document.getElementById('bk').onclick = e => { e.preventDefault(); RUN.results.length ? summary() : home(); };
+  document.getElementById('tipb').onclick = () => { document.getElementById('tip').hidden = false; };
+  document.getElementById('idk').onclick = () => finish({ ok: false, diag: 'Kein Problem – genau dafür üben wir. Schau dir den Rechenweg Schritt für Schritt an.' }, null);
+  document.getElementById('check').onclick = check;
+  if (q.kind === 'choice') app.querySelectorAll('.opt').forEach(b => b.onclick = () => { if (RUN.answered) return; app.querySelectorAll('.opt').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); RUN.sel = +b.dataset.i; });
+  if (q.kind === 'cmp') app.querySelectorAll('.cmp button').forEach(b => b.onclick = () => { if (RUN.answered) return; app.querySelectorAll('.cmp button').forEach(x => x.classList.remove('sel')); b.classList.add('sel'); RUN.sel = b.dataset.s; const sl = document.getElementById('slot'); if (sl) sl.textContent = b.dataset.s; });
+  if (q.kind === 'order') {
+    const pool = document.getElementById('pool'), seq = document.getElementById('seq');
+    const redraw = () => {
+      pool.querySelectorAll('.piece').forEach(p => p.hidden = RUN.seq.includes(+p.dataset.i));
+      seq.innerHTML = RUN.seq.map((i, j) => (j ? '<span class="lt">≤</span>' : '') + `<button class="piece" data-i="${i}">${q.items[i].h}</button>`).join('');
+      seq.querySelectorAll('.piece').forEach(p => p.onclick = () => { if (RUN.answered) return; RUN.seq = RUN.seq.filter(x => x !== +p.dataset.i); redraw(); });
+    };
+    pool.querySelectorAll('.piece').forEach(p => p.onclick = () => { if (RUN.answered) return; RUN.seq.push(+p.dataset.i); redraw(); });
+    document.getElementById('reset').onclick = () => { if (RUN.answered) return; RUN.seq = []; redraw(); };
+  }
+  app.querySelectorAll('input').forEach(inp => {
+    inp.addEventListener('input', () => { inp.value = inp.value.replace(inp.inputMode === 'decimal' ? /[^0-9,.]/g : /[^0-9]/g, ''); });
+  });
+  const first = app.querySelector('.answer input'); if (first && window.matchMedia('(min-width: 700px)').matches) first.focus();
+  window.scrollTo(0, 0);
+}
+
+function readInput(q) {
+  const msg = document.getElementById('msg');
+  if (q.kind === 'frac') {
+    const out = [];
+    for (let i = 0; i < (q.count || 1); i++) {
+      const W = q.whole ? document.getElementById('w' + i).value.trim() : '', N = document.getElementById('n' + i).value.trim(), D = document.getElementById('d' + i).value.trim();
+      if (!W && !N && !D) { msg.textContent = 'Bitte gib eine Antwort ein.'; return null; }
+      if ((N && !D) || (!N && D)) { msg.textContent = 'Bitte Zähler und Nenner ausfüllen.'; return null; }
+      if (D && +D === 0) { msg.textContent = 'Der Nenner darf nie 0 sein.'; return null; }
+      out.push(N ? { w: +(W || 0), n: +N, d: +D } : { w: +W, n: 0, d: 1 });
+    }
+    return out;
+  }
+  if (q.kind === 'nums') {
+    const v = q.fields.map((f, i) => document.getElementById('f' + i).value.trim().replace(',', '.'));
+    if (v.some(x => x === '' || isNaN(+x))) { msg.textContent = 'Bitte fülle alle Felder mit einer Zahl aus.'; return null; }
+    return v.map(Number);
+  }
+  if (q.kind === 'choice' || q.kind === 'cmp') { if (RUN.sel == null) { msg.textContent = 'Bitte wähle eine Antwort aus.'; return null; } return RUN.sel; }
+  if (q.kind === 'order') { if (RUN.seq.length !== q.items.length) { msg.textContent = 'Lege zuerst alle Brüche in eine Reihenfolge.'; return null; } return RUN.seq.slice(); }
+}
+
+function youH(q, input) {
+  if (input == null) return '';
+  if (q.kind === 'frac') return input.map(x => x.d === 1 && x.n === 0 ? `${x.w}` : tH([x.w, x.n, x.d])).join(' und ');
+  if (q.kind === 'nums') return input.map((v, i) => de(v) + (q.fields[i].unit ? ' ' + q.fields[i].unit : '')).join(', ');
+  if (q.kind === 'choice') return q.opts[input].h;
+  if (q.kind === 'cmp') return input === '<' ? '&lt;' : input === '>' ? '&gt;' : '=';
+  if (q.kind === 'order') return input.map(i => q.items[i].h).join(' ≤ ');
+  return '';
+}
+
+function stepsH(steps) {
+  return `<ol class="steps">${steps.map(s => `<li class="${s.trick ? 'trick' : s.alert ? 'alert' : s.sep ? 'sep' : ''}"><span class="sh">${s.h}</span>${s.b ? `<div>${s.b}</div>` : ''}</li>`).join('')}</ol>`;
+}
+
+function check() {
+  if (RUN.answered) return next();
+  const q = RUN.q, input = readInput(q);
+  if (input == null) return;
+  finish(grade(q, input), input);
+}
+
+function finish(res, input) {
+  const q = RUN.q, it = RUN.items[RUN.idx];
+  RUN.answered = true;
+  document.getElementById('msg').textContent = '';
+  app.querySelectorAll('.answer input').forEach(i => i.disabled = true);
+  if (q.kind === 'choice') app.querySelectorAll('.opt').forEach(b => { const o = q.opts[+b.dataset.i]; if (o.ok) b.classList.add('right'); else if (+b.dataset.i === input) b.classList.add('wrong'); });
+  RUN.results.push({ it, ok: res.ok, res, you: youH(q, input), sol: q.sol, body: q.body, title: q.title });
+  if (res.ok) { RUN.streak++; removeFehler(it); confetti(); } else { RUN.streak = 0; if (!it.twin) addFehler(it); }
+  const fb = document.getElementById('fb');
+  if (res.ok) {
+    fb.innerHTML = `<div class="fb ok"><div class="fbh">${pick(PRAISE)}</div>${res.note ? `<p>${res.note}</p>` : ''}<details><summary>So rechnet man es – zum Nachlesen</summary>${stepsH(q.steps)}</details></div>`;
+  } else {
+    const cls = res.form ? 'warn' : 'bad';
+    fb.innerHTML = `<div class="fb ${cls}"><div class="fbh">${res.form ? 'Fast richtig!' : 'Noch nicht richtig'}</div>
+      ${input != null ? `<div class="youline">Deine Antwort: ${youH(q, input)}</div>` : ''}
+      ${res.form ? `<div class="why">${res.form}</div>` : res.diag ? `<div class="why"><b>Was ist passiert?</b> ${res.diag}</div>` : ''}
+      <div class="solline">Richtige Lösung: <span class="s">${q.sol}</span></div>
+      <div class="hand" style="margin-top:8px;font-size:1.1em">So kommst du drauf:</div>
+      ${stepsH(q.steps)}
+      ${it.twin ? '' : '<p class="later">Diese Aufgabe kommt am Ende nochmal dran – zusammen mit einer ähnlichen Aufgabe.</p>'}</div>`;
+  }
+  const act = document.getElementById('actions');
+  act.innerHTML = `<button class="btn primary" id="nextb">${RUN.idx + 1 < RUN.items.length ? 'Weiter' : 'Zur Auswertung'}</button>`;
+  document.getElementById('nextb').onclick = next;
+  if (!res.ok) fb.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+  else document.getElementById('nextb').focus({ preventScroll: true });
+}
+
+function next() { RUN.idx++; if (RUN.idx >= RUN.items.length) summary(); else showQ(); }
+
+function gradeNote(p) { return p >= 92 ? 1 : p >= 81 ? 2 : p >= 67 ? 3 : p >= 50 ? 4 : p >= 30 ? 5 : 6; }
+
+function summary() {
+  const res = RUN.results, ok = res.filter(r => r.ok).length, n = res.length, pct = n ? Math.round(ok / n * 100) : 0;
+  const wrong = res.filter(r => !r.ok);
+  if (RUN.mode === 'topic' && n) { const s = store.get(SKEY, {}); s[RUN.topic] = Math.max(s[RUN.topic] || 0, pct); store.set(SKEY, s); }
+  if (RUN.mode === 'probe' && n === RUN.items.length) { const s = store.get(SKEY, {}); s.probe = Math.max(s.probe || 0, pct); store.set(SKEY, s); }
+  const C = 2 * Math.PI * 62;
+  const msg = pct === 100 ? 'Alles richtig – fantastisch!' : pct >= 80 ? 'Sehr gut! Nur noch ein paar Kleinigkeiten.' : pct >= 50 ? 'Guter Anfang! Jetzt die Fehler ausbessern.' : 'Dranbleiben! Mit jeder Wiederholung wird es leichter.';
+  app.innerHTML = `
+    <div class="top"><a class="back" href="#" id="bk">← Alle Themen</a><span class="chip">${RUN.title}</span></div>
+    <div class="card result">
+      <svg class="ring" viewBox="0 0 150 150" role="img" aria-label="${ok} von ${n} richtig"><circle cx="75" cy="75" r="62" class="bg" fill="none" stroke-width="14"/>
+        <circle cx="75" cy="75" r="62" class="fg" fill="none" stroke-width="14" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - ok / Math.max(n, 1))}" transform="rotate(-90 75 75)"/>
+        <text x="75" y="84" text-anchor="middle" font-size="30">${ok}/${n}</text></svg>
+      <h2>${msg}</h2>
+      ${RUN.mode === 'probe' ? `<p class="note">${pct} % richtig → ungefähr Note ${gradeNote(pct)}</p>` : `<p class="note">${pct} % richtig ${RUN.mode === 'topic' ? starsH(pct) : ''}</p>`}
+      ${wrong.length ? `<div class="mistakes"><div class="section-label" style="margin:6px 0 0">Deine Fehler – kurz erklärt</div>${wrong.map(r => `
+        <div class="mistake"><span class="src">${r.it.s}</span> <b>${r.title}</b>
+          <div class="q">${r.body.replace(/<svg[\s\S]*?<\/svg>/g, '').replace(/<div class="figrow">[\s\S]*?<\/div>/g, '')}</div>
+          ${r.you ? `<div class="d">Deine Antwort: ${r.you}</div>` : ''}
+          <div class="a">Richtig: ${r.sol}</div>
+          ${r.res.form || r.res.diag ? `<div class="d">${r.res.form || r.res.diag}</div>` : ''}</div>`).join('')}</div>` : '<p class="empty">Keine Fehler in dieser Runde.</p>'}
+      <div class="resbtns">
+        ${wrong.length ? `<button class="btn primary" id="rep">Fehler wiederholen (${wrong.length} + ${wrong.filter(r => !r.it.twin).length} ähnliche)</button>` : ''}
+        <button class="btn" id="again">Nochmal mit neuen Zahlen</button>
+        ${RUN.topic ? '<button class="btn ghost" id="card">Lernkarte ansehen</button>' : ''}
+        <button class="btn ghost" id="home">Übersicht</button>
+      </div>
+    </div>`;
+  if (pct >= 80 && n) confetti(140);
+  const cfg = { mode: RUN.mode === 'probe' ? 'repeat' : RUN.mode, topic: RUN.topic, title: RUN.title };
+  document.getElementById('bk').onclick = e => { e.preventDefault(); home(); };
+  document.getElementById('home').onclick = home;
+  const card = document.getElementById('card'); if (card) card.onclick = () => learn(RUN.topic);
+  const rep = document.getElementById('rep');
+  if (rep) rep.onclick = () => startRun({ ...cfg, title: RUN.title + ' – Fehler', items: wrong.flatMap(r => r.it.twin ? [r.it] : [{ ...r.it, rep: true }, twinOf(r.it)]) });
+  document.getElementById('again').onclick = () => startRun({ ...cfg, items: res.map(r => ({ ...twinOf(r.it), s: 'Neue Zahlen', twin: false })) });
+  window.scrollTo(0, 0);
+}
+
+/* ===================== Konfetti ===================== */
+const cv = document.getElementById('confetti'), cx = cv.getContext('2d');
+let bits = [], anim = null;
+function confetti(count = 50) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  cv.width = innerWidth; cv.height = innerHeight;
+  const cols = ['#ffe24a', '#2b56c9', '#18884a', '#cf3a2a', '#7ea3ff'];
+  for (let i = 0; i < count; i++) bits.push({ x: innerWidth / 2 + (Math.random() - .5) * 200, y: innerHeight * .35, vx: (Math.random() - .5) * 12, vy: -Math.random() * 11 - 3, s: 5 + Math.random() * 6, c: pick(cols), r: Math.random() * 6, life: 70 + Math.random() * 30 });
+  if (!anim) anim = requestAnimationFrame(tick);
+}
+function tick() {
+  cx.clearRect(0, 0, cv.width, cv.height);
+  bits.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += .2; p.life--; cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); cx.restore(); });
+  bits = bits.filter(p => p.life > 0 && p.y < cv.height + 20);
+  anim = bits.length ? requestAnimationFrame(tick) : (cx.clearRect(0, 0, cv.width, cv.height), null);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter' || !RUN || !RUN.q) return;
+  if (e.target.tagName === 'BUTTON') return;
+  e.preventDefault(); RUN.answered ? next() : check();
+});
+
+/* Selbsttest für Entwickler: window.__selftest() prüft, ob alle Musterlösungen als richtig erkannt werden */
+window.__selftest = () => {
+  const errs = [];
+  Object.entries(GEN).forEach(([k, g]) => {
+    const items = g.book.map(b => b.p).concat(Array.from({ length: 40 }, () => g.rand()));
+    items.forEach(p => {
+      let q; try { q = g.make(p); } catch (e) { errs.push(k + ' make ' + JSON.stringify(p) + ' ' + e); return; }
+      let input;
+      if (q.kind === 'frac') input = q.expect || (() => { const pp = parts(q.ans.n, q.ans.d); return [q.whole ? { w: pp.w, n: pp.n, d: pp.n ? pp.d : 1 } : { w: 0, ...simp(q.ans.n, q.ans.d) }]; })();
+      if (q.kind === 'frac' && input[0].n === 0 && input[0].d === 0) input = [{ w: input[0].w, n: 0, d: 1 }];
+      if (q.kind === 'nums') input = q.fields.map(f => f.ans);
+      if (q.kind === 'choice') input = q.opts.findIndex(o => o.ok);
+      if (q.kind === 'cmp') input = q.ans;
+      if (q.kind === 'order') input = q.items.map((x, i) => i).sort((a, b) => q.items[a].v - q.items[b].v);
+      const r = grade(q, input);
+      if (!r.ok) errs.push(k + ' ' + JSON.stringify(p) + ' -> ' + JSON.stringify(r));
+      if (q.kind === 'nums' && q.fields.some(f => !Number.isInteger(f.ans))) errs.push(k + ' non-int ' + JSON.stringify(p));
+      if (!q.steps || !q.steps.length) errs.push(k + ' no steps');
+    });
+  });
+  return errs;
+};
+
+home();
+</script>
+</body>
+</html>
