@@ -22,6 +22,7 @@
 
   .subject-switch {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
     margin-bottom: 32px;
@@ -73,6 +74,7 @@
   .card.deutsch-test .btn { background: #16a085; }
   .card.deutsch-explain .btn { background: #c0392b; }
   .card.deutsch-diktat .btn { background: #2348c9; }
+  .card.bio-biene .btn { background: #b97a00; }
 
   footer { margin-top: 34px; color: rgba(255,255,255,0.7); font-size: 0.8em; }
 </style>
@@ -86,6 +88,7 @@
   <div class="subject-switch">
     <button class="subject-btn active" id="btn-mathe" onclick="showSubject('mathe')">📐 Mathe</button>
     <button class="subject-btn" id="btn-deutsch" onclick="showSubject('deutsch')">📗 Deutsch</button>
+    <button class="subject-btn" id="btn-bio" onclick="showSubject('bio')">🐝 Bio</button>
   </div>
 
   <div class="subject-panel active" id="panel-mathe">
@@ -130,6 +133,17 @@
         <h2>Diktat: Der Wind</h2>
         <p>„Der Wind bringt Leben und Tod“ wird langsam vorgelesen, mit Satzzeichen. Danach prüfen, Fehler ansehen und Fehlerstatistik.</p>
         <span class="btn">Diktat üben</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="subject-panel" id="panel-bio">
+    <div class="cards">
+      <a class="card bio-biene" href="bio_honigbiene.html">
+        <div class="icon">🐝</div>
+        <h2>Honigbiene Lerntrainer</h2>
+        <p>Körperbau, Bienenstaat, Entwicklung und Organe: Kapitel mit Eselsbrücken, Lernkarten und 5 Tests mit Fehlererklärung.</p>
+        <span class="btn">Bienen lernen</span>
       </a>
     </div>
   </div>

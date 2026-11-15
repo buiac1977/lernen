@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Honigbiene Lerntrainer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout-Idee: kariertes Schulheft mit Füller-Blau, Honiggelb als Akzent, Waben als Wiedererkennung */
+:root{
+  --paper:#f5f7fc; --grid:#dbe3f2; --card:#ffffff; --ink:#1b2a5c; --ink-soft:#52608c;
+  --honey:#f5b301; --honey-soft:#fff1c4; --on-honey:#2a1d00; --line:#c9d3ea;
+  --good:#17804a; --good-soft:#dff5e8; --bad:#c2352a; --bad-soft:#fde4e0; --mark:#d6246e;
+  --bee-body:#f7c331; --bee-dark:#4a3110; --wing:#cfe3ff;
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --body:"Nunito","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --paper:#11162a; --grid:#1b2340; --card:#1a2140; --ink:#e9edfb; --ink-soft:#a9b3d8;
+    --honey:#ffc533; --honey-soft:#3d3210; --on-honey:#2a1d00; --line:#313b63;
+    --good:#62d394; --good-soft:#143524; --bad:#ff8a7c; --bad-soft:#44201c; --mark:#ff6aa8;
+    --bee-body:#f2bb25; --bee-dark:#3a260b; --wing:#3b4d7d;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#11162a; --grid:#1b2340; --card:#1a2140; --ink:#e9edfb; --ink-soft:#a9b3d8;
+  --honey:#ffc533; --honey-soft:#3d3210; --on-honey:#2a1d00; --line:#313b63;
+  --good:#62d394; --good-soft:#143524; --bad:#ff8a7c; --bad-soft:#44201c; --mark:#ff6aa8;
+  --bee-body:#f2bb25; --bee-dark:#3a260b; --wing:#3b4d7d;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background-color:var(--paper);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);font-weight:700}
+h2{font-size:1.5rem;font-weight:600}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px 64px}
+header.top{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:2px solid var(--ink)}
+.topin{max-width:860px;margin:0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:1.15rem;display:flex;align-items:center;gap:8px;margin-right:auto}
+.hex{width:26px;height:26px;background:var(--honey);clip-path:polygon(25% 3%,75% 3%,100% 50%,75% 97%,25% 97%,0 50%)}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav a{font-family:var(--display);font-weight:600;text-decoration:none;color:var(--ink);padding:8px 14px;border-radius:999px;border:2px solid transparent}
+nav a.on{background:var(--honey);color:var(--on-honey);border-color:var(--ink)}
+main{display:flex;flex-direction:column;gap:20px;padding-top:24px}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px;box-shadow:4px 4px 0 var(--ink)}
+.card.flat{box-shadow:none;border-color:var(--line)}
+.soft{color:var(--ink-soft)}
+.btn{font-family:var(--display);font-weight:600;border:2px solid var(--ink);background:var(--honey);color:var(--on-honey);border-radius:12px;padding:12px 20px;font-size:1.05rem;min-height:48px}
+.btn.ghost{background:var(--card);color:var(--ink)}
+.btn:active{transform:translate(2px,2px)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.pill{display:inline-block;font-weight:800;font-size:.8rem;letter-spacing:.03em;padding:3px 10px;border-radius:999px;background:var(--honey-soft);color:var(--ink);border:1.5px solid var(--honey)}
+.card>.pill{align-self:flex-start}
+.pill.red{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.pill.green{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--display);font-weight:600;border:2px solid var(--ink);background:var(--card);border-radius:999px;padding:8px 16px;min-height:44px}
+.chip.on{background:var(--ink);color:var(--card)}
+.esel{background:var(--honey-soft);border-left:6px solid var(--honey);border-radius:10px;padding:12px 14px}
+.esel b.lab{display:block;font-family:var(--display);font-size:.85rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:2px}
+.big{font-family:var(--display);font-size:1.25rem;font-weight:600}
+ul.plain{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px}
+/* Biene */
+.beebox{background:var(--paper);border:2px dashed var(--line);border-radius:14px;padding:6px}
+svg.bee{display:block;width:100%;height:auto;max-height:340px}
+.b-out{stroke:var(--ink);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.b-body{fill:var(--bee-body)} .b-stripe{fill:var(--bee-dark)} .b-wing{fill:var(--wing);fill-opacity:.75}
+.b-leg{fill:none;stroke:var(--ink);stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.b-leg.back{stroke:var(--ink-soft);opacity:.55}
+.b-eye{fill:var(--ink)} .b-line{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.hl{stroke:var(--mark)!important;stroke-width:7!important}
+.ring{fill:none;stroke:var(--mark);stroke-width:5}
+.ring.p{animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{stroke-opacity:.35}}
+.spot{cursor:pointer}
+.spot circle{fill:var(--card);stroke:var(--ink);stroke-width:3}
+.spot text{font-family:var(--display);font-weight:700;font-size:15px;fill:var(--ink);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.spot.on circle{fill:var(--mark);stroke:var(--mark)} .spot.on text{fill:#fff}
+.partinfo{min-height:96px}
+/* Tabelle */
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.95rem}
+th,td{border:1.5px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+thead th{font-family:var(--display);background:var(--honey-soft)}
+tbody th{font-family:var(--display);font-weight:600;white-space:nowrap}
+.size{display:flex;flex-direction:column;gap:6px}
+.size div{display:flex;align-items:center;gap:10px;font-weight:700}
+.size i{display:block;height:16px;border-radius:8px;background:var(--honey);border:2px solid var(--ink)}
+dl.facts{margin:0;display:grid;grid-template-columns:auto 1fr;gap:8px 14px}
+dl.facts dt{font-family:var(--display);font-weight:600;color:var(--ink-soft)}
+dl.facts dd{margin:0;font-weight:700}
+/* Stufen + Zeitleiste */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.step{border:2px solid var(--ink);border-radius:14px;padding:12px;background:var(--card);display:flex;flex-direction:column;gap:4px}
+.step .n,.num{font-family:var(--display);font-weight:700;color:var(--on-honey);background:var(--honey);border:2px solid var(--ink);width:32px;height:32px;border-radius:50%;display:grid;place-items:center}
+.tl{display:flex;flex-direction:column;gap:10px}
+.job{display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:start;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--card)}
+.job .day{font-family:var(--display);font-weight:700;background:var(--ink);color:var(--card);border-radius:10px;padding:6px 8px;text-align:center;font-variant-numeric:tabular-nums}
+.job.out .day{background:var(--honey);color:var(--on-honey);border:2px solid var(--ink)}
+/* Karten */
+.flash{min-height:230px;justify-content:center;text-align:center;cursor:pointer}
+.flash .q{font-family:var(--display);font-size:1.45rem;font-weight:600}
+.flash .a{font-size:1.2rem;font-weight:800}
+/* Test */
+.bar{height:14px;border-radius:999px;border:2px solid var(--ink);background:var(--card);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--honey)}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;border:2px solid var(--ink);background:var(--card);border-radius:12px;padding:14px 16px;font-weight:700;min-height:52px}
+.opt:disabled{cursor:default;opacity:1}
+.opt.right{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.opt.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.slots{min-height:56px;border:2px dashed var(--line);border-radius:12px;padding:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.slots .chip{background:var(--honey);color:var(--on-honey)}
+input.txt{font:inherit;font-weight:700;padding:12px 14px;border-radius:12px;border:2px solid var(--ink);background:var(--card);color:var(--ink);width:100%;max-width:420px;min-height:48px}
+.fb{border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;border:2px solid}
+.fb.ok{background:var(--good-soft);border-color:var(--good)} .fb.no{background:var(--bad-soft);border-color:var(--bad)}
+.fb .head{font-family:var(--display);font-weight:700;font-size:1.2rem}
+.fb.ok .head{color:var(--good)} .fb.no .head{color:var(--bad)}
+.score{font-family:var(--display);font-weight:700;font-size:3rem;line-height:1;font-variant-numeric:tabular-nums}
+.err{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.err .yours{color:var(--bad);font-weight:700} .err .corr{color:var(--good);font-weight:800}
+.tcard{display:flex;flex-direction:column;gap:8px}
+@media (max-width:480px){body{font-size:17px}.job{grid-template-columns:1fr}.card{padding:16px}}
+@media (prefers-reduced-motion: reduce){.ring.p{animation:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="topin">
+  <div class="brand"><span class="hex" aria-hidden="true"></span>Honigbiene Lerntrainer</div>
+  <nav id="nav" aria-label="Bereiche">
+    <a href="#start">Start</a><a href="#lernen">Lernen</a><a href="#karten">Lernkarten</a><a href="#tests">Tests</a>
+  </nav>
+</div></header>
+<div class="wrap"><main id="app"></main></div>
+
+<script>
+"use strict";
+/* ---------- Inhalte aus dem Heft ---------- */
+const PARTS = {
+  kopf:{n:"Kopf",x:150,y:112,t:"Der vorderste der 3 Körperabschnitte. Am Kopf sitzen die Facettenaugen, die Fühler und die Mundwerkzeuge."},
+  brust:{n:"Brust",x:222,y:150,t:"Der mittlere Körperabschnitt. Hier sitzen die Muskeln für die Bewegung: Alle 6 Beine und alle 4 Flügel sind an der Brust befestigt."},
+  hinterleib:{n:"Hinterleib",x:380,y:172,t:"Der hinterste und größte Körperabschnitt. Innen liegen zum Beispiel der Honigmagen und ganz hinten der Stachel."},
+  auge:{n:"Facettenaugen",x:120,y:142,t:"Die großen Augen an der Seite des Kopfes. Ein Facettenauge besteht aus sehr vielen winzigen Einzelaugen. Zusammen ergibt das ein Bild wie ein Mosaik."},
+  fuehler:{n:"Fühler",x:70,y:86,t:"Zwei Fühler vorn am Kopf. Damit kann die Biene riechen und tasten."},
+  mund:{n:"Mundwerkzeuge",x:113,y:226,t:"Unten am Kopf. Mit dem Rüssel saugt die Biene Nektar aus den Blüten."},
+  fluegel:{n:"4 Flügel",x:318,y:66,t:"Die Biene hat 4 Flügel: auf jeder Seite einen großen Vorderflügel und einen kleineren Hinterflügel."},
+  beine:{n:"6 Beine",x:224,y:258,t:"Wie jedes Insekt hat die Biene 6 Beine, also 3 Beinpaare. Alle sitzen an der Brust."},
+  futtersaft:{n:"Futtersaftdrüse",x:152,y:132,inner:1,t:"Liegt im Kopf. Sie stellt den Futtersaft her, mit dem die Amme die jungen Larven füttert."},
+  honigmagen:{n:"Honigmagen",x:295,y:165,inner:1,t:"Liegt vorn im Hinterleib. Er ist wie eine Einkaufstasche: Darin trägt die Sammelbiene den Nektar von der Blüte in den Stock."},
+  wachs:{n:"Wachsdrüsen",x:363,y:222,inner:1,t:"Sitzen unten am Hinterleib. Sie geben kleine Wachsplättchen ab. Daraus baut die Baubiene die Waben."},
+  sammelbein:{n:"Sammelbein",x:284,y:246,inner:1,t:"Das Hinterbein. Daran klebt die Sammelbiene den Blütenstaub (Pollen) fest und trägt ihn nach Hause."},
+  wehr:{n:"Wehrdrüse",x:432,y:174,inner:1,t:"Liegt hinten im Hinterleib und stellt das Gift her. Wehr kommt von wehren: Damit verteidigt sich die Biene."},
+  stachel:{n:"Stachel",x:480,y:187,inner:1,t:"Ganz am Ende des Hinterleibs. Mit Stachel und Gift aus der Wehrdrüse verteidigt der Wächter den Stock."}
+};
+const OUTER=["kopf","brust","hinterleib","auge","fuehler","mund","fluegel","beine"];
+const INNER=["futtersaft","mund","honigmagen","wachs","sammelbein","wehr","stachel"];
+
+const CASTE={k:"Königin",d:"Drohne",a:"Arbeiterin"};
+const TABLE=[
+ {r:"Körperlänge",k:"20 mm",d:"16–18 mm",a:"14 mm"},
+ {r:"Körperbau",star:1,k:"schmal und schlank, Hinterleib überragt die Flügel",d:"plump, Flügel länger als der Hinterleib",a:"zierlich, Hinterleib überragt die Flügel kaum"},
+ {r:"Anzahl",k:"1",d:"etwa 1000",a:"40.000–80.000"},
+ {r:"Lebensdauer",k:"4–5 Jahre",d:"April bis August",a:"Sommer: 4–6 Wochen, Winter: einige Monate"},
+ {r:"Aufgabe",k:"Eiablage, bis 2000 Eier täglich",d:"Begattung der Königin",a:"Verrichtung aller Arbeiten"},
+ {r:"Entstehung",star:1,k:"aus befruchteten Eiern, mit besonderem Futter",d:"aus unbefruchteten Eiern",a:"aus befruchteten Eiern"}
+];
+const CASTE_TIP={
+ k:"Die Königin trägt eine lange Schleppe: Ihr langer Hinterleib schaut weit unter den Flügeln hervor. Sie ist die Größte und die Einzige.",
+ d:"DrOHNE = OHNE. Drohnen entstehen OHNE Befruchtung und leben OHNE Winter (nur April bis August). Sie sind plump, die Flügel sind wie ein zu langer Mantel.",
+ a:"Die Arbeiterin ist die Kleinste, aber es gibt am meisten von ihr. Im Sommer arbeitet sie so viel, dass sie nur 4–6 Wochen lebt."
+};
+const JOBS=[
+ {d:"1.–3. Tag",n:"Raumpflegerin",t:"Sie putzt die leeren Zellen der Wabe, damit die Königin wieder Eier hineinlegen kann."},
+ {d:"3.–6. Tag",n:"Kindermädchen",t:"Sie füttert die älteren Larven."},
+ {d:"6.–10. Tag",n:"Amme",t:"Sie füttert die jungen Larven mit Futtersaft.",o:"Futtersaftdrüse"},
+ {d:"10.–16. Tag",n:"Baubiene",t:"Sie baut neue Waben aus Wachs.",o:"Wachsdrüsen"},
+ {d:"16. Tag",n:"Orientierungsflüge",t:"Sie fliegt zum ersten Mal kurz hinaus und merkt sich, wo der Stock steht.",out:1},
+ {d:"16.–20. Tag",n:"Pollenstampfer, Honigmacher",t:"Sie stampft den Pollen in die Zellen und macht aus Nektar Honig."},
+ {d:"16.–20. Tag",n:"Müllarbeiter",t:"Sie trägt Abfall und tote Bienen aus dem Stock."},
+ {d:"20. Tag",n:"Wächter",t:"Sie bewacht den Eingang und lässt keine Feinde hinein.",o:"Wehrdrüse und Stachel"},
+ {d:"20.–35. Tag",n:"Sammelbiene",t:"Sie fliegt hinaus und sammelt Nektar und Pollen an den Blüten.",o:"Mundwerkzeuge, Honigmagen, Sammelbein",out:1}
+];
+
+/* ---------- Fragen: erste Antwort (o[0]) ist immer die richtige ---------- */
+const M={
+ kbh:"Kleine Bienen Hüpfen = Kopf, Brust, Hinterleib.",
+ z346:"3 – 4 – 6: 3 Körperteile, 4 Flügel, 6 Beine.",
+ sechs:"In-SECHS-t: Jedes Insekt hat sechs Beine.",
+ gross:"Die Chefin ist die Größte (20 mm), die Fleißige die Kleinste (14 mm), die Drohne liegt dazwischen.",
+ anz:"1 Chefin, 1000 Männer, eine ganze Stadt voller Arbeiterinnen (40.000–80.000).",
+ ohne:"DrOHNE = OHNE: ohne Befruchtung entstanden, ohne Winter (nur April bis August).",
+ schleppe:"Die Königin trägt eine lange Schleppe: Ihr Hinterleib schaut weit unter den Flügeln hervor.",
+ mantel:"Die Drohne ist plump und trägt einen zu langen Mantel: Die Flügel sind länger als der Hinterleib.",
+ elpb:"Ein Lustiger Papagei Brummt = Ei, Larve, Puppe, Biene.",
+ robert:"Robert Kann Am Besten Pizza Mit Wurst Servieren = Raumpflegerin, Kindermädchen, Amme, Baubiene, Pollenstampfer, Müllarbeiter, Wächter, Sammelbiene.",
+ innen:"Erst drinnen, dann draußen: putzen, füttern, bauen, lagern, bewachen und erst ganz zum Schluss sammeln.",
+ tage:"Die Tage am Anfang: 1, 3, 6, 10. Der Abstand wird immer um eins größer (+2, +3, +4).",
+ tasche:"Der Honigmagen ist die Einkaufstasche der Biene.",
+ wehr:"Wehrdrüse kommt von sich wehren.",
+ amme:"Amme = Futtersaft. Eine Amme füttert Babys, und die Bienen-Babys sind die jungen Larven."
+};
+const lab=(id,wrong)=>({t:"label",part:id,q:"Wie heißt der pink markierte Teil?",o:[PARTS[id].n.replace(/^\d /,""),...wrong],e:PARTS[id].t});
+const POOL={
+koerper:[
+ {q:"In wie viele Abschnitte ist der Körper der Biene gegliedert?",o:["3","2","4","6"],e:"Der Körper hat eine 3-Gliederung: Kopf, Brust und Hinterleib.",m:M.kbh},
+ {t:"order",q:"Tippe die Körperabschnitte in der richtigen Reihenfolge an, von vorn nach hinten.",items:["Kopf","Brust","Hinterleib"],e:"Vorn ist der Kopf, in der Mitte die Brust, hinten der Hinterleib.",m:M.kbh},
+ {q:"Wie viele Flügel hat die Honigbiene?",o:["4","2","6","8"],e:"Sie hat 4 Flügel: auf jeder Seite einen großen und einen kleinen.",m:M.z346},
+ {q:"Wie viele Beine hat die Honigbiene?",o:["6","4","8","10"],e:"Alle Insekten haben 6 Beine.",m:M.sechs},
+ {q:"Welche Reihe stimmt?",o:["3 Körperabschnitte, 4 Flügel, 6 Beine","3 Flügel, 4 Beine, 6 Körperabschnitte","4 Körperabschnitte, 6 Flügel, 3 Beine","6 Flügel, 4 Beine, 3 Körperabschnitte"],e:"Merke dir die Zahlen in dieser Reihenfolge.",m:M.z346},
+ lab("auge",["Fühler","Mundwerkzeuge","Flügel"]),
+ lab("fuehler",["Facettenaugen","Mundwerkzeuge","Beine"]),
+ lab("mund",["Fühler","Stachel","Facettenaugen"]),
+ lab("brust",["Kopf","Hinterleib","Flügel"]),
+ lab("hinterleib",["Brust","Kopf","Beine"]),
+ lab("kopf",["Brust","Hinterleib","Fühler"]),
+ {t:"text",q:"Wie heißen die Augen der Biene? Schreibe das Wort.",acc:["facettenaugen","facettenauge"],show:"Facettenaugen",e:"Facettenaugen bestehen aus vielen kleinen Einzelaugen."},
+ {q:"Woraus besteht ein Facettenauge?",o:["aus sehr vielen kleinen Einzelaugen","aus einer einzigen großen Linse","aus zwei Pupillen","aus Wachs"],e:"Viele winzige Einzelaugen ergeben zusammen ein Bild wie ein Mosaik."},
+ {q:"Wozu braucht die Biene ihre Fühler?",o:["zum Riechen und Tasten","zum Sehen","zum Fliegen","zum Stechen"],e:"Mit den Fühlern riecht und tastet die Biene."},
+ {t:"text",q:"Wie heißt der mittlere Körperabschnitt?",acc:["brust"],show:"Brust",e:"Kopf, Brust, Hinterleib. Die Brust liegt in der Mitte.",m:M.kbh},
+ {q:"An welchem Körperabschnitt sitzen die Facettenaugen, die Fühler und die Mundwerkzeuge?",o:["am Kopf","an der Brust","am Hinterleib"],e:"Alle drei sitzen am Kopf."}
+],
+staat:[
+ {q:"Wie viele Königinnen leben in einem Bienenstaat?",o:["1","10","1000","40.000"],e:"Es gibt nur eine einzige Königin.",m:M.anz},
+ {q:"Wie viele Drohnen gibt es ungefähr im Bienenstaat?",o:["etwa 1000","1","etwa 40.000","etwa 10"],e:"Es gibt ungefähr 1000 Drohnen.",m:M.anz},
+ {q:"Wie viele Arbeiterinnen leben in einem Bienenstaat?",o:["40.000–80.000","1000","4000–8000","100"],e:"Die Arbeiterinnen sind mit 40.000 bis 80.000 die größte Gruppe.",m:M.anz},
+ {q:"Wer ist am längsten?",o:["die Königin (20 mm)","die Drohne (16–18 mm)","die Arbeiterin (14 mm)"],e:"Königin 20 mm, Drohne 16–18 mm, Arbeiterin 14 mm.",m:M.gross},
+ {q:"Wie lang ist eine Arbeiterin?",o:["14 mm","20 mm","16–18 mm","4 mm"],e:"Die Arbeiterin ist mit 14 mm die Kleinste.",m:M.gross},
+ {q:"Wie lang ist eine Drohne?",o:["16–18 mm","14 mm","20 mm","25 mm"],e:"Die Drohne liegt mit 16–18 mm zwischen Arbeiterin und Königin.",m:M.gross},
+ {t:"order",q:"Sortiere von der Größten zur Kleinsten.",items:["Königin","Drohne","Arbeiterin"],e:"Königin 20 mm, Drohne 16–18 mm, Arbeiterin 14 mm.",m:M.gross},
+ {q:"Zu wem passt dieser Körperbau: plump, Flügel länger als der Hinterleib?",o:["Drohne","Königin","Arbeiterin"],e:"Die Drohne ist plump und ihre Flügel sind länger als der Hinterleib.",m:M.mantel},
+ {q:"Zu wem passt dieser Körperbau: schmal und schlank, Hinterleib überragt die Flügel?",o:["Königin","Drohne","Arbeiterin"],e:"Bei der Königin schaut der lange Hinterleib weit unter den Flügeln hervor.",m:M.schleppe},
+ {q:"Zu wem passt dieser Körperbau: zierlich, Hinterleib überragt die Flügel kaum?",o:["Arbeiterin","Königin","Drohne"],e:"Die Arbeiterin ist zierlich. Hinterleib und Flügel sind fast gleich lang."},
+ {q:"Wie alt wird eine Königin?",o:["4–5 Jahre","4–6 Wochen","von April bis August","einige Monate"],e:"Die Königin lebt mit 4–5 Jahren am längsten."},
+ {q:"Wann leben die Drohnen?",o:["von April bis August","das ganze Jahr","nur im Winter","4–5 Jahre lang"],e:"Drohnen gibt es nur von April bis August.",m:M.ohne},
+ {q:"Wie lange lebt eine Arbeiterin im Sommer?",o:["4–6 Wochen","4–5 Jahre","einige Monate","4–6 Tage"],e:"Im Sommer arbeitet sie sehr viel und lebt deshalb nur 4–6 Wochen."},
+ {q:"Wie lange lebt eine Arbeiterin im Winter?",o:["einige Monate","4–6 Wochen","4–5 Jahre","einen Tag"],e:"Im Winter gibt es weniger Arbeit. Dann lebt sie einige Monate."},
+ {q:"Was ist die Aufgabe der Königin?",o:["Eier legen","Honig sammeln","den Stock bewachen","Waben bauen"],e:"Die Königin legt die Eier: bis zu 2000 Stück am Tag."},
+ {q:"Wie viele Eier kann die Königin täglich legen?",o:["bis zu 2000","bis zu 20","bis zu 200","bis zu 80.000"],e:"Bis zu 2000 Eier am Tag."},
+ {q:"Was ist die Aufgabe der Drohnen?",o:["die Königin begatten","Nektar sammeln","die Larven füttern","den Stock putzen"],e:"Drohnen haben nur eine Aufgabe: die Begattung der Königin."},
+ {q:"Woraus entstehen Drohnen?",o:["aus unbefruchteten Eiern","aus befruchteten Eiern","aus befruchteten Eiern mit besonderem Futter"],e:"Drohnen entstehen aus unbefruchteten Eiern.",m:M.ohne},
+ {q:"Woraus entstehen Arbeiterinnen?",o:["aus befruchteten Eiern","aus unbefruchteten Eiern","aus Drohnen"],e:"Arbeiterinnen entstehen aus befruchteten Eiern.",m:M.ohne},
+ {q:"Königin und Arbeiterin entstehen beide aus befruchteten Eiern. Was ist bei der Königin anders?",o:["Ihre Larve bekommt besonderes Futter.","Ihr Ei ist unbefruchtet.","Sie schlüpft nur im Winter.","Sie wird von Drohnen gefüttert."],e:"Bekommt eine Larve besonderes Futter, wird daraus eine Königin."},
+ {t:"text",q:"Wer verrichtet alle Arbeiten im Bienenstock? Schreibe das Wort.",acc:["arbeiterin","arbeiterinnen","arbeitsbiene","arbeitsbienen"],show:"die Arbeiterinnen",e:"Die Arbeiterinnen verrichten alle Arbeiten."},
+ {t:"text",q:"Wie heißen die Bienen, die aus unbefruchteten Eiern entstehen?",acc:["drohne","drohnen"],show:"Drohnen",e:"Drohnen entstehen aus unbefruchteten Eiern.",m:M.ohne}
+],
+entwicklung:[
+ {t:"order",q:"Tippe die Entwicklungsstufen in der richtigen Reihenfolge an.",items:["Ei","Larve (Made)","Puppe","Biene"],e:"Ei, dann Larve (Made), dann Puppe, dann die fertige Biene.",m:M.elpb},
+ {q:"Wie nennt man die Entwicklung der Honigbiene?",o:["vollkommene Verwandlung","unvollkommene Verwandlung","Begattung","Gliederung"],e:"Die Biene macht eine vollkommene Verwandlung durch. Das Fachwort ist Metamorphose."},
+ {t:"text",q:"Wie heißt das Fachwort für die Verwandlung?",acc:["metamorphose"],show:"Metamorphose",e:"Vollkommene Verwandlung = Metamorphose."},
+ {q:"Wie nennt man die Larve der Biene noch?",o:["Made","Puppe","Drohne","Amme"],e:"Die Larve der Biene heißt auch Made."},
+ {q:"Welche Stufe kommt nach der Larve?",o:["Puppe","Ei","Biene","Made"],e:"Nach der Larve kommt die Puppe. In der Puppe verwandelt sie sich zur Biene.",m:M.elpb},
+ {q:"Welche Stufe kommt direkt vor der fertigen Biene?",o:["Puppe","Larve","Ei"],e:"Aus der Puppe schlüpft die fertige Biene.",m:M.elpb},
+ {q:"Was ist die erste Aufgabe einer Arbeiterin (1.–3. Tag)?",o:["Raumpflegerin","Sammelbiene","Wächter","Baubiene"],e:"Am 1.–3. Tag putzt sie als Raumpflegerin die Zellen.",m:M.innen},
+ {q:"Was ist die Arbeiterin am 3.–6. Tag?",o:["Kindermädchen","Raumpflegerin","Baubiene","Sammelbiene"],e:"Am 3.–6. Tag ist sie Kindermädchen und füttert die älteren Larven.",m:M.robert},
+ {q:"Was ist die Arbeiterin am 6.–10. Tag?",o:["Amme","Wächter","Müllarbeiter","Raumpflegerin"],e:"Am 6.–10. Tag ist sie Amme und füttert die jungen Larven mit Futtersaft.",m:M.amme},
+ {q:"Was ist die Arbeiterin am 10.–16. Tag?",o:["Baubiene","Amme","Sammelbiene","Kindermädchen"],e:"Am 10.–16. Tag baut sie als Baubiene Waben aus Wachs.",m:M.robert},
+ {q:"An welchem Tag macht die Arbeiterin ihre Orientierungsflüge?",o:["am 16. Tag","am 1. Tag","am 6. Tag","am 35. Tag"],e:"Am 16. Tag fliegt sie zum ersten Mal hinaus und merkt sich die Umgebung."},
+ {q:"Welche Berufe hat die Arbeiterin am 16.–20. Tag?",o:["Pollenstampfer, Honigmacher und Müllarbeiter","Amme und Baubiene","Raumpflegerin und Kindermädchen","Wächter und Sammelbiene"],e:"Am 16.–20. Tag stampft sie Pollen, macht Honig und trägt Müll hinaus.",m:M.robert},
+ {q:"Was ist die Arbeiterin am 20. Tag?",o:["Wächter","Amme","Baubiene","Raumpflegerin"],e:"Am 20. Tag bewacht sie als Wächter den Eingang."},
+ {q:"Was ist die Arbeiterin vom 20. bis zum 35. Tag?",o:["Sammelbiene","Baubiene","Kindermädchen","Müllarbeiter"],e:"Vom 20. bis 35. Tag sammelt sie Nektar und Pollen. Das ist ihr letzter Beruf.",m:M.innen},
+ {t:"order",q:"Bringe die Berufe der Arbeiterin in die richtige Reihenfolge.",items:["Raumpflegerin","Kindermädchen","Amme","Baubiene","Wächter","Sammelbiene"],e:"Erst die Arbeiten im Stock, ganz zum Schluss das Sammeln draußen.",m:M.robert},
+ {q:"Was macht die Baubiene?",o:["Sie baut Waben aus Wachs.","Sie sammelt Nektar.","Sie füttert die Larven.","Sie bewacht den Eingang."],e:"Die Baubiene baut die Waben. Das Wachs kommt aus ihren Wachsdrüsen."},
+ {q:"Was macht die Raumpflegerin?",o:["Sie putzt die Zellen.","Sie legt Eier.","Sie baut Waben.","Sie sammelt Pollen."],e:"Die Raumpflegerin putzt die Zellen."},
+ {q:"Wo arbeitet eine junge Arbeiterin zuerst?",o:["drinnen im Stock","draußen auf der Wiese"],e:"Die ersten Berufe sind alle im Stock. Sammelbiene wird sie erst zum Schluss.",m:M.innen}
+],
+organe:[
+ lab("futtersaft",["Honigmagen","Wachsdrüsen","Wehrdrüse"]),
+ lab("honigmagen",["Futtersaftdrüse","Wehrdrüse","Wachsdrüsen"]),
+ lab("wachs",["Wehrdrüse","Honigmagen","Sammelbein"]),
+ lab("wehr",["Wachsdrüsen","Honigmagen","Futtersaftdrüse"]),
+ lab("sammelbein",["Mundwerkzeuge","Stachel","Wachsdrüsen"]),
+ lab("stachel",["Sammelbein","Fühler","Mundwerkzeuge"]),
+ {q:"Wozu dient der Honigmagen?",o:["zum Transport von Nektar","zum Herstellen von Wachs","zum Füttern der Larven","zum Herstellen von Gift"],e:"Im Honigmagen trägt die Sammelbiene den Nektar in den Stock.",m:M.tasche},
+ {q:"Welche Drüsen liefern den Baustoff für die Waben?",o:["Wachsdrüsen","Futtersaftdrüsen","Wehrdrüsen"],e:"Die Wachsdrüsen geben Wachs ab. Daraus werden die Waben gebaut."},
+ {q:"Welches Organ braucht die Amme für ihre Arbeit?",o:["Futtersaftdrüse","Wehrdrüse","Sammelbein","Stachel"],e:"Die Amme füttert die jungen Larven mit Futtersaft aus der Futtersaftdrüse.",m:M.amme},
+ {q:"Womit verteidigt sich die Biene?",o:["mit Wehrdrüse und Stachel","mit Wachsdrüsen","mit dem Honigmagen","mit dem Sammelbein"],e:"Die Wehrdrüse stellt das Gift her, mit dem Stachel wird gestochen.",m:M.wehr},
+ {q:"Womit transportiert die Sammelbiene den Pollen?",o:["mit dem Sammelbein","mit dem Honigmagen","mit den Fühlern","mit den Flügeln"],e:"Der Pollen klebt am Sammelbein (Hinterbein)."},
+ {q:"Womit nimmt die Biene den Nektar aus der Blüte auf?",o:["mit den Mundwerkzeugen","mit den Fühlern","mit dem Sammelbein","mit dem Stachel"],e:"Mit den Mundwerkzeugen (dem Rüssel) saugt sie den Nektar auf."},
+ {t:"text",q:"In welchem Organ trägt die Sammelbiene den Nektar nach Hause?",acc:["honigmagen"],show:"Honigmagen",e:"Der Nektar wird im Honigmagen transportiert.",m:M.tasche},
+ {q:"Wo liegt die Futtersaftdrüse?",o:["im Kopf","im Hinterleib","im Sammelbein"],e:"Die Futtersaftdrüse liegt im Kopf."},
+ {q:"Welches Organ braucht die Baubiene?",o:["Wachsdrüsen","Honigmagen","Wehrdrüse","Futtersaftdrüse"],e:"Die Baubiene baut Waben aus dem Wachs ihrer Wachsdrüsen."}
+]};
+const TESTS=[
+ {id:"koerper",t:"Körperbau",s:"Kopf, Brust, Hinterleib und alles, was dran ist",n:12,ch:0},
+ {id:"staat",t:"Der Bienenstaat",s:"Königin, Drohne und Arbeiterin im Vergleich",n:14,ch:1},
+ {id:"entwicklung",t:"Entwicklung und Berufe",s:"Vom Ei zur Biene und die Berufe der Arbeiterin",n:13,ch:2},
+ {id:"organe",t:"Organe der Arbeiterin",s:"Drüsen, Honigmagen, Sammelbein und Stachel",n:11,ch:3},
+ {id:"probe",t:"Große Probe",s:"20 gemischte Fragen aus allen Themen, wie in der echten Probe",n:20,ch:0}
+];
+const TOPICS=["Körperbau","Bienenstaat","Entwicklung","Organe"];
+const CARDS=[
+ [0,"In welche 3 Abschnitte ist der Körper gegliedert?","Kopf, Brust und Hinterleib",M.kbh],
+ [0,"Wie viele Flügel hat die Biene?","4 Flügel",M.z346],
+ [0,"Wie viele Beine hat die Biene?","6 Beine",M.sechs],
+ [0,"Wie heißen die Augen der Biene?","Facettenaugen. Sie bestehen aus vielen kleinen Einzelaugen."],
+ [0,"Womit riecht und tastet die Biene?","mit den Fühlern"],
+ [0,"Womit nimmt die Biene Nektar auf?","mit den Mundwerkzeugen"],
+ [1,"Wie lang sind Königin, Drohne und Arbeiterin?","Königin 20 mm, Drohne 16–18 mm, Arbeiterin 14 mm",M.gross],
+ [1,"Wie viele gibt es von jeder Sorte?","1 Königin, etwa 1000 Drohnen, 40.000–80.000 Arbeiterinnen",M.anz],
+ [1,"Körperbau der Königin?","schmal und schlank, der Hinterleib überragt die Flügel",M.schleppe],
+ [1,"Körperbau der Drohne?","plump, die Flügel sind länger als der Hinterleib",M.mantel],
+ [1,"Körperbau der Arbeiterin?","zierlich, der Hinterleib überragt die Flügel kaum"],
+ [1,"Wie lange lebt die Königin?","4–5 Jahre"],
+ [1,"Wann leben die Drohnen?","von April bis August",M.ohne],
+ [1,"Wie lange lebt eine Arbeiterin?","im Sommer 4–6 Wochen, im Winter einige Monate"],
+ [1,"Aufgabe der Königin?","Eiablage, bis zu 2000 Eier täglich"],
+ [1,"Aufgabe der Drohne?","Begattung der Königin"],
+ [1,"Aufgabe der Arbeiterin?","Verrichtung aller Arbeiten"],
+ [1,"Woraus entsteht eine Königin?","aus einem befruchteten Ei, die Larve bekommt besonderes Futter"],
+ [1,"Woraus entsteht eine Drohne?","aus einem unbefruchteten Ei",M.ohne],
+ [1,"Woraus entsteht eine Arbeiterin?","aus einem befruchteten Ei"],
+ [2,"Wie heißen die 4 Stufen der Entwicklung?","Ei, Larve (Made), Puppe, Biene",M.elpb],
+ [2,"Wie nennt man diese Entwicklung?","vollkommene Verwandlung (Metamorphose)"],
+ [2,"Beruf am 1.–3. Tag?","Raumpflegerin",M.tage],
+ [2,"Beruf am 3.–6. Tag?","Kindermädchen",M.tage],
+ [2,"Beruf am 6.–10. Tag?","Amme",M.amme],
+ [2,"Beruf am 10.–16. Tag?","Baubiene"],
+ [2,"Was passiert am 16. Tag?","Orientierungsflüge"],
+ [2,"Berufe am 16.–20. Tag?","Pollenstampfer, Honigmacher und Müllarbeiter"],
+ [2,"Beruf am 20. Tag?","Wächter"],
+ [2,"Beruf vom 20. bis 35. Tag?","Sammelbiene",M.innen],
+ [2,"Alle Berufe der Reihe nach?","Raumpflegerin, Kindermädchen, Amme, Baubiene, Pollenstampfer/Honigmacher, Müllarbeiter, Wächter, Sammelbiene",M.robert],
+ [3,"Was macht die Futtersaftdrüse?","Sie stellt Futtersaft für die jungen Larven her. Sie liegt im Kopf.",M.amme],
+ [3,"Wozu dient der Honigmagen?","zum Transport von Nektar",M.tasche],
+ [3,"Was machen die Wachsdrüsen?","Sie liefern das Wachs für den Wabenbau."],
+ [3,"Wozu dient das Sammelbein?","zum Transport von Pollen (Blütenstaub)"],
+ [3,"Wozu dienen Wehrdrüse und Stachel?","zur Verteidigung. Die Wehrdrüse stellt das Gift her.",M.wehr]
+];
+
+/* ---------- Zustand ---------- */
+let store={best:{},known:{}};
+try{const s=JSON.parse(localStorage.getItem("biene-max")||"null");if(s&&s.best)store=s;}catch(e){}
+const save=()=>{try{localStorage.setItem("biene-max",JSON.stringify(store));}catch(e){}};
+const ui={chap:0,part:"kopf",ipart:"futtersaft",caste:"k",deck:-1,queue:null,flip:false,run:null};
+const app=document.getElementById("app");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const esel=m=>m?`<div class="esel"><b class="lab">Eselsbrücke</b>${esc(m)}</div>`:"";
+
+/* ---------- Bienen-Zeichnung ---------- */
+let svgN=0;
+function bee(o){
+  o=o||{};const hl=o.hl,inner=!!o.inner,id="c"+(++svgN);
+  const H=k=>hl===k?" hl":"";
+  const abd="M262,170 C262,104 402,100 472,180 C402,238 262,236 262,170 Z";
+  const legs=(cls,dx,dy)=>`<g transform="translate(${dx},${dy})"><path class="b-leg ${cls}" d="M198,192 L178,228 L170,262 l-9,3"/><path class="b-leg ${cls}" d="M222,200 L226,236 L216,268 l-9,3"/><path class="b-leg ${cls}" d="M248,194 L282,228 L276,270 l-9,3"/></g>`;
+  let s=`<svg class="bee" viewBox="30 20 480 270" role="img" aria-label="Zeichnung einer Honigbiene von der Seite"><defs><clipPath id="${id}"><path d="${abd}"/></clipPath></defs>`;
+  s+=legs("back"+H("beine"),14,-3);
+  s+=`<ellipse class="b-wing b-out${H("fluegel")}" cx="305" cy="104" rx="78" ry="21" transform="rotate(-9 230 112)"/>`;
+  s+=`<ellipse class="b-wing b-out${H("fluegel")}" cx="318" cy="84" rx="108" ry="29" transform="rotate(-19 228 108)"/>`;
+  s+=`<path class="b-body" d="${abd}" fill-opacity="${inner?.45:1}"/><g clip-path="url(#${id})" opacity="${inner?.18:1}"><rect class="b-stripe" x="300" y="90" width="24" height="160"/><rect class="b-stripe" x="348" y="90" width="24" height="160"/><rect class="b-stripe" x="396" y="90" width="24" height="160"/></g>`;
+  s+=`<path class="b-out${H("hinterleib")}" fill="none" d="${abd}"/>`;
+  s+=`<ellipse class="b-body b-out${H("brust")}" cx="222" cy="150" rx="60" ry="51" fill-opacity="${inner?.55:1}"/>`;
+  s+=`<ellipse class="b-body b-out${H("kopf")}" cx="136" cy="150" rx="40" ry="45" fill-opacity="${inner?.55:1}"/>`;
+  if(inner){
+    s+=`<path d="M122,186 C170,162 230,160 276,165" fill="none" stroke="#e8792b" stroke-width="4" stroke-linecap="round"/>`;
+    s+=`<ellipse cx="295" cy="165" rx="23" ry="17" fill="#f08a2e" stroke="var(--ink)" stroke-width="2.5"/>`;
+    s+=`<path d="M152,112 q12,8 0,17 q-12,8 0,17 q9,6 3,12" fill="none" stroke="#8a5fd1" stroke-width="7" stroke-linecap="round"/>`;
+    s+=[[332,219],[354,221],[376,219],[397,214]].map(p=>`<ellipse cx="${p[0]}" cy="${p[1]}" rx="9" ry="5" fill="#2f4fb5" stroke="var(--ink)" stroke-width="1.5"/>`).join("");
+    s+=`<ellipse cx="432" cy="174" rx="13" ry="10" fill="#8a5a33" stroke="var(--ink)" stroke-width="2.5"/>`;
+    s+=`<path class="b-line" d="M444,178 L492,190" style="stroke-width:3.5"/>`;
+  }
+  s+=legs(H("beine"),0,0);
+  if(inner)s+=`<path d="M281,231 L277,262" stroke="#2d9c74" stroke-width="12" stroke-linecap="round"/><circle cx="286" cy="250" r="8" fill="var(--honey)" stroke="var(--ink)" stroke-width="2"/>`;
+  s+=`<ellipse class="b-eye" cx="120" cy="142" rx="13" ry="21"/><g fill="var(--card)" opacity=".5">${[[116,132],[124,136],[117,144],[125,148],[119,155]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="1.8"/>`).join("")}</g>`;
+  s+=`<path class="b-line" d="M118,111 L86,78 L60,92"/><path class="b-line" d="M132,107 L104,68 L80,74" opacity=".5"/>`;
+  s+=`<path class="b-line" d="M122,192 C116,206 116,220 112,238" style="stroke:#c2352a;stroke-width:5"/>`;
+  if(hl&&!["kopf","brust","hinterleib","fluegel","beine"].includes(hl)){const p=PARTS[hl];s+=`<circle class="ring p" cx="${p.x}" cy="${p.y}" r="24"/>`;}
+  if(o.spots){o.spots.forEach((k,i)=>{const p=PARTS[k];s+=`<g class="spot${o.sel===k?" on":""}" data-act="part" data-id="${k}" tabindex="0" role="button" aria-label="${esc(p.n)}"><circle cx="${p.x}" cy="${p.y}" r="14"/><text x="${p.x}" y="${p.y}">${i+1}</text></g>`;});}
+  return s+"</svg>";
+}
+
+/* ---------- Ansichten ---------- */
+function vStart(){
+  const known=Object.keys(store.known).length;
+  return `<section class="card">
+    <span class="pill">Bio-Probe · Zusammenleben in Staaten</span>
+    <h1>Hallo Max, heute wirst du Bienen-Profi.</h1>
+    <p>Hier steht alles aus deinem Heft zur Honigbiene. Lerne in drei Schritten, dann sitzt es in der Probe.</p>
+    <div class="beebox">${bee({})}</div>
+  </section>
+  <section class="grid2">
+    <div class="card"><div><span class="num">1</span></div><h2>Lernen</h2><p class="soft">4 kurze Kapitel mit Erklärungen und Eselsbrücken.</p><a class="btn" href="#lernen" style="text-decoration:none;text-align:center">Kapitel lesen</a></div>
+    <div class="card"><div><span class="num">2</span></div><h2>Lernkarten</h2><p class="soft">${known} von ${CARDS.length} Karten gewusst.</p><a class="btn" href="#karten" style="text-decoration:none;text-align:center">Karten üben</a></div>
+    <div class="card"><div><span class="num">3</span></div><h2>Tests</h2><p class="soft">5 Tests. Jeder Fehler wird dir erklärt.</p><a class="btn" href="#tests" style="text-decoration:none;text-align:center">Test starten</a></div>
+  </section>
+  <section class="card flat"><h2>Das Wichtigste auf einen Blick</h2>
+    ${esel(M.z346)}${esel(M.ohne)}${esel(M.elpb)}${esel(M.innen)}
+  </section>`;
+}
+
+function vLernen(){
+  const names=["1 Körperbau","2 Bienenstaat","3 Entwicklung","4 Berufe und Organe"];
+  let h=`<div class="chips" role="tablist">${names.map((n,i)=>`<button class="chip${ui.chap===i?" on":""}" data-act="chap" data-id="${i}">${n}</button>`).join("")}</div>`;
+  if(ui.chap===0){const p=PARTS[ui.part];
+    h+=`<section class="card"><h2>Besonderheiten des Körperbaus</h2>
+    <p>Tippe auf die Nummern an der Biene. Dann siehst du, wie der Teil heißt und wozu er da ist.</p>
+    <div class="beebox">${bee({spots:OUTER,sel:ui.part})}</div>
+    <div class="card flat partinfo"><h3>${OUTER.indexOf(ui.part)+1} · ${esc(p.n)}</h3><p>${esc(p.t)}</p></div>
+    </section>
+    <section class="card"><h2>Das musst du wissen</h2>
+    <ul class="plain"><li><b>3-Gliederung</b> des Körpers in <b>Kopf, Brust und Hinterleib</b></li><li><b>4 Flügel</b></li><li><b>6 Beine</b></li><li>Am Kopf: <b>Facettenaugen, Fühler, Mundwerkzeuge</b></li></ul>
+    ${esel(M.kbh)}${esel(M.z346)}${esel(M.sechs)}
+    <div class="row"><button class="btn" data-act="start" data-id="koerper">Test zum Körperbau</button><button class="btn ghost" data-act="chap" data-id="1">Weiter zu Kapitel 2</button></div></section>`;
+  }
+  if(ui.chap===1){const c=ui.caste;
+    h+=`<section class="card"><h2>Mitglieder des Bienenstaats</h2>
+    <p>In einem Bienenstaat leben drei verschiedene Bienen zusammen. Jede hat ihre eigene Aufgabe.</p>
+    <div class="chips">${Object.keys(CASTE).map(k=>`<button class="chip${c===k?" on":""}" data-act="caste" data-id="${k}">${CASTE[k]}</button>`).join("")}</div>
+    <div class="card flat"><h3>${CASTE[c]}</h3>
+      <dl class="facts">${TABLE.map(r=>`<dt>${r.r}${r.star?" *":""}</dt><dd>${esc(r[c])}</dd>`).join("")}</dl>
+      ${esel(CASTE_TIP[c])}</div>
+    <div><h3>Größenvergleich</h3><div class="size" style="margin-top:8px">
+      <div><i style="width:200px"></i>Königin 20 mm</div><div><i style="width:170px"></i>Drohne 16–18 mm</div><div><i style="width:140px"></i>Arbeiterin 14 mm</div></div></div>
+    </section>
+    <section class="card"><h2>Die ganze Tabelle</h2>
+    <p class="soft">* Körperbau und Entstehung sind in deinem Heft rot angekreuzt. Schau dir diese zwei Zeilen besonders gut an.</p>
+    <div class="tw"><table><thead><tr><th></th><th>Königin</th><th>Drohne</th><th>Arbeiterin</th></tr></thead><tbody>
+    ${TABLE.map(r=>`<tr><th>${r.r}${r.star?" *":""}</th><td>${esc(r.k)}</td><td>${esc(r.d)}</td><td>${esc(r.a)}</td></tr>`).join("")}</tbody></table></div>
+    ${esel(M.gross)}${esel(M.anz)}${esel(M.ohne)}
+    <div class="esel"><b class="lab">Eselsbrücke zur Entstehung</b>Befruchtetes Ei = Weibchen (Königin und Arbeiterin). Unbefruchtetes Ei = Männchen (Drohne). Mit besonderem Futter wird aus der Larve eine Königin.</div>
+    <div class="row"><button class="btn" data-act="start" data-id="staat">Test zum Bienenstaat</button><button class="btn ghost" data-act="chap" data-id="2">Weiter zu Kapitel 3</button></div></section>`;
+  }
+  if(ui.chap===2){
+    const st=[["Ei","Die Königin legt in jede Zelle der Wabe ein Ei."],["Larve (Made)","Aus dem Ei schlüpft die Larve. Sie wird gefüttert und wächst schnell."],["Puppe","Die Zelle wird verschlossen. In der Puppe verwandelt sich die Larve."],["Biene","Die fertige Biene schlüpft aus der Zelle."]];
+    h+=`<section class="card"><h2>Entwicklung der Honigbiene</h2>
+    <p>Die Biene macht eine <b>vollkommene Verwandlung</b> durch. Das Fachwort dafür ist <b>Metamorphose</b>.</p>
+    <div class="steps">${st.map((s,i)=>`<div class="step"><span class="n">${i+1}</span><h3>${s[0]}</h3><p class="soft">${s[1]}</p></div>`).join("")}</div>
+    <p class="big">Ei → Larve (Made) → Puppe → Biene</p>
+    ${esel(M.elpb)}
+    <div class="esel"><b class="lab">Warum vollkommen?</b>Die Larve sieht ganz anders aus als die fertige Biene. Erst in der Puppe wird sie komplett umgebaut. Vollkommen heißt: mit Puppe.</div>
+    <div class="row"><button class="btn ghost" data-act="chap" data-id="3">Weiter zu Kapitel 4</button></div></section>`;
+  }
+  if(ui.chap===3){const p=PARTS[ui.ipart];
+    h+=`<section class="card"><h2>Lebenszyklus der Arbeitsbiene</h2>
+    <p>Eine Arbeiterin hat nicht nur einen Beruf. Je älter sie wird, desto weiter kommt sie nach draußen. Gelb markierte Tage ist sie draußen, an allen anderen arbeitet sie im Stock.</p>
+    <div class="tl">${JOBS.map(j=>`<div class="job${j.out?" out":""}"><div class="day">${j.d}</div><div><h3>${j.n}</h3><p>${j.t}</p>${j.o?`<p class="soft">Dafür braucht sie: <b>${j.o}</b></p>`:""}</div></div>`).join("")}</div>
+    ${esel(M.innen)}${esel(M.robert)}${esel(M.tage)}
+    </section>
+    <section class="card"><h2>Die Organe der Arbeiterin</h2>
+    <p>So sieht die Biene innen aus. Tippe auf die Nummern.</p>
+    <div class="beebox">${bee({inner:1,spots:INNER,sel:ui.ipart})}</div>
+    <div class="card flat partinfo"><h3>${INNER.indexOf(ui.ipart)+1} · ${esc(p.n)}</h3><p>${esc(p.t)}</p></div>
+    <div class="esel"><b class="lab">Eselsbrücke: Organ und Beruf gehören zusammen</b>Amme → Futtersaftdrüse · Baubiene → Wachsdrüsen · Wächter → Wehrdrüse und Stachel · Sammelbiene → Honigmagen und Sammelbein</div>
+    ${esel(M.tasche)}${esel(M.wehr)}
+    <div class="row"><button class="btn" data-act="start" data-id="entwicklung">Test: Entwicklung und Berufe</button><button class="btn" data-act="start" data-id="organe">Test: Organe</button></div></section>`;
+  }
+  return h;
+}
+
+function deckIdx(){return CARDS.map((c,i)=>i).filter(i=>ui.deck<0||CARDS[i][0]===ui.deck);}
+function vKarten(){
+  const all=deckIdx();
+  if(!ui.queue)ui.queue=shuffle(all.filter(i=>!store.known[i]));
+  const done=all.length-ui.queue.length;
+  let h=`<section class="card"><h2>Lernkarten</h2><p>Lies die Frage und sag die Antwort laut. Dann dreh die Karte um und prüfe dich ehrlich.</p>
+  <div class="chips"><button class="chip${ui.deck<0?" on":""}" data-act="deck" data-id="-1">Alle</button>${TOPICS.map((t,i)=>`<button class="chip${ui.deck===i?" on":""}" data-act="deck" data-id="${i}">${t}</button>`).join("")}</div>
+  <div class="bar" aria-hidden="true"><i style="width:${all.length?done/all.length*100:0}%"></i></div>
+  <p class="soft">${done} von ${all.length} gewusst · noch ${ui.queue.length} im Stapel</p></section>`;
+  if(!ui.queue.length){
+    h+=`<section class="card"><h2>Stapel geschafft!</h2><p>Du hast alle Karten in diesem Stapel gewusst. Morgen noch einmal wiederholen, dann bleibt es im Kopf.</p><div class="row"><button class="btn" data-act="deckreset">Stapel noch einmal üben</button><a class="btn ghost" href="#tests" style="text-decoration:none">Zu den Tests</a></div></section>`;
+  }else{const c=CARDS[ui.queue[0]];
+    h+=`<section class="card flash" data-act="flip" tabindex="0" role="button" aria-label="Karte umdrehen">
+      <span class="pill" style="align-self:center">${TOPICS[c[0]]}</span>
+      <p class="q">${esc(c[1])}</p>
+      ${ui.flip?`<p class="a">${esc(c[2])}</p>${esel(c[3])}`:`<p class="soft">Tippen zum Umdrehen</p>`}
+    </section>`;
+    h+=ui.flip?`<div class="row"><button class="btn ghost" data-act="again">Nochmal üben</button><button class="btn" data-act="knew">Wusste ich</button></div>`:`<div class="row"><button class="btn" data-act="flip">Antwort zeigen</button></div>`;
+  }
+  return h;
+}
+
+/* ---------- Tests ---------- */
+function pick(id){
+  const t=TESTS.find(x=>x.id===id);
+  const pool=id==="probe"?[].concat(...Object.keys(POOL).map(k=>POOL[k].map(q=>Object.assign({src:k},q)))):POOL[id].map(q=>Object.assign({src:id},q));
+  return shuffle(pool).slice(0,t.n);
+}
+function prep(q){const r=Object.assign({t:"mc"},q);
+  if(r.t==="mc"||r.t==="label")r.opts=shuffle(r.o);
+  if(r.t==="order")r.pool=shuffle(r.items.map((x,i)=>i)),r.seq=[];
+  if(r.t==="order"&&r.pool.every((v,i)=>v===i))r.pool.reverse();
+  return r;}
+function startRun(id,qs,retry){const t=TESTS.find(x=>x.id===id);
+  ui.run={id,title:retry?"Fehler-Runde: "+t.t:t.t,retry:!!retry,qs:(qs||pick(id)).map(prep),i:0,right:0,wrong:[],state:null};}
+const corr=q=>q.t==="order"?q.items.join(" → "):q.t==="text"?q.show:q.o[0];
+const norm=s=>s.toLowerCase().trim().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/^(der|die|das|den|dem|im|in der|mit dem|eine|ein)\s+/,"").replace(/[^a-z0-9]/g,"");
+function lev(a,b){const m=[];for(let i=0;i<=a.length;i++)m[i]=[i];for(let j=1;j<=b.length;j++)m[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)m[i][j]=Math.min(m[i-1][j]+1,m[i][j-1]+1,m[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return m[a.length][b.length];}
+function judge(q,given,ok,near){const r=ui.run;r.state={ok,given,near};if(ok)r.right++;else r.wrong.push({q,given});}
+
+function vTests(){
+  const r=ui.run;
+  if(!r){
+    return `<section class="card"><h2>Tests</h2><p>Nach jeder Antwort siehst du sofort, ob sie stimmt, und bekommst die Erklärung dazu. Am Ende kannst du nur deine Fehler wiederholen oder den Test neu starten. Bei jedem Start kommen die Fragen neu gemischt.</p></section>
+    <section class="grid2">${TESTS.map(t=>{const b=store.best[t.id];
+      return `<div class="card tcard"><h3>${t.t}</h3><p class="soft">${t.s}</p><p>${b?`<span class="pill ${b.s===b.n?"green":""}">Bestes Ergebnis: ${b.s} von ${b.n}</span>`:`<span class="pill">${t.n} Fragen</span>`}</p><button class="btn" data-act="start" data-id="${t.id}">${b?"Nochmal machen":"Starten"}</button></div>`;}).join("")}</section>`;
+  }
+  if(r.i>=r.qs.length)return vResult();
+  const q=r.qs[r.i],st=r.state;
+  let h=`<section class="card"><div class="row" style="justify-content:space-between"><span class="pill">${esc(r.title)}</span><span class="soft" style="font-weight:800">Frage ${r.i+1} von ${r.qs.length}</span></div>
+  <div class="bar" aria-hidden="true"><i style="width:${r.i/r.qs.length*100}%"></i></div>`;
+  if(q.t==="label")h+=`<div class="beebox">${bee({hl:q.part,inner:!!PARTS[q.part].inner})}</div>`;
+  h+=`<h2>${esc(q.q)}</h2>`;
+  if(q.t==="mc"||q.t==="label"){
+    h+=`<div class="opts">${q.opts.map((o,i)=>{let c="";if(st){if(o===q.o[0])c=" right";else if(o===st.given)c=" wrong";}
+      return `<button class="opt${c}" data-act="opt" data-id="${i}"${st?" disabled":""}>${esc(o)}</button>`;}).join("")}</div>`;
+  }else if(q.t==="order"){
+    h+=`<div class="slots" aria-label="Deine Reihenfolge">${q.seq.length?q.seq.map((v,i)=>`<button class="chip" data-act="orem" data-id="${i}"${st?" disabled":""}>${i+1}. ${esc(q.items[v])}</button>`).join(""):`<span class="soft">Tippe unten die Kärtchen der Reihe nach an.</span>`}</div>
+    <div class="chips">${q.pool.filter(v=>!q.seq.includes(v)).map(v=>`<button class="chip" data-act="oadd" data-id="${v}"${st?" disabled":""}>${esc(q.items[v])}</button>`).join("")}</div>`;
+    if(!st)h+=`<div class="row"><button class="btn" data-act="ocheck"${q.seq.length<q.items.length?" disabled style=\"opacity:.45\"":""}>Prüfen</button><span class="soft">Falsch getippt? Tippe oben auf ein Kärtchen, um es zurückzulegen.</span></div>`;
+  }else if(q.t==="text"){
+    h+=st?`<p>Deine Antwort: <b>${esc(st.given)}</b></p>`:`<form id="tform" class="row"><label for="antwort" class="soft" style="width:100%">Deine Antwort:</label><input class="txt" id="antwort" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn" type="submit">Prüfen</button></form>`;
+  }
+  if(st){
+    h+=`<div class="fb ${st.ok?"ok":"no"}" role="status"><div class="head">${st.ok?(st.near?"Richtig, aber achte auf die Schreibweise":"Richtig!"):"Leider falsch"}</div>
+    ${!st.ok||st.near?`<p>Richtige Antwort: <b>${esc(corr(q))}</b></p>`:""}
+    <p>${esc(q.e)}</p>${esel(q.m)}</div>
+    <div class="row"><button class="btn" data-act="next" id="nextbtn">${r.i+1<r.qs.length?"Nächste Frage":"Ergebnis ansehen"}</button></div>`;
+  }
+  h+=`</section><div class="row"><button class="btn ghost" data-act="quit">Test abbrechen</button></div>`;
+  return h;
+}
+function vResult(){
+  const r=ui.run,n=r.qs.length,pc=r.right/n,t=TESTS.find(x=>x.id===r.id);
+  const msg=pc===1?"Perfekt! Alles richtig. So kann die Probe kommen.":pc>=.8?"Sehr gut! Nur noch ein paar Kleinigkeiten.":pc>=.5?"Schon ganz gut. Schau dir deine Fehler an und versuch es gleich nochmal.":"Das wird noch. Lies die Erklärungen unten und geh das Kapitel noch einmal durch.";
+  let h=`<section class="card"><span class="pill">${esc(r.title)}</span>
+  <div class="row" style="align-items:baseline"><span class="score">${r.right}</span><span class="big">von ${n} richtig</span></div>
+  <div class="bar" aria-hidden="true"><i style="width:${pc*100}%"></i></div><p class="big">${msg}</p>
+  <div class="row">${r.wrong.length?`<button class="btn" data-act="retry">Nur meine ${r.wrong.length} Fehler wiederholen</button>`:""}<button class="btn ${r.wrong.length?"ghost":""}" data-act="start" data-id="${r.id}">Test neu starten</button><button class="btn ghost" data-act="quit">Alle Tests</button>${r.id!=="probe"&&pc<.8?`<button class="btn ghost" data-act="tochap" data-id="${t.ch}">Kapitel nochmal lesen</button>`:""}</div></section>`;
+  if(r.wrong.length){
+    h+=`<section class="card"><h2>Deine Fehler mit Erklärung</h2>${r.wrong.map(w=>`<div class="err"><h3>${esc(w.q.q)}${w.q.t==="label"?" ("+esc(PARTS[w.q.part].n)+")":""}</h3>
+      <p class="yours">Deine Antwort: ${esc(w.given||"keine")}</p><p class="corr">Richtig: ${esc(corr(w.q))}</p><p>${esc(w.q.e)}</p>${esel(w.q.m)}</div>`).join("")}</section>`;
+  }
+  return h;
+}
+
+/* ---------- Steuerung ---------- */
+const VIEWS={start:vStart,lernen:vLernen,karten:vKarten,tests:vTests};
+function route(){const v=location.hash.slice(1);return VIEWS[v]?v:"start";}
+function render(top){
+  const v=route();
+  document.querySelectorAll("#nav a").forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+v));
+  app.innerHTML=VIEWS[v]();
+  if(top)window.scrollTo(0,0);
+  const f=document.getElementById("tform");
+  if(f)f.addEventListener("submit",e=>{e.preventDefault();const q=ui.run.qs[ui.run.i];const raw=document.getElementById("antwort").value.trim();if(!raw)return;
+    const g=norm(raw);let best=99;q.acc.forEach(a=>{const d=lev(g,a);const tol=a.length>=9?2:a.length>=5?1:0;if(d<=tol&&d<best)best=d;});
+    judge(q,raw,best<99,best>0&&best<99);render();});
+}
+function act(a,id,el){
+  const r=ui.run,q=r&&r.qs[r.i];
+  switch(a){
+    case"chap":ui.chap=+id;render(true);break;
+    case"tochap":ui.chap=+id;ui.run=null;location.hash="lernen";render(true);break;
+    case"part":if(ui.chap===3)ui.ipart=id;else ui.part=id;render();break;
+    case"caste":ui.caste=id;render();break;
+    case"deck":ui.deck=+id;ui.queue=null;ui.flip=false;render();break;
+    case"deckreset":deckIdx().forEach(i=>delete store.known[i]);save();ui.queue=null;ui.flip=false;render();break;
+    case"flip":ui.flip=!ui.flip;render();break;
+    case"knew":store.known[ui.queue.shift()]=1;save();ui.flip=false;render();break;
+    case"again":ui.queue.push(ui.queue.shift());ui.flip=false;render();break;
+    case"start":startRun(id);if(route()!=="tests")location.hash="tests";render(true);break;
+    case"retry":startRun(r.id,r.wrong.map(w=>w.q),true);render(true);break;
+    case"quit":ui.run=null;render(true);break;
+    case"opt":if(!r.state){const g=q.opts[+id];judge(q,g,g===q.o[0]);render();}break;
+    case"oadd":if(!r.state){q.seq.push(+id);render();}break;
+    case"orem":if(!r.state){q.seq.splice(+id,1);render();}break;
+    case"ocheck":if(!r.state&&q.seq.length===q.items.length){judge(q,q.seq.map(v=>q.items[v]).join(" → "),q.seq.every((v,i)=>v===i));render();}break;
+    case"next":r.i++;r.state=null;
+      if(r.i>=r.qs.length&&!r.retry){const b=store.best[r.id];if(!b||r.right/r.qs.length>b.s/b.n){store.best[r.id]={s:r.right,n:r.qs.length};save();}}
+      render(true);break;
+  }
+  if(a==="opt"||a==="ocheck"){const n=document.getElementById("nextbtn");if(n)n.scrollIntoView({block:"nearest",behavior:"smooth"});}
+}
+document.addEventListener("click",e=>{const el=e.target.closest("[data-act]");if(el&&!el.disabled)act(el.dataset.act,el.dataset.id,el);});
+document.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&e.target.matches&&e.target.matches("[data-act]:not(button)")){e.preventDefault();e.target.click();}});
+window.addEventListener("hashchange",()=>render(true));
+render();
+</script>
+</body>
+</html>
